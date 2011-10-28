@@ -35,5 +35,6 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 # rostest
 rosbuild_add_roslaunch_check(ros/launch/2dnav.launch)
+rosbuild_add_roslaunch_check(ros/launch/2dnav_dwa.launch)
 rosbuild_add_roslaunch_check(ros/launch/2dnav_local.launch)
 rosbuild_add_roslaunch_check(ros/launch/2dnav_slam.launch)

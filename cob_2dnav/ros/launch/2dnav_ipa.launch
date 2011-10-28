@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <launch>
-	<!-- Run the map server -->
-	<node name="map_server" pkg="map_server" type="map_server" args="$(find cob_default_config)/envs/$(env ROBOT_ENV)/map.yaml"/>
 
+	<arg name="map" default="$(find cob_default_env_config)/$(env ROBOT_ENV)/map.yaml" />
 
-  <!-- Run ipa navigation -->
-  <include file="$(find cob_platform_ctrl)/ros/launch/platform_ctrl.launch"/>
+	<!--- Run map_server -->
+	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
+
+	<!-- Run ipa navigation -->
+	<include file="$(find cob_platform_ctrl)/ros/launch/platform_ctrl.launch"/>
 
 </launch>
