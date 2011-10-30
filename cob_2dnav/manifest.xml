@@ -15,5 +15,6 @@
   <depend package="amcl"/>
   <depend package="topic_tools"/>
   <depend package="cob_2dslam"/>
+  <depend package="cob_default_env_config"/>
 
 </package>

@@ -8,6 +8,7 @@
   <license>BSD,LGPL</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cob_navigation</url>
+  <depend stack="cob_default_configurations" /> <!-- cob_default_env_config -->
   <depend stack="navigation" /> <!-- move_base, map_server, amcl, robot_pose_ekf -->
   <depend stack="ros" />
   <depend stack="ros_comm" /> <!-- topic_tools -->
