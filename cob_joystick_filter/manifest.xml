@@ -1,0 +1,19 @@
+<package>
+  <description brief="cob_joystick_filter">
+
+     cob_joystick_filter
+
+  </description>
+  <author>Matthias Gruhler</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cob_joystick_filter</url>
+
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="move_base_msgs"/>
+  <depend package="nav_msgs"/>
+   
+</package>
+
+
