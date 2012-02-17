@@ -1,23 +1,25 @@
 # global information
-global_frame: base_link
-robot_base_frame: base_footprint
+global_frame: /base_link
+robot_base_frame: /base_footprint
 update_frequency: 2.0
 publish_frequency: 2.0
 map_type: costmap
 
-# use local map
+# local map settings
 static_map: false
 rolling_window: true
 width: 6.0
 height: 6.0
 resolution: 0.025
 
-
+# footprint and range 
 obstacle_range: 6.0 #[m]
 raytrace_range: 6.0 #3.0 #[m]
 footprint: [[0.45, 0.37], [0.45, -0.37], [-0.45, -0.37],[-0.45, 0.37]] #[m]
+footprint_padding: 0.02 #[m]
 inflation_radius: 0.55 #[m]
 
+# sensor setup
 observation_sources: laser_scan_sensor_front laser_scan_sensor_rear laser_scan_sensor_top
 laser_scan_sensor_front: {sensor_frame: base_laser_front_link, data_type: LaserScan, topic: scan_front, marking: true, clearing: true}
 

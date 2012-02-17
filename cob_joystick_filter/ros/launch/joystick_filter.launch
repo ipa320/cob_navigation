@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- start map server -->
-
   <!-- start local costmap -->
-  <node name="local_costmap_node" pkg="costmap_2d" type="costmap_2d_node">
+  <node name="local_costmap_node" pkg="costmap_2d" type="costmap_2d_node" output="screen">
     <rosparam file="$(find cob_joystick_filter)/ros/config/local_costmap_params.yaml" command="load" ns="costmap" />
   </node>
 
@@ -12,6 +10,7 @@
   <node pkg="cob_joystick_filter" type="joystick_filter" name="joystick_filter" output="screen">
     <remap from="obstacles" to="/local_costmap_node/costmap/obstacles" />
     <remap from="robot_footprint" to="/local_costmap_node/costmap/robot_footprint" />
+    <rosparam file="$(find cob_joystick_filter)/ros/config/joystick_filter_params.yaml" command="load" />
   </node>
 
 </launch>
