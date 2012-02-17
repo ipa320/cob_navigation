@@ -17,7 +17,6 @@
  *
  * Date of creation: February 2012
  * ToDo:
- *    - implement Subscriber processing
  *    - calculate Distance (of footprint) to obstacle
  *    - handle possible collisions (1. stop robot completely, 2. block only component of velocity that would lead to collision)
  *    - tests
@@ -147,9 +146,17 @@ class JoystickFilterClass
 			}
 		}
   } 
+
   // joystick_velocityCB reads twist command from joystick
   void joystickVelocityCB(const geometry_msgs::Twist::ConstPtr &twist){
-  	ROS_INFO("joystick_velocityCB called");
+    pthread_mutex_lock(&m_mutex);
+    
+    robot_twist_linear_ = twist->linear;
+    robot_twist_angular_ = twist->angular;
+
+    ROS_DEBUG("Received Twist linear: x=%f , y=%f ; angular: z=%f", robot_twist_linear_.x, robot_twist_linear_.y, robot_twist_angular_.z);
+
+    pthread_mutex_unlock(&m_mutex);
   }
   
   // obstaclesCB reads obstacles from costmap
@@ -176,6 +183,9 @@ class JoystickFilterClass
 	tf::TransformListener tf_listener_;
 	std::string global_frame_, robot_frame_;
 
+  // velocity
+  geometry_msgs::Vector3 robot_twist_linear_, robot_twist_angular_;
+  
   //obstacle avoidence
   std::vector<geometry_msgs::Point> robot_footprint_;
   double footprint_left_, footprint_right_, footprint_front_, footprint_rear_;
