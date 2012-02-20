@@ -1,5 +1,5 @@
 #Parameters specifying joystick filter 
-influence_radius: 0.0005 #[m] distance from robot_center
+influence_radius: 2.5 #[m] distance from robot_center
 obstacle_damping_dist: 0.6 # used as slow-down dist
 stop_threshold: 0.1 #[m]
 use_circumscribed_threshold: 1.35 #[rad/s] scan for obstacles in circumscribed radius of robot even when tube filter is enabled during fast rotations

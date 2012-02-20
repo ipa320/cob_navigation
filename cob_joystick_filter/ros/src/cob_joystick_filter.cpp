@@ -80,10 +80,10 @@ class JoystickFilterClass
   public:
   // create a handle for this node, initialize node
   ros::NodeHandle nh_;
-  	
+
   // declaration of topics
 //  ros::Publisher topic_pub_command_;
-//  ros::Publisher topic_pub_relevant_obstacles_;
+  ros::Publisher topic_pub_relevant_obstacles_;
 
   ros::Subscriber joystick_velocity_sub_, obstacles_sub_;
   
@@ -96,9 +96,9 @@ class JoystickFilterClass
     std::string costmap_name_ = "/local_costmap_node/costmap";
     ros::NodeHandle local_costmap_nh_(costmap_name_); 	
 
-// implementation of topics to publish (command for base and list of relevant obstacles)
+  // implementation of topics to publish (command for base and list of relevant obstacles)
 //  	topic_pub_command_ = nh_.advertise<geometry_msgs::Twist>("command", 1);
-//  	topic_pub_relevant_obstacles_ = nh_.advertise<nav_msgs::GridCells>("relevant_obstacles", 1);
+  topic_pub_relevant_obstacles_ = nh_.advertise<nav_msgs::GridCells>("relevant_obstacles", 1);
   	
     // subscribe to twist-movement of teleop 
   	joystick_velocity_sub_ = nh_.subscribe<geometry_msgs::Twist>("teleop_twist", 1, boost::bind(&JoystickFilterClass::joystickVelocityCB, this, _1));
@@ -154,7 +154,8 @@ class JoystickFilterClass
     robot_twist_linear_ = twist->linear;
     robot_twist_angular_ = twist->angular;
 
-    ROS_DEBUG("Received Twist linear: x=%f , y=%f ; angular: z=%f", robot_twist_linear_.x, robot_twist_linear_.y, robot_twist_angular_.z);
+    // check for relevant obstacles
+    obstacleHandler();
 
     pthread_mutex_unlock(&m_mutex);
   }
@@ -162,7 +163,7 @@ class JoystickFilterClass
   // obstaclesCB reads obstacles from costmap
   void obstaclesCB(const nav_msgs::GridCells::ConstPtr &obstacles){
 		pthread_mutex_lock(&m_mutex);
-	
+
 		if(obstacles->cells.size()!=0) costmap_received_ = true;
 		last_costmap_received_ = * obstacles;
 		
@@ -183,23 +184,176 @@ class JoystickFilterClass
 	tf::TransformListener tf_listener_;
 	std::string global_frame_, robot_frame_;
 
-  // velocity
+  //velocity
   geometry_msgs::Vector3 robot_twist_linear_, robot_twist_angular_;
   
   //obstacle avoidence
   std::vector<geometry_msgs::Point> robot_footprint_;
   double footprint_left_, footprint_right_, footprint_front_, footprint_rear_;
   bool costmap_received_;
-  nav_msgs::GridCells last_costmap_received_;
+  nav_msgs::GridCells last_costmap_received_, relevant_obstacles_;
   double influence_radius_, stop_threshold_, obstacle_damping_dist_, use_circumscribed_threshold_;
   double closest_obstacle_dist_;
+	
+  //core functions
+  void obstacleHandler();
 
   //helper functions:
   std::vector<geometry_msgs::Point> loadRobotFootprint(ros::NodeHandle node);
 	double sign(double x);
+  double getDistance2d(geometry_msgs::Point a, geometry_msgs::Point b);
+	bool obstacleValid(double x_robot, double y_robot);
 
 }; //JoystickFilterClass
 
+
+void JoystickFilterClass::obstacleHandler() {
+  if(!costmap_received_) {
+		ROS_WARN("No costmap has been received by cob_joystick_filter, the robot will drive without obstacle avoidance!");
+		closest_obstacle_dist_ = influence_radius_;
+		
+		pthread_mutex_unlock(&m_mutex);
+		return;
+	}
+	closest_obstacle_dist_ = influence_radius_;
+
+	double cur_distance_to_center, cur_distance_to_border;
+	double obstacle_theta_robot, obstacle_delta_theta_robot, obstacle_dist_vel_dir;
+	bool cur_obstacle_relevant;
+	geometry_msgs::Point cur_obstacle_robot;
+  geometry_msgs::Point zero_position;
+  zero_position.x=0.0f;  
+  zero_position.y=0.0f;
+  zero_position.z=0.0f;
+	bool use_circumscribed=true, use_tube=true;
+
+	//Calculate corner angles in robot_frame:
+	double corner_front_left, corner_rear_left, corner_rear_right, corner_front_right;
+	corner_front_left = atan2(footprint_left_, footprint_front_);
+	corner_rear_left = atan2(footprint_left_, footprint_rear_);
+	corner_rear_right = atan2(footprint_right_, footprint_rear_);
+	corner_front_right = atan2(footprint_right_, footprint_front_);
+	
+	//Decide, whether circumscribed or tube argument should be usd for filtering:
+	if(fabs(robot_twist_linear_.x) <= 0.005f && fabs(robot_twist_linear_.y) <= 0.005f) {
+		use_tube = false;
+		//disable tube filter at very slow velocities
+	}
+	if(!use_tube) {
+		if( fabs(robot_twist_angular_.z) <= 0.01f) {
+			use_circumscribed = false;
+		} //when tube filter inactive, start circumscribed filter at very low rot-velocities
+	} else {
+		if( fabs(robot_twist_angular_.z) <= use_circumscribed_threshold_) {
+			use_circumscribed = false;
+		} //when tube filter running, disable circum-filter in a wider range of rot-velocities
+	} 
+	
+	//Calculation of tube in driving-dir considered for obstacle avoidence
+	double velocity_angle=0.0f, velocity_ortho_angle;
+	double corner_angle, delta_corner_angle;
+	double ortho_corner_dist;
+	double tube_left_border = 0.0f, tube_right_border = 0.0f;
+	double tube_left_origin = 0.0f, tube_right_origin = 0.0f;
+	double corner_dist, circumscribed_radius = 0.0f;
+
+	for(unsigned i = 0; i<robot_footprint_.size(); i++) {
+		corner_dist = sqrt(robot_footprint_[i].x*robot_footprint_[i].x + robot_footprint_[i].y*robot_footprint_[i].y);
+		if(corner_dist > circumscribed_radius) circumscribed_radius = corner_dist;
+	}
+
+	if(use_tube) {
+		//use commanded vel-value for vel-vector direction.. ?
+		velocity_angle = atan2(robot_twist_linear_.y, robot_twist_linear_.x);
+		velocity_ortho_angle = velocity_angle + M_PI / 2.0f;
+
+		for(unsigned i = 0; i<robot_footprint_.size(); i++) {
+			corner_angle = atan2(robot_footprint_[i].y, robot_footprint_[i].x);
+			delta_corner_angle = velocity_ortho_angle - corner_angle;
+			corner_dist = sqrt(robot_footprint_[i].x*robot_footprint_[i].x + robot_footprint_[i].y*robot_footprint_[i].y);
+			if(corner_dist > circumscribed_radius) circumscribed_radius = corner_dist;
+			
+      ortho_corner_dist = cos(delta_corner_angle) * corner_dist;
+	
+			if(ortho_corner_dist < tube_right_border) {
+				tube_right_border = ortho_corner_dist;
+				tube_right_origin = sin(delta_corner_angle) * corner_dist;
+			} else if(ortho_corner_dist > tube_left_border) {
+				tube_left_border = ortho_corner_dist;
+				tube_left_origin = sin(delta_corner_angle) * corner_dist;
+			}
+		}
+	}
+
+	//find relevant obstacles
+	relevant_obstacles_.header = last_costmap_received_.header;
+	relevant_obstacles_.cell_width = last_costmap_received_.cell_width;
+	relevant_obstacles_.cell_height = last_costmap_received_.cell_height;
+	relevant_obstacles_.cells.clear();
+	
+	for(unsigned int i = 0; i < last_costmap_received_.cells.size(); i++) {
+    cur_obstacle_relevant = false;
+		cur_distance_to_center = getDistance2d(zero_position, last_costmap_received_.cells[i]);
+		//check whether current obstacle lies inside the circumscribed_radius of the robot -> prevent collisions while rotating
+    if(use_circumscribed && cur_distance_to_center <= circumscribed_radius) {
+			cur_obstacle_robot = last_costmap_received_.cells[i];
+
+			if( obstacleValid(cur_obstacle_robot.x, cur_obstacle_robot.y) ) {
+				cur_obstacle_relevant = true;
+				relevant_obstacles_.cells.push_back(last_costmap_received_.cells[i]);
+				obstacle_theta_robot = atan2(cur_obstacle_robot.y, cur_obstacle_robot.x);
+			}
+			
+		//for each obstacle, now check whether it lies in the tube or not:
+		} else if(use_tube && cur_distance_to_center < influence_radius_) {
+			cur_obstacle_robot = last_costmap_received_.cells[i];
+
+      if( obstacleValid(cur_obstacle_robot.x, cur_obstacle_robot.y) ) {
+				obstacle_theta_robot = atan2(cur_obstacle_robot.y, cur_obstacle_robot.x);
+				obstacle_delta_theta_robot = obstacle_theta_robot - velocity_angle;
+				obstacle_dist_vel_dir = sin(obstacle_delta_theta_robot) * cur_distance_to_center;
+		
+				if(obstacle_dist_vel_dir <= tube_left_border && obstacle_dist_vel_dir >= tube_right_border) {
+					//found obstacle that lies inside of observation tube
+					
+					if( sign(obstacle_dist_vel_dir) >= 0) { 
+						if(cos(obstacle_delta_theta_robot) * cur_distance_to_center >= tube_left_origin) {
+							//relevant obstacle in tube found
+							cur_obstacle_relevant = true;
+							relevant_obstacles_.cells.push_back(last_costmap_received_.cells[i]);
+						}
+					} else { // obstacle in right part of tube
+						if(cos(obstacle_delta_theta_robot) * cur_distance_to_center >= tube_right_origin) {
+							//relevant obstacle in tube found
+							cur_obstacle_relevant = true;
+							relevant_obstacles_.cells.push_back(last_costmap_received_.cells[i]);
+						}
+					}
+				}
+			}
+		}
+	
+		if(cur_obstacle_relevant) { //now calculate distance of current, relevant obstacle to robot
+			if(obstacle_theta_robot >= corner_front_right && obstacle_theta_robot < corner_front_left) {
+        //obstacle in front:
+				cur_distance_to_border = cur_distance_to_center - fabs(footprint_front_) / fabs(cos(obstacle_theta_robot));
+			} else if(obstacle_theta_robot >= corner_front_left && obstacle_theta_robot < corner_rear_left) {
+        //obstacle left:
+				cur_distance_to_border = cur_distance_to_center - fabs(footprint_left_) / fabs(sin(obstacle_theta_robot));
+			} else if(obstacle_theta_robot >= corner_rear_left || obstacle_theta_robot < corner_rear_right) {
+        //obstacle in rear:
+				cur_distance_to_border = cur_distance_to_center - fabs(footprint_rear_) / fabs(cos(obstacle_theta_robot));
+			} else {
+				//obstacle right:
+				cur_distance_to_border = cur_distance_to_center - fabs(footprint_right_) / fabs(sin(obstacle_theta_robot));
+			}
+			
+			if(cur_distance_to_border < closest_obstacle_dist_) closest_obstacle_dist_ = cur_distance_to_border;
+		}	
+	}
+	
+	topic_pub_relevant_obstacles_.publish(relevant_obstacles_);
+}
 
 // load robot footprint from costmap_2d_ros to keep same footprint format
 std::vector<geometry_msgs::Point> JoystickFilterClass::loadRobotFootprint(ros::NodeHandle node){
@@ -263,11 +417,23 @@ std::vector<geometry_msgs::Point> JoystickFilterClass::loadRobotFootprint(ros::N
 	return footprint;
 }
 	
+double JoystickFilterClass::getDistance2d(geometry_msgs::Point a, geometry_msgs::Point b) {
+	return sqrt( pow(a.x - b.x,2) + pow(a.y - b.y,2) );
+}
+
 double JoystickFilterClass::sign(double x) {
 	if(x >= 0.0f) return 1.0f;
 	else return -1.0f;
 }
 
+bool JoystickFilterClass::obstacleValid(double x_obstacle, double y_obstacle) {
+	if(x_obstacle<footprint_front_ && x_obstacle>footprint_rear_ && y_obstacle>footprint_right_ && y_obstacle<footprint_left_) {
+		ROS_WARN("Found an obstacle inside robot_footprint: Skip!");
+		return false;
+	}
+	
+	return true;
+}
 
 //#######################
 //#### main programm ####
