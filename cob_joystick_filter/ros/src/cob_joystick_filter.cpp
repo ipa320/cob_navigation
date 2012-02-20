@@ -82,7 +82,7 @@ class JoystickFilterClass
   ros::NodeHandle nh_;
 
   // declaration of topics
-//  ros::Publisher topic_pub_command_;
+  ros::Publisher topic_pub_command_;
   ros::Publisher topic_pub_relevant_obstacles_;
 
   ros::Subscriber joystick_velocity_sub_, obstacles_sub_;
@@ -96,9 +96,9 @@ class JoystickFilterClass
     std::string costmap_name_ = "/local_costmap_node/costmap";
     ros::NodeHandle local_costmap_nh_(costmap_name_); 	
 
-  // implementation of topics to publish (command for base and list of relevant obstacles)
-//  	topic_pub_command_ = nh_.advertise<geometry_msgs::Twist>("command", 1);
-  topic_pub_relevant_obstacles_ = nh_.advertise<nav_msgs::GridCells>("relevant_obstacles", 1);
+    // implementation of topics to publish (command for base and list of relevant obstacles)
+  	topic_pub_command_ = nh_.advertise<geometry_msgs::Twist>("command", 1);
+    topic_pub_relevant_obstacles_ = nh_.advertise<nav_msgs::GridCells>("relevant_obstacles", 1);
   	
     // subscribe to twist-movement of teleop 
   	joystick_velocity_sub_ = nh_.subscribe<geometry_msgs::Twist>("teleop_twist", 1, boost::bind(&JoystickFilterClass::joystickVelocityCB, this, _1));
@@ -156,6 +156,8 @@ class JoystickFilterClass
 
     // check for relevant obstacles
     obstacleHandler();
+    // stop if we are about to run in an obstacle
+    performControllerStep();
 
     pthread_mutex_unlock(&m_mutex);
   }
@@ -195,7 +197,8 @@ class JoystickFilterClass
   double influence_radius_, stop_threshold_, obstacle_damping_dist_, use_circumscribed_threshold_;
   double closest_obstacle_dist_;
 	
-  //core functions
+  //core functionsi
+  void performControllerStep();
   void obstacleHandler();
 
   //helper functions:
@@ -203,9 +206,24 @@ class JoystickFilterClass
 	double sign(double x);
   double getDistance2d(geometry_msgs::Point a, geometry_msgs::Point b);
 	bool obstacleValid(double x_robot, double y_robot);
+  void stopMovement();
 
 }; //JoystickFilterClass
 
+void JoystickFilterClass::performControllerStep() {
+
+  geometry_msgs::Twist cmd_vel;
+  cmd_vel.linear = robot_twist_linear_;
+  cmd_vel.angular = robot_twist_angular_;
+
+	if( closest_obstacle_dist_ < stop_threshold_ ) {
+		stopMovement();
+		return;
+	}
+  // implement linear decrease etc. pp
+  topic_pub_command_.publish(cmd_vel);  
+  return;
+}
 
 void JoystickFilterClass::obstacleHandler() {
   if(!costmap_received_) {
@@ -433,6 +451,13 @@ bool JoystickFilterClass::obstacleValid(double x_obstacle, double y_obstacle) {
 	}
 	
 	return true;
+}
+
+void JoystickFilterClass::stopMovement() {
+  geometry_msgs::Twist stop_twist;
+  stop_twist.linear.x = 0.0f; stop_twist.linear.y = 0.0f; stop_twist.linear.z = 0.0f;
+  stop_twist.angular.x = 0.0f; stop_twist.angular.y = 0.0f; stop_twist.linear.z = 0.0f;
+  topic_pub_command_.publish(stop_twist);
 }
 
 //#######################

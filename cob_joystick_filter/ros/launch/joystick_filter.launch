@@ -8,9 +8,13 @@
 
   <!-- start joystick filter node -->
   <node pkg="cob_joystick_filter" type="joystick_filter" name="joystick_filter" output="screen">
+    <!-- remap incoming variables -->
     <remap from="obstacles" to="/local_costmap_node/costmap/obstacles" />
-    <remap from="teleop_twist" to="/base_controller/command" />
+    <remap from="teleop_twist" to="/cmd_vel" />
+    <!-- remap outgoing variables -->
+    <remap from="command" to="/base_controller/command" />
     <remap from="relevant_obstacles" to="/joystick_filter/relevant_obstacles" />
+    <!-- load parameter file -->
     <rosparam file="$(find cob_joystick_filter)/ros/config/joystick_filter_params.yaml" command="load" />
   </node>
 
