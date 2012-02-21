@@ -17,8 +17,6 @@
  *
  * Date of creation: February 2012
  * ToDo:
- *    - calculate Distance (of footprint) to obstacle
- *    - handle possible collisions (1. stop robot completely, 2. block only component of velocity that would lead to collision)
  *    - tests
  *
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -106,6 +104,7 @@ class JoystickFilterClass
   	obstacles_sub_ = nh_.subscribe<nav_msgs::GridCells>("obstacles", 1, boost::bind(&JoystickFilterClass::obstaclesCB, this, _1));
 		
 		// read parameters from parameter server
+    // parameters from costmap
 		if(!local_costmap_nh_.hasParam(costmap_name_+"/global_frame")) ROS_WARN("Used default parameter for global_frame");
 		local_costmap_nh_.param(costmap_name_+"/global_frame", global_frame_, std::string("/map"));
 		
@@ -116,6 +115,7 @@ class JoystickFilterClass
 		nh_.param(name+"/influence_radius", influence_radius_, 1.5);
 		closest_obstacle_dist_ = influence_radius_;
 		
+    // parameters for obstacle avoidence and velocity adjustment
 		if(!nh_.hasParam(name+"/stop_threshold")) ROS_WARN("Used default parameter for stop_threshold");
 		nh_.param(name+"/stop_threshold", stop_threshold_, 0.10);
 		
@@ -127,6 +127,12 @@ class JoystickFilterClass
 		
 		if(!nh_.hasParam(name+"/use_circumscribed_threshold")) ROS_WARN("Used default parameter for use_circumscribed_threshold_");
 		nh_.param(name+"/use_circumscribed_threshold", use_circumscribed_threshold_, 0.20);
+		
+		if(!nh_.hasParam(name+"/vmax")) ROS_WARN("Used default parameter for pot_ctrl_vmax");
+		nh_.param(name+"/vmax", v_max_, 0.6);
+		
+		if(!nh_.hasParam(name+"/vtheta_max")) ROS_WARN("Used default parameter for pot_ctrl_vtheta_max");
+		nh_.param(name+"/vtheta_max", vtheta_max_, 0.8);
 		
     //load the robot footprint from the parameter server if its available in the local costmap namespace
 		robot_footprint_ = loadRobotFootprint(local_costmap_nh_);
@@ -188,7 +194,8 @@ class JoystickFilterClass
 
   //velocity
   geometry_msgs::Vector3 robot_twist_linear_, robot_twist_angular_;
-  
+	double v_max_, vtheta_max_;  
+
   //obstacle avoidence
   std::vector<geometry_msgs::Point> robot_footprint_;
   double footprint_left_, footprint_right_, footprint_front_, footprint_rear_;
@@ -196,8 +203,8 @@ class JoystickFilterClass
   nav_msgs::GridCells last_costmap_received_, relevant_obstacles_;
   double influence_radius_, stop_threshold_, obstacle_damping_dist_, use_circumscribed_threshold_;
   double closest_obstacle_dist_;
-	
-  //core functionsi
+
+  //core functions
   void performControllerStep();
   void obstacleHandler();
 
@@ -215,12 +222,43 @@ void JoystickFilterClass::performControllerStep() {
   geometry_msgs::Twist cmd_vel;
   cmd_vel.linear = robot_twist_linear_;
   cmd_vel.angular = robot_twist_angular_;
+  double v_max_obst = v_max_, vtheta_max_obst = vtheta_max_, v_factor = 1.0f;
 
 	if( closest_obstacle_dist_ < stop_threshold_ ) {
 		stopMovement();
 		return;
 	}
-  // implement linear decrease etc. pp
+
+  //Slow down in direction of closest relevant obstacle: 
+	if(closest_obstacle_dist_ < influence_radius_) {
+		//implementation for linear decrease of v_max:
+		double obstacle_linear_slope = v_max_ / (obstacle_damping_dist_ - stop_threshold_);
+		v_max_obst = (closest_obstacle_dist_- stop_threshold_ + stop_threshold_/10.0f) * obstacle_linear_slope;
+
+		if(v_max_obst > v_max_) v_max_obst = v_max_;
+			else if(v_max_obst < 0.0f) v_max_obst = 0.0f;
+		//implementation for linear decrease of vtheta_max:
+		obstacle_linear_slope = vtheta_max_ / (obstacle_damping_dist_ - stop_threshold_);
+		vtheta_max_obst = (closest_obstacle_dist_- stop_threshold_ + stop_threshold_/10.0f) * obstacle_linear_slope;
+
+		if(vtheta_max_obst > vtheta_max_) vtheta_max_obst = vtheta_max_;
+			else if(vtheta_max_obst < 0.0f) vtheta_max_obst = 0.0f;
+	
+    //Translational movement
+    v_factor = v_max_obst / v_max_; // v_factor only dependent on distance of robot to closest relevant obstacle
+  	if(v_factor > 1.0) v_factor = 1.0;
+	
+  	cmd_vel.linear.x = v_factor * robot_twist_linear_.x;
+	  cmd_vel.linear.y = v_factor * robot_twist_linear_.y;
+
+  	//Rotational Movement
+    v_factor = vtheta_max_obst / vtheta_max_; // v_factor only dependent on distance of robot to closest relevant obstacle
+  	if(v_factor > 1.0) v_factor = 1.0;
+	
+  	cmd_vel.angular.z = v_factor * robot_twist_angular_.z;
+  }
+
+  // publish adjusted velocity 
   topic_pub_command_.publish(cmd_vel);  
   return;
 }
