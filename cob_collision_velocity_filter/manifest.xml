@@ -1,13 +1,13 @@
 <package>
-  <description brief="cob_joystick_filter">
+  <description brief="cob_collision_velocity_filter">
 
      cob_joystick_filter
 
   </description>
   <author>Matthias Gruhler</author>
-  <license>BSD</license>
+  <license>LGPL</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/cob_joystick_filter</url>
+  <url>http://ros.org/wiki/cob_collision_velocity_filter</url>
 
   <depend package="roscpp"/>
   <depend package="rospy"/>

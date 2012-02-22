@@ -31,4 +31,4 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/ros/include)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(joystick_filter ros/src/cob_joystick_filter.cpp)
+rosbuild_add_executable(collision_velocity_filter ros/src/cob_collision_velocity_filter.cpp)

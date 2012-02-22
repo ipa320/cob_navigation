@@ -9,7 +9,7 @@
  *
  * Project name: care-o-bot
  * ROS stack name: cob_navigation
- * ROS package name: cob_joystick_filter
+ * ROS package name: cob_collision_velocity_filter
  *  							
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *  		
@@ -47,10 +47,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************/
-#include <cob_joystick_filter.h>
+#include <cob_collision_velocity_filter.h>
 
 // Constructor
-JoystickFilterClass::JoystickFilterClass(std::string name)
+CollisionVelocityFilter::CollisionVelocityFilter(std::string name)
 {
   m_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -63,9 +63,9 @@ JoystickFilterClass::JoystickFilterClass(std::string name)
   topic_pub_relevant_obstacles_ = nh_.advertise<nav_msgs::GridCells>("relevant_obstacles", 1);
 
   // subscribe to twist-movement of teleop 
-  joystick_velocity_sub_ = nh_.subscribe<geometry_msgs::Twist>("teleop_twist", 1, boost::bind(&JoystickFilterClass::joystickVelocityCB, this, _1));
+  joystick_velocity_sub_ = nh_.subscribe<geometry_msgs::Twist>("teleop_twist", 1, boost::bind(&CollisionVelocityFilter::joystickVelocityCB, this, _1));
   // subscribe to the costmap to receive inflated cells
-  obstacles_sub_ = nh_.subscribe<nav_msgs::GridCells>("obstacles", 1, boost::bind(&JoystickFilterClass::obstaclesCB, this, _1));
+  obstacles_sub_ = nh_.subscribe<nav_msgs::GridCells>("obstacles", 1, boost::bind(&CollisionVelocityFilter::obstaclesCB, this, _1));
 
   // read parameters from parameter server
   // parameters from costmap
@@ -101,15 +101,15 @@ JoystickFilterClass::JoystickFilterClass(std::string name)
   //load the robot footprint from the parameter server if its available in the local costmap namespace
   robot_footprint_ = loadRobotFootprint(local_costmap_nh_);
   if(robot_footprint_.size() > 4) 
-    ROS_WARN("You have set more than 4 points as robot_footprint, cob_joystick_filter can deal only with rectangular footprints so far!");
+    ROS_WARN("You have set more than 4 points as robot_footprint, cob_collision_velocity_filter can deal only with rectangular footprints so far!");
 
 } 
 
 // Destructor
-JoystickFilterClass::~JoystickFilterClass(){}
+CollisionVelocityFilter::~CollisionVelocityFilter(){}
 
 // joystick_velocityCB reads twist command from joystick
-void JoystickFilterClass::joystickVelocityCB(const geometry_msgs::Twist::ConstPtr &twist){
+void CollisionVelocityFilter::joystickVelocityCB(const geometry_msgs::Twist::ConstPtr &twist){
   pthread_mutex_lock(&m_mutex);
 
   robot_twist_linear_ = twist->linear;
@@ -124,7 +124,7 @@ void JoystickFilterClass::joystickVelocityCB(const geometry_msgs::Twist::ConstPt
 }
 
 // obstaclesCB reads obstacles from costmap
-void JoystickFilterClass::obstaclesCB(const nav_msgs::GridCells::ConstPtr &obstacles){
+void CollisionVelocityFilter::obstaclesCB(const nav_msgs::GridCells::ConstPtr &obstacles){
   pthread_mutex_lock(&m_mutex);
 
   if(obstacles->cells.size()!=0) costmap_received_ = true;
@@ -136,7 +136,7 @@ void JoystickFilterClass::obstaclesCB(const nav_msgs::GridCells::ConstPtr &obsta
   pthread_mutex_unlock(&m_mutex);
 }
 
-void JoystickFilterClass::performControllerStep() {
+void CollisionVelocityFilter::performControllerStep() {
 
   geometry_msgs::Twist cmd_vel;
   cmd_vel.linear = robot_twist_linear_;
@@ -182,9 +182,9 @@ void JoystickFilterClass::performControllerStep() {
   return;
 }
 
-void JoystickFilterClass::obstacleHandler() {
+void CollisionVelocityFilter::obstacleHandler() {
   if(!costmap_received_) {
-    ROS_WARN("No costmap has been received by cob_joystick_filter, the robot will drive without obstacle avoidance!");
+    ROS_WARN("No costmap has been received by cob_collision_velocity_filter, the robot will drive without obstacle avoidance!");
     closest_obstacle_dist_ = influence_radius_;
 
     pthread_mutex_unlock(&m_mutex);
@@ -331,7 +331,7 @@ void JoystickFilterClass::obstacleHandler() {
 }
 
 // load robot footprint from costmap_2d_ros to keep same footprint format
-std::vector<geometry_msgs::Point> JoystickFilterClass::loadRobotFootprint(ros::NodeHandle node){
+std::vector<geometry_msgs::Point> CollisionVelocityFilter::loadRobotFootprint(ros::NodeHandle node){
   std::vector<geometry_msgs::Point> footprint;
   geometry_msgs::Point pt;
   double padding;
@@ -387,21 +387,21 @@ std::vector<geometry_msgs::Point> JoystickFilterClass::loadRobotFootprint(ros::N
     if(footprint[i].y > footprint_left_) footprint_left_ = footprint[i].y;
     if(footprint[i].y < footprint_right_) footprint_right_ = footprint[i].y;
   }
-  ROS_DEBUG("Extracted rectangular footprint for cob_joystick_filter: Front: %f, Rear %f, Left: %f, Right %f", footprint_front_, footprint_rear_, footprint_left_, footprint_right_);
+  ROS_DEBUG("Extracted rectangular footprint for cob_collision_velocity_filter: Front: %f, Rear %f, Left: %f, Right %f", footprint_front_, footprint_rear_, footprint_left_, footprint_right_);
 
   return footprint;
 }
 
-double JoystickFilterClass::getDistance2d(geometry_msgs::Point a, geometry_msgs::Point b) {
+double CollisionVelocityFilter::getDistance2d(geometry_msgs::Point a, geometry_msgs::Point b) {
   return sqrt( pow(a.x - b.x,2) + pow(a.y - b.y,2) );
 }
 
-double JoystickFilterClass::sign(double x) {
+double CollisionVelocityFilter::sign(double x) {
   if(x >= 0.0f) return 1.0f;
   else return -1.0f;
 }
 
-bool JoystickFilterClass::obstacleValid(double x_obstacle, double y_obstacle) {
+bool CollisionVelocityFilter::obstacleValid(double x_obstacle, double y_obstacle) {
   if(x_obstacle<footprint_front_ && x_obstacle>footprint_rear_ && y_obstacle>footprint_right_ && y_obstacle<footprint_left_) {
     ROS_WARN("Found an obstacle inside robot_footprint: Skip!");
     return false;
@@ -410,7 +410,7 @@ bool JoystickFilterClass::obstacleValid(double x_obstacle, double y_obstacle) {
   return true;
 }
 
-void JoystickFilterClass::stopMovement() {
+void CollisionVelocityFilter::stopMovement() {
   geometry_msgs::Twist stop_twist;
   stop_twist.linear.x = 0.0f; stop_twist.linear.y = 0.0f; stop_twist.linear.z = 0.0f;
   stop_twist.angular.x = 0.0f; stop_twist.angular.y = 0.0f; stop_twist.linear.z = 0.0f;
@@ -422,10 +422,11 @@ void JoystickFilterClass::stopMovement() {
 int main(int argc, char** argv)
 {
   // initialize ROS, spezify name of node
-  ros::init(argc, argv, "cob_joystick");
+  ros::init(argc, argv, "cob_collision_velocity_filter");
 
   // create nodeClass
-  JoystickFilterClass joystickFilterClass("joystick_filter");
+  CollisionVelocityFilter collisionVelocityFilter("collision_velocity_filter");
+
 
   ros::spin();
 

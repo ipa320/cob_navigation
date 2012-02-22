@@ -2,7 +2,7 @@
 vmax: 0.2 #0.6
 vtheta_max: 0.3
 
-#Parameters specifying joystick filter 
+#Parameters specifying collision velocity filter 
 influence_radius: 2.0 #[m] distance from robot_center
 obstacle_damping_dist: 0.3 # used as slow-down dist
 stop_threshold: 0.1 #[m]

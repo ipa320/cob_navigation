@@ -9,15 +9,13 @@
  *
  * Project name: care-o-bot
  * ROS stack name: cob_navigation
- * ROS package name: cob_joystick_filter
+ * ROS package name: cob_collision_velocity_filter
  *  							
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *  		
  * Author: Matthias Gruhler, email:Matthias.Gruhler@ipa.fhg.de
  *
  * Date of creation: February 2012
- * ToDo:
- *    - tests
  *
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *
@@ -49,8 +47,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************/
-#ifndef COB_JOYSTICK_FILTER_H
-#define COB_JOYSTICK_FILTER_H
+#ifndef COB_COLLISION_VELOCITY_FILTER_H
+#define COB_COLLISION_VELOCITY_FILTER_H
 
 //##################
 //#### includes ####
@@ -70,16 +68,16 @@
 #include <geometry_msgs/Polygon.h>
 #include <nav_msgs/GridCells.h>
 
-//###############################
-//#### joystick filter class ####
-class JoystickFilterClass
+//#########################################
+//#### collision velocity filter class ####
+class CollisionVelocityFilter
 {
   public:
     // Constructor
-    JoystickFilterClass(std::string name);
+    CollisionVelocityFilter(std::string name);
 
     // Destructor
-    ~JoystickFilterClass();
+    ~CollisionVelocityFilter();
 
     // joystick_velocityCB reads twist command from joystick
     void joystickVelocityCB(const geometry_msgs::Twist::ConstPtr &twist);
@@ -125,6 +123,6 @@ class JoystickFilterClass
     double influence_radius_, stop_threshold_, obstacle_damping_dist_, use_circumscribed_threshold_;
     double closest_obstacle_dist_;
 
-}; //JoystickFilterClassi
+}; //CollisionVelocityFilter
 
 #endif
