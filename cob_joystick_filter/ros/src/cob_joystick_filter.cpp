@@ -68,9 +68,6 @@
 #include <geometry_msgs/Polygon.h>
 #include <nav_msgs/GridCells.h>
 
-// Listener includes
-#include <tf/transform_listener.h>
-
 //###############################
 //#### joystick filter class ####
 class JoystickFilterClass
@@ -139,18 +136,6 @@ class JoystickFilterClass
 		if(robot_footprint_.size() > 4) 
 			ROS_WARN("You have set more than 4 points as robot_footprint, cob_joystick_filter can deal only with rectangular footprints so far!");
 
-
-		//we need to make sure that the transform between the robot base frame and the global frame is available
-		ros::Time last_error = ros::Time::now();
-		std::string tf_error;
-		while(!tf_listener_.waitForTransform(global_frame_, robot_frame_, ros::Time(), ros::Duration(0.1), ros::Duration(0.01), &tf_error)) {
-			ros::spinOnce();
-			if(last_error + ros::Duration(5.0) < ros::Time::now()){
-				ROS_WARN("Waiting on transform from %s to %s to become available before running cob_joystick_filter, tf error: %s", 
-				robot_frame_.c_str(), global_frame_.c_str(), tf_error.c_str());
-				last_error = ros::Time::now();
-			}
-		}
   } 
 
   // joystick_velocityCB reads twist command from joystick
@@ -188,8 +173,7 @@ class JoystickFilterClass
   private:
   pthread_mutex_t m_mutex;
 
-  //tf transform
-	tf::TransformListener tf_listener_;
+  //frames
 	std::string global_frame_, robot_frame_;
 
   //velocity
