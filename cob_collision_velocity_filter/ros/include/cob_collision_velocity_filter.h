@@ -68,42 +68,99 @@
 #include <geometry_msgs/Polygon.h>
 #include <nav_msgs/GridCells.h>
 
-//#########################################
-//#### collision velocity filter class ####
+
+///
+/// @class CollisionVelocityFilter
+/// @brief checks for obstacles in driving direction and stops the robot
+/// 
+///
 class CollisionVelocityFilter
 {
   public:
-    // Constructor
+
+    ///
+    /// @brief  Constructor
+    /// @param  name - name of node
+    ///
     CollisionVelocityFilter(std::string name);
 
-    // Destructor
+    
+    ///
+    /// @brief  Destructor
+    ///
     ~CollisionVelocityFilter();
 
-    // joystick_velocityCB reads twist command from joystick
+    ///
+    /// @brief  reads twist command from teleop device (joystick, teleop_keyboard, ...) and calls functions 
+    ///         for collision check (obstacleHandler) and driving of the robot (performControllerStep)
+    /// @param  twist - velocity command sent as twist message (twist.linear.x/y/z, twist.angular.x/y/z) 
+    ///
     void joystickVelocityCB(const geometry_msgs::Twist::ConstPtr &twist);
 
-    // obstaclesCB reads obstacles from costmap
+    ///
+    /// @brief  reads obstacles from costmap
+    /// @param  obstacles - 2D occupancy grid in rolling window mode!
+    ///
     void obstaclesCB(const nav_msgs::GridCells::ConstPtr &obstacles);
 
-    // create a handle for this node, initialize node
+    /// create a handle for this node, initialize node
     ros::NodeHandle nh_;
 
-    // declaration of topics
+    /// declaration of publisher 
     ros::Publisher topic_pub_command_;
     ros::Publisher topic_pub_relevant_obstacles_;
 
+    /// declaration of subscriber
     ros::Subscriber joystick_velocity_sub_, obstacles_sub_;
 
   private:
-    //core functions
+    /* core functions */
+    
+    ///
+    /// @brief  checks distance to obstacles in driving direction and slows down/stops 
+    ///         robot and publishes command velocity to robot
+    ///
     void performControllerStep();
+    
+    ///
+    /// @brief  checks for obstacles in driving direction of the robot (rotation included) 
+    ///         and publishes relevant obstacles
+    ///
     void obstacleHandler();
 
-    //helper functions:
+    /* helper functions */
+    
+    ///
+    /// @brief  loads the robot footprint published by the local costmap
+    /// @param  node - NodeHandle to the local costmap
+    /// @return footprint polygon as vector
+    ///
     std::vector<geometry_msgs::Point> loadRobotFootprint(ros::NodeHandle node);
+
+
+    ///
+    /// @brief  returns the sign of x
+    ///
     double sign(double x);
+    
+    ///
+    /// @brief  computes distance between two points
+    /// @param  a,b - Points 
+    /// @return distance
+    ///
     double getDistance2d(geometry_msgs::Point a, geometry_msgs::Point b);
-    bool obstacleValid(double x_robot, double y_robot);
+
+    ///
+    /// @brief  checks if obstacle lies already within footprint -> this is ignored due to sensor readings of the hull etc
+    /// @param  x_obstacle - x coordinate of obstacle in occupancy grid local costmap
+    /// @param  y_obstacle - y coordinate of obstacle in occupancy grid local costmap
+    /// @return true if obstacle outside of footprint
+    ///
+    bool obstacleValid(double x_obstacle, double y_obstacle);
+
+    ///
+    /// @brief  stops movement of the robot
+    ///
     void stopMovement();
 
     pthread_mutex_t m_mutex;
