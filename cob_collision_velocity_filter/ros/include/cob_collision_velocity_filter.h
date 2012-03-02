@@ -68,6 +68,9 @@
 #include <geometry_msgs/Polygon.h>
 #include <nav_msgs/GridCells.h>
 
+#include <boost/tokenizer.hpp>
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 ///
 /// @class CollisionVelocityFilter
