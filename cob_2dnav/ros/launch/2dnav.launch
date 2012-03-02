@@ -13,6 +13,7 @@
 	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 		<remap from="cmd_vel" to="base_controller/command"/>
 		<remap from="odom" to="base_controller/odometry"/>
+		<param name="controller_frequency" value="12"/>
 
 		<!--- load common configuration files -->
 		<rosparam file="$(find cob_2dnav)/ros/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
