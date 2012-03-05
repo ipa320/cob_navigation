@@ -89,7 +89,7 @@ FootprintObserver::FootprintObserver(std::string name)
   if(!nh_.hasParam(name+"/farthest_frame")) ROS_WARN("No parameter farthest_frame on parameter server. Using default [/base_link].");
   nh_.param(name+"/farthest_frame", farthest_frame_, std::string("/base_link"));
 
-  // wait until transform to sdh_tip_link is available
+  // wait until transform to from robot_base_frame_ to farthest_frame_ is available
   ros::Time last_error = ros::Time::now();
   std::string tf_error;
   while(!tf_listener_.waitForTransform(robot_base_frame_, farthest_frame_, ros::Time(), ros::Duration(0.1), ros::Duration(0.01), &tf_error)) {
@@ -260,6 +260,7 @@ std::vector<geometry_msgs::Point> FootprintObserver::loadRobotFootprint(ros::Nod
   return footprint;
 }
 
+// checks if footprint has to be adjusted and does so if necessary
 void FootprintObserver::checkFootprint(){
   // check each frame
   std::string frame;
@@ -273,13 +274,14 @@ void FootprintObserver::checkFootprint(){
   y_right = footprint_right_initial_;
  
   while(ss >> frame){
-    // get transform between robot base link and frame
+    // get transform between robot base frame and frame
     if(tf_listener_.canTransform(robot_base_frame_, frame, ros::Time(0))) {
       tf::StampedTransform transform;
       tf_listener_.lookupTransform(robot_base_frame_, frame, ros::Time(0), transform);
       
       tf::Vector3 frame_position = transform.getOrigin();
-    
+
+      // check if frame position is outside of current footprint
       if(frame_position.x() > x_front) x_front = frame_position.x();
       if(frame_position.x() < x_rear) x_rear = frame_position.x();
       if(frame_position.y() > y_left) y_left = frame_position.y();
@@ -295,6 +297,7 @@ void FootprintObserver::checkFootprint(){
   footprint_right_ = y_right;
   pthread_mutex_unlock(&m_mutex);
 
+  // create new footprint vector
   geometry_msgs::Point point;
   std::vector<geometry_msgs::Point> points;
 
@@ -316,8 +319,10 @@ void FootprintObserver::checkFootprint(){
   setFootprint();
 }
 
+// calls the SetFootprint Service and publishes the footprint
 void FootprintObserver::setFootprint(){
 
+  // create Polygon message for service call
   geometry_msgs::PolygonStamped footprint_poly;
   footprint_poly.header.frame_id = robot_base_frame_;
   footprint_poly.header.stamp = ros::Time::now();
@@ -328,7 +333,11 @@ void FootprintObserver::setFootprint(){
     footprint_poly.polygon.points[i].y = robot_footprint_[i].y;
     footprint_poly.polygon.points[i].z = robot_footprint_[i].z;   
   }
+
+  // publish adjusted footprint
   topic_pub_footprint_.publish(footprint_poly);
+
+  // call SetFootprint service
   cob_collision_velocity_filter::SetFootprint srv = cob_collision_velocity_filter::SetFootprint();
   srv.request.footprint = footprint_poly;
   if(!srv_client_.call(srv)) {
@@ -336,6 +345,7 @@ void FootprintObserver::setFootprint(){
   }
 }
 
+// compute the sign of x
 double FootprintObserver::sign(double x){
   if(x >= 0.0f) return 1.0f;
   else return -1.0f;

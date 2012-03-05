@@ -83,19 +83,43 @@
 class FootprintObserver
 {
   public:
+    ///
+    /// @brief  constructor
+    /// @param  name - name of the node
+    ///
     FootprintObserver(std::string name);
+    ///
+    /// @brief  destructor
+    ///
     ~FootprintObserver();
 
-    ros::NodeHandle nh_;
-    ros::Publisher topic_pub_footprint_;
+    ///
+    /// @brief  checks the footprint of the robot if it needs to be enlarged due to arm or tray
+    ///
     void checkFootprint();
     
     ros::ServiceClient srv_client_;
+    ros::NodeHandle nh_;
+    ros::Publisher topic_pub_footprint_;
 
   private:
+    ///
+    /// @brief  loads the robot footprint from the costmap node
+    /// @param  node - costmap node to check for footprint parameter
+    /// @return points of a polygon specifying the footprint
+    ///
     std::vector<geometry_msgs::Point> loadRobotFootprint(ros::NodeHandle node);
+
+    ///
+    /// @brief  calls the SetFootprint service and publishes the adjusted footprint
+    ///
     void setFootprint();
 
+    ///
+    /// @brief  computes the sign of x
+    /// @param  x - number
+    /// @return sign of x
+    ///
     double sign(double x);
 
     std::vector<geometry_msgs::Point> robot_footprint_;
