@@ -72,6 +72,9 @@
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
+// ROS service includes
+#include "cob_collision_velocity_filter/SetFootprint.h"
+
 ///
 /// @class CollisionVelocityFilter
 /// @brief checks for obstacles in driving direction and stops the robot
@@ -106,6 +109,8 @@ class CollisionVelocityFilter
     ///
     void obstaclesCB(const nav_msgs::GridCells::ConstPtr &obstacles);
 
+    bool setFootprintCB(cob_collision_velocity_filter::SetFootprint::Request &req, cob_collision_velocity_filter::SetFootprint::Response &resp);
+
     /// create a handle for this node, initialize node
     ros::NodeHandle nh_;
 
@@ -115,6 +120,9 @@ class CollisionVelocityFilter
 
     /// declaration of subscriber
     ros::Subscriber joystick_velocity_sub_, obstacles_sub_;
+
+    /// declaration of service
+    ros::ServiceServer srv_set_footprint_;
 
   private:
     /* core functions */
@@ -178,6 +186,7 @@ class CollisionVelocityFilter
     //obstacle avoidence
     std::vector<geometry_msgs::Point> robot_footprint_;
     double footprint_left_, footprint_right_, footprint_front_, footprint_rear_;
+    double footprint_left_initial_, footprint_right_initial_, footprint_front_initial_, footprint_rear_initial_;
     bool costmap_received_;
     nav_msgs::GridCells last_costmap_received_, relevant_obstacles_;
     double influence_radius_, stop_threshold_, obstacle_damping_dist_, use_circumscribed_threshold_;

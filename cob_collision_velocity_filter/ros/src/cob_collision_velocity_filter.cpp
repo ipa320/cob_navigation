@@ -67,6 +67,9 @@ CollisionVelocityFilter::CollisionVelocityFilter(std::string name)
   // subscribe to the costmap to receive inflated cells
   obstacles_sub_ = nh_.subscribe<nav_msgs::GridCells>("obstacles", 1, boost::bind(&CollisionVelocityFilter::obstaclesCB, this, _1));
 
+  // advertise service
+  srv_set_footprint_ = nh_.advertiseService(name+"/set_footprint", &CollisionVelocityFilter::setFootprintCB, this);
+
   // read parameters from parameter server
   // parameters from costmap
   if(!local_costmap_nh_.hasParam(costmap_name_+"/global_frame")) ROS_WARN("Used default parameter for global_frame");
@@ -136,6 +139,38 @@ void CollisionVelocityFilter::obstaclesCB(const nav_msgs::GridCells::ConstPtr &o
   pthread_mutex_unlock(&m_mutex);
 }
 
+bool CollisionVelocityFilter::setFootprintCB(cob_collision_velocity_filter::SetFootprint::Request &req, cob_collision_velocity_filter::SetFootprint::Response &resp) {
+  geometry_msgs::PolygonStamped footprint_poly = req.footprint;
+  std::vector<geometry_msgs::Point> footprint;
+  geometry_msgs::Point pt;
+
+  for(unsigned int i=0; i<footprint_poly.polygon.points.size(); ++i) {
+    pt.x = footprint_poly.polygon.points[i].x;
+    pt.y = footprint_poly.polygon.points[i].y;
+    pt.z = footprint_poly.polygon.points[i].z;
+    footprint.push_back(pt);
+  }
+  
+  pthread_mutex_lock(&m_mutex);
+  footprint_front_ = footprint_front_initial_;
+  footprint_rear_ = footprint_rear_initial_;
+  footprint_left_ = footprint_left_initial_;
+  footprint_right_ = footprint_right_initial_;
+
+  robot_footprint_ = footprint;
+  for(unsigned int i=0; i<footprint.size(); i++) {
+    if(footprint[i].x > footprint_front_) footprint_front_ = footprint[i].x;
+    if(footprint[i].x < footprint_rear_) footprint_rear_ = footprint[i].x;
+    if(footprint[i].y > footprint_left_) footprint_left_ = footprint[i].y;
+    if(footprint[i].y < footprint_right_) footprint_right_ = footprint[i].y;
+  }
+
+  pthread_mutex_unlock(&m_mutex);
+
+  return true;
+}
+
+// sets corrected velocity of joystick command
 void CollisionVelocityFilter::performControllerStep() {
 
   geometry_msgs::Twist cmd_vel;
