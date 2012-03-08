@@ -1,9 +1,12 @@
-#set maxium allowed speeds
-vmax: 0.2 #0.6
-vtheta_max: 0.3
+#Parameters specifying slow down behaviour
+pot_ctrl_vmax: 0.6 #default: 0.6
+pot_ctrl_vtheta_max: 0.6 #default: 0.8
+pot_ctrl_kv: 2.5 #damping default: 1.0
+pot_ctrl_kp: 3.0 #stiffness default: 2.0
+pot_ctrl_virt_mass: 0.5 #default: 0.8
 
 #Parameters specifying collision velocity filter 
 influence_radius: 2.0 #[m] distance from robot_center
-obstacle_damping_dist: 0.3 # used as slow-down dist
+obstacle_damping_dist: 1.0 # used as slow-down dist
 stop_threshold: 0.1 #[m]
-use_circumscribed_threshold: 1.35 #[rad/s] scan for obstacles in circumscribed radius of robot even when tube filter is enabled during fast rotations
+use_circumscribed_threshold: 0.2 #[rad/s] scan for obstacles in circumscribed radius of robot even when tube filter is enabled during fast rotations

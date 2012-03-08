@@ -190,7 +190,13 @@ class CollisionVelocityFilter
     bool costmap_received_;
     nav_msgs::GridCells last_costmap_received_, relevant_obstacles_;
     double influence_radius_, stop_threshold_, obstacle_damping_dist_, use_circumscribed_threshold_;
-    double closest_obstacle_dist_;
+    double closest_obstacle_dist_, closest_obstacle_angle_;
+
+    // variables for slow down behaviour
+    double last_time_;
+    double kp_, kv_;
+    double vx_last_, vy_last_;
+    double virt_mass_;
 
 }; //CollisionVelocityFilter
 
