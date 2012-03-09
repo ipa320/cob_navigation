@@ -55,8 +55,11 @@ CollisionVelocityFilter::CollisionVelocityFilter(std::string name)
   m_mutex = PTHREAD_MUTEX_INITIALIZER;
 
   // node handle to get footprint from parameter server
-  std::string costmap_name_ = "/local_costmap_node/costmap";
-  ros::NodeHandle local_costmap_nh_(costmap_name_); 	
+  std::string costmap_parameter_source;
+  if(!nh_.hasParam(name+"/costmap_parameter_source")) ROS_WARN("Checking global parameter server for costmap parameters");
+  nh_.param(name+"/costmap_parameter_source",costmap_parameter_source, std::string("/"));
+
+  ros::NodeHandle local_costmap_nh_(costmap_parameter_source); 	
 
   // implementation of topics to publish (command for base and list of relevant obstacles)
   topic_pub_command_ = nh_.advertise<geometry_msgs::Twist>("command", 1);
@@ -72,11 +75,11 @@ CollisionVelocityFilter::CollisionVelocityFilter(std::string name)
 
   // read parameters from parameter server
   // parameters from costmap
-  if(!local_costmap_nh_.hasParam(costmap_name_+"/global_frame")) ROS_WARN("Used default parameter for global_frame");
-  local_costmap_nh_.param(costmap_name_+"/global_frame", global_frame_, std::string("/map"));
+  if(!local_costmap_nh_.hasParam(costmap_parameter_source+"/global_frame")) ROS_WARN("Used default parameter for global_frame");
+  local_costmap_nh_.param(costmap_parameter_source+"/global_frame", global_frame_, std::string("/map"));
 
-  if(!local_costmap_nh_.hasParam(costmap_name_+"/robot_base_frame")) ROS_WARN("Used default parameter for robot_frame");
-  local_costmap_nh_.param(costmap_name_+"/robot_base_frame", robot_frame_, std::string("/base_link"));
+  if(!local_costmap_nh_.hasParam(costmap_parameter_source+"/robot_base_frame")) ROS_WARN("Used default parameter for robot_frame");
+  local_costmap_nh_.param(costmap_parameter_source+"/robot_base_frame", robot_frame_, std::string("/base_link"));
 
   if(!nh_.hasParam(name+"/influence_radius")) ROS_WARN("Used default parameter for influence_radius");
   nh_.param(name+"/influence_radius", influence_radius_, 1.5);

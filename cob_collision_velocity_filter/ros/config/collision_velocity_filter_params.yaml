@@ -1,3 +1,6 @@
+#where to look for costmap parameters
+costmap_parameter_source: "/local_costmap_node/costmap" #default "/"
+
 #Parameters specifying slow down behaviour
 pot_ctrl_vmax: 0.6 #default: 0.6
 pot_ctrl_vtheta_max: 0.6 #default: 0.8
