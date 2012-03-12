@@ -1,6 +1,6 @@
 TrajectoryPlannerROS:
   max_vel_x: 0.3
-  min_vel_x: 0.01
+  min_vel_x: -0.3
   max_rotational_vel: 0.3
   max_vel_theta: 0.3
   min_in_place_rotational_vel: 0.01
