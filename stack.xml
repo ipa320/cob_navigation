@@ -4,7 +4,7 @@
      The cob_navigation stack provides different navigation packages for Care-O-bot.
 
   </description>
-  <author>Maintained by Florian Weisshardt</author>
+  <author>Maintained by Alexander Bubeck</author>
   <license>LGPL</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cob_navigation</url>
