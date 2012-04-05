@@ -128,8 +128,8 @@ class NodeClass
     if(!private_nh.hasParam("virt_mass")) ROS_WARN("Used default parameter for virt_mass [0.8]");
 		private_nh.param("virt_mass", virt_mass_, 0.8);
 
-    if(!private_nh.hasParam("vmax")) ROS_WARN("Used default parameter for vmax [0.6 m/s]");
-		private_nh.param("vmax", v_max_, 0.6);
+    if(!private_nh.hasParam("vmax")) ROS_WARN("Used default parameter for vmax [0.3 m/s]");
+		private_nh.param("vmax", v_max_, 0.3);
 
 		if(!private_nh.hasParam("goal_threshold")) ROS_WARN("Used default parameter for goal_threshold [0.03 cm]");
 		private_nh.param("goal_threshold", goal_threshold_, 0.03);
@@ -146,8 +146,8 @@ class NodeClass
     if(!private_nh.hasParam("virt_mass_rot")) ROS_WARN("Used default parameter for virt_mass_rot [0.5]");
 		private_nh.param("virt_mass_rot", virt_mass_rot_, 0.5);
 				
-		if(!private_nh.hasParam("vtheta_max")) ROS_WARN("Used default parameter for vtheta_max [0.8 rad/s]");
-		private_nh.param("vtheta_max", vtheta_max_, 0.8);
+		if(!private_nh.hasParam("vtheta_max")) ROS_WARN("Used default parameter for vtheta_max [0.3 rad/s]");
+		private_nh.param("vtheta_max", vtheta_max_, 0.3);
 		
 		if(!private_nh.hasParam("goal_threshold_rot")) ROS_WARN("Used default parameter for goal_threshold_rot [0.08 rad]");
 		private_nh.param("goal_threshold_rot", goal_threshold_rot_, 0.08);
@@ -292,7 +292,7 @@ class NodeClass
 	//obstacle avoidence
 	double slow_down_distance_;
 	double closest_obstacle_dist_;
-	double stop_threshold_, obstacle_damping_dist_, use_circumscribed_threshold_;
+	double stop_threshold_, use_circumscribed_threshold_;
 	
 	bool finished_, move_;
 	

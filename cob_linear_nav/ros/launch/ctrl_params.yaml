@@ -3,7 +3,7 @@
 kv: 2.50 #damping 2.50
 kp: 3.00 #stiffness 3.0
 virt_mass: 0.50 #0.50
-vmax: 0.6 #0.6
+vmax: 0.3 #0.6
 goal_threshold: 0.03
 speed_threshold: 0.08 #0.08
 
@@ -19,7 +19,6 @@ speed_threshold_rot: 0.08
 global_frame: /map
 robot_frame: /base_link
 
-#Costmap params / Obstacles
-slow_down_distance: 0.5 #[m] distance from robot_center
-obstacle_damping_dist: 0.6 # used as slow-down dist
+#
+slow_down_distance: 0.5 #[m] distance from robot_center to goal at which robot starts slowing down
 stop_threshold: 0.1 #[m]
