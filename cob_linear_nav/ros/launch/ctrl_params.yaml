@@ -19,6 +19,5 @@ speed_threshold_rot: 0.08
 global_frame: /map
 robot_frame: /base_link
 
-#
 slow_down_distance: 0.5 #[m] distance from robot_center to goal at which robot starts slowing down
-stop_threshold: 0.1 #[m]
+

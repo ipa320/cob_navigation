@@ -163,7 +163,6 @@ class NodeClass
 
 		if(!private_nh.hasParam("slow_down_distance")) ROS_WARN("Used default parameter for slow_down_distance [0.5m]");
 		private_nh.param("slow_down_distance", slow_down_distance_, 0.5);
- 		if(slow_down_distance_ < stop_threshold_) ROS_WARN("slow_down_distance_ is smaller than stop_threshold_!");		
 
     //generate robot zero_pose
 		zero_pose_.pose.position.x = 0.0;
@@ -261,18 +260,16 @@ class NodeClass
 		return;
 	};
 
-  // TODO: what about the frames?
+
 	void odometryCB(const nav_msgs::Odometry::ConstPtr &odometry){ 
-		//tf_listener_.waitForTransform(robot_frame_, robot_frame_, ros::Time::now(), ros::Duration(5.0));
-		
 		geometry_msgs::Vector3Stamped vec_stamped;
 		
 		vec_stamped.vector = odometry->twist.twist.linear;
-		vec_stamped.header.frame_id =  robot_frame_;
+		vec_stamped.header.frame_id =  "/base_footprint";
 		tf_listener_.transformVector(robot_frame_, vec_stamped, robot_twist_linear_robot_);
 		
 		vec_stamped.vector = odometry->twist.twist.angular;
-		vec_stamped.header.frame_id =  robot_frame_;
+		vec_stamped.header.frame_id =  "/base_footprint";
 		tf_listener_.transformVector(robot_frame_, vec_stamped, robot_twist_angular_robot_);
 	}
 	
@@ -289,10 +286,7 @@ class NodeClass
 	geometry_msgs::PoseStamped robot_pose_global_;
 	geometry_msgs::Vector3Stamped robot_twist_linear_robot_, robot_twist_angular_robot_;
 	
-	//obstacle avoidence
-	double slow_down_distance_;
-	double closest_obstacle_dist_;
-	double stop_threshold_, use_circumscribed_threshold_;
+  double slow_down_distance_;
 	
 	bool finished_, move_;
 	
@@ -408,7 +402,7 @@ bool NodeClass::notMovingDueToObstacle() {
   } else if ( fabs(robot_twist_linear_robot_.vector.x) > 0.01 ||
               fabs(robot_twist_linear_robot_.vector.y) > 0.01 ||
               fabs(robot_twist_angular_robot_.vector.z) > 0.01 )
-  {
+  { // still moving, then update last_time_moving_
     last_time_moving_ = ros::Time::now().toSec();
   }
 
@@ -419,13 +413,13 @@ bool NodeClass::notMovingDueToObstacle() {
 void NodeClass::performControllerStep() {
 	pthread_mutex_lock(&m_mutex);
 
-	double dt;;
+	double dt;
 	double F_x, F_y, F_theta;
   double distance_to_goal;
   double theta, theta_goal;
 	double cmd_vx, cmd_vy, cmd_vtheta;
 	double vx_d, vy_d, vtheta_d, v_factor;
-	double kv_obst=kv_, kv_rot_obst=kv_rot_, v_max_obst=v_max_;
+  double v_max_goal = v_max_;
 
 	if(!move_) {
 		pthread_mutex_unlock(&m_mutex);
@@ -466,33 +460,33 @@ void NodeClass::performControllerStep() {
 	if(distance_to_goal < slow_down_distance_) {
 		//implementation for linear decrease of v_max:
 		double goal_linear_slope = v_max_ / slow_down_distance_;
-		v_max_obst = (distance_to_goal- stop_threshold_ + stop_threshold_/10.0f) * goal_linear_slope;
+		v_max_goal = distance_to_goal * goal_linear_slope;
 
-		if(v_max_obst > v_max_) v_max_obst = v_max_;
-			else if(v_max_obst < 0.0f) v_max_obst = 0.0f;
+		if(v_max_goal > v_max_) v_max_goal = v_max_;
+			else if(v_max_goal < 0.0f) v_max_goal = 0.0f;
 	}
 	
 	//Translational movement
 	//calculation of v factor to limit maxspeed
-	vx_d = kp_/kv_obst * (goal_pose_global_.pose.position.x - robot_pose_global_.pose.position.x);
-	vy_d = kp_/kv_obst * (goal_pose_global_.pose.position.y - robot_pose_global_.pose.position.y);
-	v_factor = v_max_obst / sqrt(vy_d*vy_d + vx_d*vx_d);
+	vx_d = kp_/kv_ * (goal_pose_global_.pose.position.x - robot_pose_global_.pose.position.x);
+	vy_d = kp_/kv_ * (goal_pose_global_.pose.position.y - robot_pose_global_.pose.position.y);
+	v_factor = v_max_goal / sqrt(vy_d*vy_d + vx_d*vx_d);
 
 	if(v_factor > 1.0) v_factor = 1.0;
 	
-	F_x = - kv_obst * vx_last_ + v_factor * kp_ * (goal_pose_global_.pose.position.x - robot_pose_global_.pose.position.x);
-	F_y = - kv_obst * vy_last_ + v_factor * kp_ * (goal_pose_global_.pose.position.y - robot_pose_global_.pose.position.y);
+	F_x = - kv_ * vx_last_ + v_factor * kp_ * (goal_pose_global_.pose.position.x - robot_pose_global_.pose.position.x);
+	F_y = - kv_ * vy_last_ + v_factor * kp_ * (goal_pose_global_.pose.position.y - robot_pose_global_.pose.position.y);
 
 	cmd_vx = vx_last_ + F_x / virt_mass_ * dt;
 	cmd_vy = vy_last_ + F_y / virt_mass_ * dt;
 
 	//Rotational Movement
 	//calculation of v factor to limit maxspeed
-	vtheta_d = kp_rot_ / kv_rot_obst * getThetaDiffRad(theta_goal, theta);
+	vtheta_d = kp_rot_ / kv_rot_ * getThetaDiffRad(theta_goal, theta);
 	v_factor = fabs(vtheta_max_ / vtheta_d);
 	if(v_factor > 1.0) v_factor = 1.0;
 	
-	F_theta = - kv_rot_obst * vtheta_last_ + v_factor * kp_rot_ * getThetaDiffRad(theta_goal, theta);
+	F_theta = - kv_rot_ * vtheta_last_ + v_factor * kp_rot_ * getThetaDiffRad(theta_goal, theta);
 	cmd_vtheta = vtheta_last_ + F_theta / virt_mass_rot_ * dt;
 
 	//Publish velocities, these calculated forces and velocities are for the global frame
