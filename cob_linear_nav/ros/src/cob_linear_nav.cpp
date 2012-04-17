@@ -118,15 +118,14 @@ class NodeClass
 		odometry_sub_ = nh_.subscribe<nav_msgs::Odometry>("odom", 1, boost::bind(&NodeClass::odometryCB, this, _1));
 
 		// read parameters from parameter server
-    // TODO: Default parameter anpassen
-		if(!private_nh.hasParam("kv")) ROS_WARN("Used default parameter for kv [1.0]");
-		private_nh.param("kv", kv_, 1.0);
+		if(!private_nh.hasParam("kv")) ROS_WARN("Used default parameter for kv [2.5]");
+		private_nh.param("kv", kv_, 2.5);
 
-		if(!private_nh.hasParam("kp")) ROS_WARN("Used default parameter for kp [2.0]");
-		private_nh.param("kp", kp_, 2.0);
+		if(!private_nh.hasParam("kp")) ROS_WARN("Used default parameter for kp [3.0]");
+		private_nh.param("kp", kp_, 3.0);
 
-    if(!private_nh.hasParam("virt_mass")) ROS_WARN("Used default parameter for virt_mass [0.8]");
-		private_nh.param("virt_mass", virt_mass_, 0.8);
+    if(!private_nh.hasParam("virt_mass")) ROS_WARN("Used default parameter for virt_mass [0.5]");
+		private_nh.param("virt_mass", virt_mass_, 0.5);
 
     if(!private_nh.hasParam("vmax")) ROS_WARN("Used default parameter for vmax [0.3 m/s]");
 		private_nh.param("vmax", v_max_, 0.3);
@@ -134,14 +133,14 @@ class NodeClass
 		if(!private_nh.hasParam("goal_threshold")) ROS_WARN("Used default parameter for goal_threshold [0.03 cm]");
 		private_nh.param("goal_threshold", goal_threshold_, 0.03);
 
- 		if(!private_nh.hasParam("speed_threshold")) ROS_WARN("Used default parameter for speed_threshold [0.05 m/s]");
-		private_nh.param("speed_threshold", speed_threshold_, 0.05);
+ 		if(!private_nh.hasParam("speed_threshold")) ROS_WARN("Used default parameter for speed_threshold [0.08 m/s]");
+		private_nh.param("speed_threshold", speed_threshold_, 0.08);
 		
-		if(!private_nh.hasParam("kv_rot")) ROS_WARN("Used default parameter for kv_rot [1.0]");
-		private_nh.param("kv_rot", kv_rot_, 1.0);
+		if(!private_nh.hasParam("kv_rot")) ROS_WARN("Used default parameter for kv_rot [2.0]");
+		private_nh.param("kv_rot", kv_rot_, 2.0);
 
-		if(!private_nh.hasParam("kp_rot")) ROS_WARN("Used default parameter for kp_rot [0.4]");
-		private_nh.param("kp_rot", kp_rot_, 0.4);
+		if(!private_nh.hasParam("kp_rot")) ROS_WARN("Used default parameter for kp_rot [2.0]");
+		private_nh.param("kp_rot", kp_rot_, 2.0);
 
     if(!private_nh.hasParam("virt_mass_rot")) ROS_WARN("Used default parameter for virt_mass_rot [0.5]");
 		private_nh.param("virt_mass_rot", virt_mass_rot_, 0.5);
@@ -152,8 +151,8 @@ class NodeClass
 		if(!private_nh.hasParam("goal_threshold_rot")) ROS_WARN("Used default parameter for goal_threshold_rot [0.08 rad]");
 		private_nh.param("goal_threshold_rot", goal_threshold_rot_, 0.08);
 		
-		if(!private_nh.hasParam("speed_threshold_rot")) ROS_WARN("Used default parameter for speed_threshold_rot [0.05 rad/s]");
-		private_nh.param("speed_threshold_rot", speed_threshold_rot_, 0.05);
+		if(!private_nh.hasParam("speed_threshold_rot")) ROS_WARN("Used default parameter for speed_threshold_rot [0.08 rad/s]");
+		private_nh.param("speed_threshold_rot", speed_threshold_rot_, 0.08);
 		
 		if(!private_nh.hasParam("global_frame")) ROS_WARN("Used default parameter for global_frame [/map]");
 		private_nh.param("global_frame", global_frame_, std::string("/map"));
@@ -163,6 +162,9 @@ class NodeClass
 
 		if(!private_nh.hasParam("slow_down_distance")) ROS_WARN("Used default parameter for slow_down_distance [0.5m]");
 		private_nh.param("slow_down_distance", slow_down_distance_, 0.5);
+
+		if(!private_nh.hasParam("goal_abortion_time")) ROS_WARN("Used default parameter for goal_abortion_time [5.0s]");
+		private_nh.param("goal_abortion_time", goal_abortion_time_, 5.0);
 
     //generate robot zero_pose
 		zero_pose_.pose.position.x = 0.0;
@@ -286,7 +288,7 @@ class NodeClass
 	geometry_msgs::PoseStamped robot_pose_global_;
 	geometry_msgs::Vector3Stamped robot_twist_linear_robot_, robot_twist_angular_robot_;
 	
-  double slow_down_distance_;
+  double slow_down_distance_, goal_abortion_time_;
 	
 	bool finished_, move_;
 	
@@ -396,7 +398,7 @@ bool NodeClass::notMovingDueToObstacle() {
       fabs(robot_twist_linear_robot_.vector.x) <= 0.01 && // velocity components are small
       fabs(robot_twist_linear_robot_.vector.y) <= 0.01 &&
       fabs(robot_twist_angular_robot_.vector.z) <= 0.01 &&
-      ros::Time::now().toSec() - last_time_moving_ > 2.0 ) // has not been moving for 2 seconds
+      ros::Time::now().toSec() - last_time_moving_ > goal_abortion_time_ ) // has not been moving for x seconds
   {
     return true;
   } else if ( fabs(robot_twist_linear_robot_.vector.x) > 0.01 ||
