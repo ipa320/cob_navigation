@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+
+	<arg name="map" default="$(find cob_default_env_config)/$(env ROBOT_ENV)/map.yaml" />
+
+	<!--- Run map_server -->
+	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
+
+	<!--- Run AMCL -->
+	<include file="$(find cob_navigation_config)/launch/amcl_omni.launch" />
+
+	<!--- Run move_base -->
+	<include file="$(find cob_navigation_global)/launch/move_base_global.launch" />
+
+	<!-- Robot pose ekf -->
+	<include file="$(find cob_navigation_config)/launch/robot_pose_ekf.launch" />
+
+  <!--- Run linear nav -->
+	<include file="$(find cob_linear_nav)/launch/linear_nav.launch"/>
+
+</launch>

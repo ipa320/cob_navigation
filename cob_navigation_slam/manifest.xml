@@ -1,5 +1,5 @@
 <package>
-  <description brief="cob_2dslam">
+  <description brief="cob_navigation_slam">
 
      This Package provides launch files for running Care-O-bot with the gmapping slam package of ROS.
 
@@ -7,9 +7,10 @@
   <author>Florian Weisshardt</author>
   <license>LGPL</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/cob_2dslam</url>
+  <url>http://ros.org/wiki/cob_navigation_slam</url>
 
+  <depend package="move_base"/>
   <depend package="gmapping"/>
-  <depend package="robot_pose_ekf"/>
+  <depend package="cob_navigation_config"/>
   
 </package>

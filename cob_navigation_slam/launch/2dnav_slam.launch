@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- dynamic map generation -->
+	<include file="$(find cob_2dslam)/ros/launch/gmapping.launch" />
+
+	<!--- Run move base -->
+	<include file="$(find cob_navigation_global)/launch/move_base_global.launch" />
+
+	<!-- Robot pose ekf -->
+	<include file="$(find cob_navigation_config)/ros/launch/robot_pose_ekf.launch" />
+
+</launch>
