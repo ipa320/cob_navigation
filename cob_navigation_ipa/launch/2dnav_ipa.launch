@@ -9,7 +9,4 @@
 	<!-- Run ipa navigation -->
 	<include file="$(find cob_platform_ctrl)/ros/launch/platform_ctrl.launch"/>
 
-  <!-- Run linear nav -->
-	<include file="$(find cob_linear_nav)/ros/launch/linear_nav.launch"/>
-
 </launch>

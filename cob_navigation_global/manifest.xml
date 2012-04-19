@@ -11,8 +11,8 @@
   <url>http://ros.org/wiki/cob_navigation_global</url>
   
   <depend package="move_base"/>
+  <depend package="amcl"/>
   <depend package="map_server"/>
-  <depend package="topic_tools"/>
   <depend package="cob_default_env_config"/>
   <depend package="cob_navigation_config"/>
 

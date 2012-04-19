@@ -9,7 +9,7 @@
  *
  * Project name: care-o-bot
  * ROS stack name: cob_navigation
- * ROS package name: cob_linear_nav
+ * ROS package name: cob_navigation_linear
  *								
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *			

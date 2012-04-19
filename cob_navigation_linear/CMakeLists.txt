@@ -30,4 +30,4 @@ rosbuild_add_executable(cob_linear_nav ros/src/cob_linear_nav.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
 # rostest
-rosbuild_add_roslaunch_check(ros/launch/linear_nav.launch)
+rosbuild_add_roslaunch_check(ros/launch ROBOT_ENV=ipa-kitchen)

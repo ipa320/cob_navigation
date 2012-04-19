@@ -7,12 +7,12 @@
 	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
 
 	<!--- Run AMCL -->
-	<include file="$(find cob_navigation_config)/launch/amcl_omni.launch" />
+	<include file="$(find cob_navigation_global)/launch/amcl_omni.launch" />
 	
 	<!-- Robot pose ekf -->
 	<include file="$(find cob_navigation_config)/launch/robot_pose_ekf.launch" />
 
   <!-- Run linear nav -->
-	<include file="$(find cob_linear_nav)/ros/launch/linear_nav.launch"/>
+	<include file="$(find cob_navigation_linear)/ros/launch/2dnav_linear_include.launch"/>
 
 </launch>

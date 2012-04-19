@@ -11,8 +11,8 @@
 
   <depend package="cob_default_env_config"/>
   <depend package="map_server"/>
-  <depend package="cob_linear_nav"/>
   <depend package="cob_navigation_config"/>
+  <depend package="cob_navigation_global"/>
   <depend package="cob_navigation_slam"/>
 
 </package>

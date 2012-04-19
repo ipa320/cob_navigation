@@ -10,7 +10,6 @@
   <url>http://ros.org/wiki/cob_navigation_config</url>
 
   <depend package="robot_pose_ekf"/>
-  <depend package="amcl"/>
 
 </package>
 

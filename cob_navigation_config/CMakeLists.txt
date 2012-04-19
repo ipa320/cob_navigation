@@ -30,5 +30,4 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 #rostest
-rosbuild_add_roslaunch_check(launch/robot_pose_ekf.launch)
-rosbuild_add_roslaunch_check(launch/amcl_omni.launch)
+rosbuild_add_roslaunch_check(launch)
