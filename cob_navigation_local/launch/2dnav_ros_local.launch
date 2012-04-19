@@ -12,8 +12,8 @@
 		<rosparam file="$(find cob_navigation_config)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
 
 		<!--- load local navigation specific parameters -->
-		<rosparam file="$(find cob_navigation_local)/config/local/local_costmap_params.yaml" command="load" />
-		<rosparam file="$(find cob_navigation_local)/config/local/global_costmap_params.yaml" command="load" />
+		<rosparam file="$(find cob_navigation_local)/config/local_costmap_params.yaml" command="load" />
+		<rosparam file="$(find cob_navigation_local)/config/global_costmap_params.yaml" command="load" />
 
 		<!--- load planner parameters -->
 		<rosparam file="$(find cob_navigation_config)/config/base_local_planner_params.yaml" command="load" />
