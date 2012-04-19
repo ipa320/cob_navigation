@@ -17,13 +17,15 @@ private:
 	int buffer_capacity;
 	//maximal time-delay in seconds for stored messages in Circular Buffer
 	double store_delay;
-public:	
-	
+public:
+	//constructor	
+	cob_vel_integrator(int cap, double delay);
+
 	ros::NodeHandle n;
 	boost::circular_buffer<geometry_msgs::Twist> cb;
 	boost::circular_buffer<ros::Time> cb_time;
-
-	void setBufferCapacity(int cap, double delay);
+	ros::Publisher pub;
+	//void setBufferCapacity(int cap, double delay);
 	void geometryCallback(const geometry_msgs::Twist& cmd_vel);
 	void reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_vel);
 	bool CircBuffOutOfDate(ros::Time now);
@@ -32,12 +34,15 @@ public:
 
 };
 
-void cob_vel_integrator::setBufferCapacity(int cap, double delay)
+//constructor
+cob_vel_integrator::cob_vel_integrator(int cap, double delay)
 {
 	buffer_capacity = cap;
 	store_delay = delay;
 	cb.set_capacity(buffer_capacity);
 	cb_time.set_capacity(buffer_capacity);
+	pub = n.advertise<geometry_msgs::Twist>("output", 1);
+
 };
 
 //returns true if all messages in cb are out of date in consideration of store_delay
@@ -163,7 +168,6 @@ void cob_vel_integrator::geometryCallback(const geometry_msgs::Twist& cmd_vel)
 	//print result
 	cout << "result message: " << result << endl;
 	//publish result
-	ros::Publisher pub = n.advertise<geometry_msgs::Twist>("output", 1);
 	pub.publish(result);
 
 };
@@ -173,9 +177,9 @@ int main(int argc, char **argv)
 
 	ros::init(argc, argv, "cob_vel_integrator");
 
-	cob_vel_integrator my_cvi;
+	cob_vel_integrator my_cvi = cob_vel_integrator(10,4);
 
-	my_cvi.setBufferCapacity(10,4);
+	//my_cvi.setBufferCapacity(10,4);
 	
 	ros::Subscriber sub=my_cvi.n.subscribe("input", 1, &cob_vel_integrator::geometryCallback, &my_cvi);
 
