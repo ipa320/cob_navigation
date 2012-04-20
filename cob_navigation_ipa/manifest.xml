@@ -9,11 +9,13 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cob_navigation_ipa</url>
 
-  <depend package="cob_default_env_config"/>
   <depend package="map_server"/>
+  <depend package="topic_tools"/>
+  <depend package="cob_default_env_config"/>
   <depend package="cob_navigation_config"/>
   <depend package="cob_navigation_global"/>
   <depend package="cob_navigation_slam"/>
+  <depend package="cob_platform_ctrl"/>
 
 </package>
 

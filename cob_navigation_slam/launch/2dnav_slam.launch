@@ -2,7 +2,7 @@
 <launch>
 
 	<!-- dynamic map generation -->
-	<include file="$(find cob_2dslam)/ros/launch/gmapping.launch" />
+	<include file="$(find cob_navigation_slam)/launch/gmapping.launch" />
 
 	<!--- Run move base -->
 	<include file="$(find cob_navigation_global)/launch/2dnav_ros_include.launch" />

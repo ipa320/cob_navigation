@@ -11,6 +11,8 @@
 
   <depend package="move_base"/>
   <depend package="gmapping"/>
+  <depend package="topic_tools"/>
   <depend package="cob_navigation_config"/>
+  <depend package="cob_navigation_global"/>
   
 </package>
