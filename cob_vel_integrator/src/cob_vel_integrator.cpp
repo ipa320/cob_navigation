@@ -14,21 +14,30 @@ using namespace std;
 class cob_vel_integrator
 {
 private:
+	//capacity for circular buffers
 	int buffer_capacity;
 	//maximal time-delay in seconds for stored messages in Circular Buffer
 	double store_delay;
+	//geometry message filled with zero values
+	geometry_msgs::Twist zero_values;
 public:
 	//constructor	
 	cob_vel_integrator(int cap, double delay);
 
 	ros::NodeHandle n;
+
+	//circular buffers for velocity, acceleration and time
 	boost::circular_buffer<geometry_msgs::Twist> cb;
+	boost::circular_buffer<geometry_msgs::Twist> cb_in;
 	boost::circular_buffer<ros::Time> cb_time;
+
 	ros::Publisher pub;
 	//void setBufferCapacity(int cap, double delay);
 	void geometryCallback(const geometry_msgs::Twist& cmd_vel);
 	void reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_vel);
 	bool CircBuffOutOfDate(ros::Time now);
+	bool IsCircBuffInZero();
+	bool IsEqual(geometry_msgs::Twist msg1, geometry_msgs::Twist msg2);
 
 	geometry_msgs::Twist meanValue(geometry_msgs::Twist cmd_vel);
 
@@ -37,10 +46,35 @@ public:
 //constructor
 cob_vel_integrator::cob_vel_integrator(int cap, double delay)
 {
+	//set variables
 	buffer_capacity = cap;
 	store_delay = delay;
+
+	zero_values.linear.x=0;
+	zero_values.linear.y=0;
+	zero_values.linear.z=0;
+
+	zero_values.angular.x=0;
+	zero_values.angular.y=0;
+	zero_values.angular.z=0;
+
+	//initialize crcular buffers
 	cb.set_capacity(buffer_capacity);
+	cb_in.set_capacity(buffer_capacity);
 	cb_time.set_capacity(buffer_capacity);
+	
+	//set actual ros::Time
+	ros::Time now=ros::Time::now();
+
+	//fill circular buffer with zero values
+	while(cb.full() == false){
+
+		cb.push_front(zero_values);
+		//cb_in.push_back(zero_values);
+		cb_time.push_front(now);
+
+	}
+
 	pub = n.advertise<geometry_msgs::Twist>("output", 1);
 
 };
@@ -55,9 +89,38 @@ bool cob_vel_integrator::CircBuffOutOfDate(ros::Time now)
 	while( (count < cb.size()) && (result == true) ){
 		
 		double delay=(now.toSec() - cb_time[count].toSec());
-		//cout << "CircBuffOutOfDate: " << delay << endl;
+
 		if(delay < store_delay){
 			result = false;
+		}
+		count++;
+	}
+
+	return result;
+
+};
+
+//returns true if the input geometry messages are equal
+bool cob_vel_integrator::IsEqual(geometry_msgs::Twist msg1, geometry_msgs::Twist msg2)
+{
+	if( (msg1.linear.x == msg2.linear.x) && (msg1.linear.y == msg2.linear.y) && (msg1.linear.z == msg2.linear.z) && (msg1.angular.x == msg2.angular.x) && (msg1.angular.y == msg2.angular.y) && (msg1.angular.z == msg2.angular.z)){
+		return true;
+	}
+	else{	
+		return false;
+	}
+};
+
+bool cob_vel_integrator::IsCircBuffInZero()
+{
+	bool result=true;
+	long unsigned int count=0;
+	long unsigned int size = cb_in.size();
+
+	while( (count < size) && (result == true) ){
+
+		if(this->IsEqual(zero_values, cb_in[count]) == false){
+			result=false;
 		}
 		count++;
 	}
@@ -70,14 +133,23 @@ void cob_vel_integrator::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_
 {
 	if(this->CircBuffOutOfDate(now) == true){
 
+		//clear buffers
 		cb.clear();
 		cb_time.clear();
-		//cout << "revise CircBuff: if-case!" << endl;
+
+		//fill circular buffer with zero_values and time buffer with actual time-stamp
+		while(cb.full() == false){
+
+			cb.push_front(zero_values);
+			cb_time.push_front(now);
+
+		}
 
 		//add new command velocity message to circular buffer
 		cb.push_front(cmd_vel);
+		cb_in.push_front(cmd_vel);
 		//add new timestamp for subscribed command velocity message
-		cb_time.push_front(ros::Time::now());
+		cb_time.push_front(now);
 
 	}
 	else{
@@ -85,13 +157,6 @@ void cob_vel_integrator::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_
 		double delay=(now.toSec() - cb_time.back().toSec());
 
 		while( delay >= store_delay ){
-			/*
-			cout << "I'm in the while-loop" << endl;
-
-			cout << "buffer-size: " << cb.size() << " " << endl;
-			cout << "buffer-back: " << cb.back() << endl;
-			cout << "buffer-back-time-delay: " << delay << endl;*/
-
 			//remove out-dated messages
 			cb.pop_back();
 			cb_time.pop_back();
@@ -101,8 +166,9 @@ void cob_vel_integrator::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_
 
 		//add new command velocity message to circular buffer
 		cb.push_front(cmd_vel);
+		cb_in.push_front(cmd_vel);
 		//add new timestamp for subscribed command velocity message
-		cb_time.push_front(ros::Time::now());
+		cb_time.push_front(now);
 
 	}
 };
@@ -110,24 +176,12 @@ void cob_vel_integrator::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_
 //calculates the mean values of all twist geometry messages contained in the circular buffer
 geometry_msgs::Twist cob_vel_integrator::meanValue(geometry_msgs::Twist cmd_vel)
 {
-	geometry_msgs::Twist result;
-
-	result.linear.x=0;
-	result.linear.y=0;
-	result.linear.z=0;
-
-	result.angular.x=0;
-	result.angular.y=0;
-	result.angular.z=0;
+	geometry_msgs::Twist result = zero_values;
 	
+	//set actual ros::Time
+	ros::Time now=ros::Time::now();
 	//some pre-conditions
-	this->reviseCircBuff(ros::Time::now(), cmd_vel);
-
-	//test-print
-	//cout << "front-time-delay till now: " << ros::Time::now() - cb_time.back() << " " << endl;
-	//cout << "buffer-front: " << cb.front() << endl;
-	//cout << "buffer-back: " << cb.back() << endl;
-	//cout << "buffer-back-time: " << cb_time.back() << endl;
+	this->reviseCircBuff(now, cmd_vel);
 
 	long unsigned int size=cb.size();
 
@@ -144,13 +198,33 @@ geometry_msgs::Twist cob_vel_integrator::meanValue(geometry_msgs::Twist cmd_vel)
 
 	}
 	//calculate mean values
-	result.linear.x = result.linear.x / size;
-	result.linear.y = result.linear.y / size;
-	result.linear.z = result.linear.z / size;
+	result.linear.x = result.linear.x / buffer_capacity;
+	result.linear.y = result.linear.y / buffer_capacity;
+	result.linear.z = result.linear.z / buffer_capacity;
 
-	result.angular.x = result.angular.x / size;
-	result.angular.y = result.angular.y / size;
-	result.angular.z = result.angular.z / size;
+	result.angular.x = result.angular.x / buffer_capacity;
+	result.angular.y = result.angular.y / buffer_capacity;
+	result.angular.z = result.angular.z / buffer_capacity;
+
+	//return result;
+
+	//delete last incoming geometry message from circular buffer
+	//cb.pop_front();
+	//add calculated result message to circular buffer
+	//cb.push_front(result);
+		
+	if(this->IsCircBuffInZero() == true){
+		//cb.pop_front();
+		//cb.push_front(zero_values);
+		return result;
+	}
+	else{
+		cb.pop_front();
+		//add calculated result message to circular buffer
+		cb.push_front(result);
+
+		return result;
+	}
 	
 	return result;
 }
@@ -177,9 +251,7 @@ int main(int argc, char **argv)
 
 	ros::init(argc, argv, "cob_vel_integrator");
 
-	cob_vel_integrator my_cvi = cob_vel_integrator(10,4);
-
-	//my_cvi.setBufferCapacity(10,4);
+	cob_vel_integrator my_cvi = cob_vel_integrator(12,4);
 	
 	ros::Subscriber sub=my_cvi.n.subscribe("input", 1, &cob_vel_integrator::geometryCallback, &my_cvi);
 
