@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!--- Run move base -->
+	<include file="$(find cob_navigation_local)/launch/2dnav_ros_local_include.launch" />
+
+	<!-- Robot pose ekf -->
+	<include file="$(find cob_navigation_config)/launch/robot_pose_ekf.launch" />
+
+</launch>

@@ -1,0 +1,16 @@
+<package>
+  <description brief="cob_navigation_config">
+
+    This package holds common configuration files for running the move_base node on the Care-O-Bot.
+
+  </description>
+  <author>Matthias Gruhler</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cob_navigation_config</url>
+
+  <depend package="robot_pose_ekf"/>
+
+</package>
+
+

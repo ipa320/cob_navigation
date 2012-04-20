@@ -1,5 +1,0 @@
-<launch>
-	<node name="costmap_node" pkg="costmap_2d" type="costmap_2d_node" >
-    	<rosparam file="$(find cob_linear_nav)/ros/launch/costmap_params.yaml" command="load" ns="costmap" />
-  	</node>
-</launch>
