@@ -15,7 +15,6 @@
   <depend package="cob_navigation_config"/>
   <depend package="cob_navigation_global"/>
   <depend package="cob_navigation_slam"/>
-  <depend package="cob_platform_ctrl"/>
 
 </package>
 

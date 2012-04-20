@@ -30,4 +30,3 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 #rostest
-rosbuild_add_roslaunch_check(launch ROBOT_ENV=ipa-kitchen)
