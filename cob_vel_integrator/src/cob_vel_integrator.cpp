@@ -122,26 +122,28 @@ double cob_vel_integrator::meanValueX()
 	}
 	result = result / size;
 
-	double max = cb[0].linear.x;
-	long unsigned int max_ind = 0;
-	for(long unsigned int i=0; i<size; i++){
+	if(size > 1){
+		double max = cb[0].linear.x;
+		long unsigned int max_ind = 0;
+		for(long unsigned int i=0; i<size; i++){
 
-		if(abs(result-cb[i].linear.x) > abs(result-max)){
-			max = cb[i].linear.x;
-			max_ind = i;
+			if(abs(result-cb[i].linear.x) > abs(result-max)){
+				max = cb[i].linear.x;
+				max_ind = i;
+			}
+
 		}
 
-	}
-
-	//calculate sum
-	for(long unsigned int i=0; i<size; i++){
+		//calculate sum
+		for(long unsigned int i=0; i<size; i++){
 		
-		if(i != max_ind){
-			result = result + cb[i].linear.x;
+			if(i != max_ind){
+				result = result + cb[i].linear.x;
+			}
 		}
+		result = result / (size - 1);
 	}
-	result = result / (size - 1);
-
+	
 	return result;
 	
 };
@@ -159,25 +161,28 @@ double cob_vel_integrator::meanValueY()
 	}
 	result = result / size;
 
-	double max = cb[0].linear.y;
-	long unsigned int max_ind = 0;
-	for(long unsigned int i=0; i<size; i++){
+	if(size > 1){
 
-		if(abs(result-cb[i].linear.y) > abs(result-max)){
-			max = cb[i].linear.y;
-			max_ind = i;
+		double max = cb[0].linear.y;
+		long unsigned int max_ind = 0;
+		for(long unsigned int i=0; i<size; i++){
+
+			if(abs(result-cb[i].linear.y) > abs(result-max)){
+				max = cb[i].linear.y;
+				max_ind = i;
+			}
+
 		}
 
-	}
-
-	//calculate sum
-	for(long unsigned int i=0; i<size; i++){
+		//calculate sum
+		for(long unsigned int i=0; i<size; i++){
 		
-		if(i != max_ind){
-			result = result + cb[i].linear.y;
+			if(i != max_ind){
+				result = result + cb[i].linear.y;
+			}
 		}
+		result = result / (size - 1);
 	}
-	result = result / (size - 1);
 
 	return result;
 	
@@ -196,25 +201,29 @@ double cob_vel_integrator::meanValueZ()
 	}
 	result = result / size;
 
-	double max = cb[0].angular.z;
-	long unsigned int max_ind = 0;
-	for(long unsigned int i=0; i<size; i++){
+	if(size > 1){
 
-		if(abs(result-cb[i].angular.z) > abs(result-max)){
-			max = cb[i].angular.z;
-			max_ind = i;
+		double max = cb[0].angular.z;
+		long unsigned int max_ind = 0;
+		for(long unsigned int i=0; i<size; i++){
+
+			if(abs(result-cb[i].angular.z) > abs(result-max)){
+				max = cb[i].angular.z;
+				max_ind = i;
+			}
+
 		}
 
-	}
-
-	//calculate sum
-	for(long unsigned int i=0; i<size; i++){
+		//calculate sum
+		for(long unsigned int i=0; i<size; i++){
 		
-		if(i != max_ind){
-			result = result + cb[i].angular.z;
+			if(i != max_ind){
+				result = result + cb[i].angular.z;
+			}
 		}
+		result = result / (size - 1);
+
 	}
-	result = result / (size - 1);
 
 	return result;
 	
@@ -304,19 +313,26 @@ geometry_msgs::Twist cob_vel_integrator::setOutput(geometry_msgs::Twist cmd_vel)
 	result.linear.x = meanValueX();
 	result.linear.y = meanValueY();
 	result.angular.z = meanValueZ();
-
+	
+	//set delty velocity and acceleration values
 	double deltaX = result.linear.x - cb_out.front().linear.x;
-	double deltaY = result.linear.y - cb_out.front().linear.y;
-	double deltaZ = result.angular.z - cb_out.front().linear.y;
+	double accX = deltaX / ( now.toSec() - cb_time.front().toSec() );
 
-	if(deltaX > thresh){
-		result.linear.x = cb_out.front().linear.x + thresh;
+	double deltaY = result.linear.y - cb_out.front().linear.y;
+	double accY = deltaY / ( now.toSec() - cb_time.front().toSec() );
+
+	double deltaZ = result.angular.z - cb_out.front().linear.y;
+	double accZ = deltaZ /  ( now.toSec() - cb_time.front().toSec() );
+
+
+	if( abs(accX) > thresh){
+		result.linear.x = cb_out.front().linear.x + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
 	}
-	if(deltaY > thresh){
-		result.linear.y = cb_out.front().linear.y + thresh;
+	if( abs(accY) > thresh){
+		result.linear.y = cb_out.front().linear.y + ( thresh *  ( now.toSec() - cb_time.front().toSec() ));
 	}
-	if(deltaZ > thresh){
-		result.angular.z = cb_out.front().angular.z + thresh;
+	if( abs(accZ) > thresh){
+		result.angular.z = cb_out.front().angular.z + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
 	}
 
 	cb_out.push_front(result);
