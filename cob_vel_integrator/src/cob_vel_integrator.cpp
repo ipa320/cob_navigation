@@ -309,33 +309,35 @@ geometry_msgs::Twist cob_vel_integrator::setOutput(geometry_msgs::Twist cmd_vel)
 	ros::Time now=ros::Time::now();
 	//some pre-conditions
 	this->reviseCircBuff(now, cmd_vel);
-
+	
 	result.linear.x = meanValueX();
 	result.linear.y = meanValueY();
 	result.angular.z = meanValueZ();
+
+	if( cb_out.size() > 1){
 	
-	//set delty velocity and acceleration values
-	double deltaX = result.linear.x - cb_out.front().linear.x;
-	double accX = deltaX / ( now.toSec() - cb_time.front().toSec() );
+		//set delty velocity and acceleration values
+		double deltaX = result.linear.x - cb_out.front().linear.x;
+		double accX = deltaX / ( now.toSec() - cb_time.front().toSec() );
 
-	double deltaY = result.linear.y - cb_out.front().linear.y;
-	double accY = deltaY / ( now.toSec() - cb_time.front().toSec() );
+		double deltaY = result.linear.y - cb_out.front().linear.y;
+		double accY = deltaY / ( now.toSec() - cb_time.front().toSec() );
 
-	double deltaZ = result.angular.z - cb_out.front().linear.y;
-	double accZ = deltaZ /  ( now.toSec() - cb_time.front().toSec() );
+		double deltaZ = result.angular.z - cb_out.front().linear.y;
+		double accZ = deltaZ /  ( now.toSec() - cb_time.front().toSec() );
 
+		if( abs(accX) > thresh){
+			result.linear.x = cb_out.front().linear.x + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
+		}
+		if( abs(accY) > thresh){
+			result.linear.y = cb_out.front().linear.y + ( thresh *  ( now.toSec() - cb_time.front().toSec() ));
+		}
+		if( abs(accZ) > thresh){
+			result.angular.z = cb_out.front().angular.z + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
+		}
 
-	if( abs(accX) > thresh){
-		result.linear.x = cb_out.front().linear.x + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
+		cb_out.push_front(result);
 	}
-	if( abs(accY) > thresh){
-		result.linear.y = cb_out.front().linear.y + ( thresh *  ( now.toSec() - cb_time.front().toSec() ));
-	}
-	if( abs(accZ) > thresh){
-		result.angular.z = cb_out.front().angular.z + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
-	}
-
-	cb_out.push_front(result);
 
 	return result;
 
@@ -363,7 +365,7 @@ int main(int argc, char **argv)
 
 	ros::init(argc, argv, "cob_vel_integrator");
 
-	cob_vel_integrator my_cvi = cob_vel_integrator(12,4,0.1);
+	cob_vel_integrator my_cvi = cob_vel_integrator(12,4,0.02);
 	
 	ros::Subscriber sub=my_cvi.n.subscribe("input", 1, &cob_vel_integrator::geometryCallback, &my_cvi);
 
