@@ -26,8 +26,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(cob_linear_nav ros/src/cob_linear_nav.cpp)
+#rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-# rostest
-rosbuild_add_roslaunch_check(ros/launch ROBOT_ENV=ipa-kitchen)
+#rostest
+rosbuild_add_roslaunch_check(launch)

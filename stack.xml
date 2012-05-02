@@ -13,6 +13,7 @@
   <depend stack="common_msgs" /> <!-- nav_msgs -->
   <depend stack="geometry" /> <!-- tf -->
   <depend stack="navigation" /> <!-- move_base_msgs, move_base, map_server, amcl, robot_pose_ekf -->
+  <depend stack="ros" />
   <depend stack="ros_comm" /> <!-- topic_tools, roscpp -->
   <depend stack="slam_gmapping" /> <!-- gmapping -->
 
