@@ -4,7 +4,5 @@
 	<!--- Run move base -->
 	<include file="$(find cob_navigation_local)/launch/2dnav_ros_local.xml" />
 
-	<!-- Robot pose ekf -->
-	<include file="$(find cob_navigation_config)/launch/robot_pose_ekf.xml" />
 
 </launch>
