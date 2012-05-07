@@ -2,10 +2,10 @@
 <launch>
 
 	<!-- dynamic map generation -->
-	<include file="$(find cob_navigation_slam)/launch/gmapping.launch" />
+	<include file="$(find cob_mapping_slam)/launch/gmapping.xml" />
 
 	<!-- Robot pose ekf -->
-	<include file="$(find cob_navigation_config)/launch/robot_pose_ekf.launch" />
+	<include file="$(find cob_navigation_config)/launch/robot_pose_ekf.xml" />
 
 	<!-- Run ipa navigation -->
 	<include file="$(find cob_platform_ctrl)/ros/launch/platform_ctrl_extloc.launch"/>
