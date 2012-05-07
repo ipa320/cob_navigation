@@ -8,6 +8,12 @@
 
 	<!--- Run AMCL -->
 	<include file="$(find cob_navigation_global)/launch/amcl_omni.launch" />
+	
+	<!--- Run cob_vel_integrator -->
+	<node name="cob_vel_integrator" pkg="cob_vel_integrator" type="cob_vel_integrator" >
+		<remap from="input" to="cmd_vel" />
+		<remap from="output" to="base_controller/command" />
+	</node>
 
 	<!--- Run move_base -->
 	<include file="$(find cob_navigation_global)/launch/2dnav_ros_include.launch" />

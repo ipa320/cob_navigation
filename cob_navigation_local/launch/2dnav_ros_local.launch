@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <launch>
 
+	<!--- Run cob_vel_integrator -->
+	<node name="cob_vel_integrator" pkg="cob_vel_integrator" type="cob_vel_integrator" >
+		<remap from="input" to="cmd_vel" />
+		<remap from="output" to="base_controller/command" />
+	</node>
+	
 	<!--- Run move base -->
 	<include file="$(find cob_navigation_local)/launch/2dnav_ros_local_include.launch" />
 
