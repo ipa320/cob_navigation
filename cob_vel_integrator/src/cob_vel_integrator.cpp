@@ -1,4 +1,55 @@
+/****************************************************************
+ *
+ * Copyright (c) 2012
+ *
+ * Fraunhofer Institute for Manufacturing Engineering  
+ * and Automation (IPA)
+ *
+ * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ *
+ * Project name: care-o-bot
+ * ROS stack name: cob_navigation
+ * ROS package name: cob_vel_integrator
+ *  							
+ * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ *  		
+ * Author: Florian Mirus, email:Florian.Mirus@ipa.fhg.de
+ *
+ * Date of creation: May 2012
+ *
+ * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *  	 notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above copyright
+ *  	 notice, this list of conditions and the following disclaimer in the
+ *  	 documentation and/or other materials provided with the distribution.
+ *   * Neither the name of the Fraunhofer Institute for Manufacturing 
+ *  	 Engineering and Automation (IPA) nor the names of its
+ *  	 contributors may be used to endorse or promote products derived from
+ *  	 this software without specific prior written permission.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License LGPL as 
+ * published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License LGPL for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public 
+ * License LGPL along with this program. 
+ * If not, see <http://www.gnu.org/licenses/>.
+ *
+ ****************************************************************/
 #include <ros/ros.h>
+#include <XmlRpc.h>
+#include <pthread.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
 #include <ros/console.h>
@@ -7,27 +58,36 @@
 #include <iostream>
 #include <boost/circular_buffer.hpp>
 #include <boost/bind.hpp>
-//#include "publlisher.h"
 
 using namespace std;
 
+/****************************************************************
+ * the ros navigation doesn't run very smoothly because acceleration is too high
+ * --> cob has strong base motors and therefore reacts with shaking behavior 
+ * (PR2 has much more meachnical damping)
+ * solution: the additional node cob_vel_integrator smooths the velocities
+ * comming from ROS-navigation, by calculating the mean values of a certain number 
+ * of past messages and limiting the acceleration under a given threshold. 
+ * cob_vel_integrator subsribes (input) and publishes (output) geometry_msgs::Twist.
+ ****************************************************************/
 class cob_vel_integrator
 {
 private:
-	//capacity for circular buffers
+	//capacity for circular buffers (to be loaded from parameter server, otherwise set to default value 12)
 	int buffer_capacity;
-	//maximal time-delay in seconds for stored messages in Circular Buffer
+	//maximal time-delay in seconds for stored messages in Circular Buffer (to be loaded from parameter server, otherwise set to default value 4)
 	double store_delay;
-	//threshhold for allowed distance from zero-value
+	//threshhold for maximal allowed acceleration (to be loaded from parameter server, otherwise set to default value 0.02)
 	double thresh;
 	//geometry message filled with zero values
 	geometry_msgs::Twist zero_values;
 
 public:
 	
-	//constructor	
-	cob_vel_integrator(int cap, double delay, double zero_thresh);
+	//constructor
+	cob_vel_integrator();
 
+	//create node handle
 	ros::NodeHandle n;
 
 	//circular buffers for velocity, acceleration and time
@@ -35,31 +95,67 @@ public:
 	boost::circular_buffer<geometry_msgs::Twist> cb_out;
 	boost::circular_buffer<ros::Time> cb_time;
 
+	//ros publisher
 	ros::Publisher pub;
-	//void setBufferCapacity(int cap, double delay);
-	void geometryCallback(const geometry_msgs::Twist& cmd_vel);
-	void reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_vel);
-	bool CircBuffOutOfDate(ros::Time now);
-	bool IsCircBuffZero();
-	bool IsEqual(geometry_msgs::Twist msg1, geometry_msgs::Twist msg2);
 
+	//callback function to subsribe to the geometry messages cmd_vel and publish to base_controller/command
+	void geometryCallback(const geometry_msgs::Twist& cmd_vel);
+	//function that updates the circular buffer after receiving a new geometry message
+	void reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_vel);
+	
+	//boolean function that returns true if all messages stored in the circular buffer are older than store_delay,
+	//false otherwise
+	bool CircBuffOutOfDate(ros::Time now);
+
+	//functions to calculate the mean values for each direction
 	double meanValueX();
 	double meanValueY();
 	double meanValueZ();
 
-
+	//function for the actual computation
+	//calls the reviseCircBuff and the meanValue-functions and limits the acceleration under thresh
+	//returns the resulting geometry message to be published to the base_controller
 	geometry_msgs::Twist setOutput(geometry_msgs::Twist cmd_vel);
 
 };
 
 //constructor
-cob_vel_integrator::cob_vel_integrator(int cap, double delay, double zero_thresh)
+cob_vel_integrator::cob_vel_integrator()
 {
-	//set variables
-	buffer_capacity = cap;
-	store_delay = delay;
-	thresh = zero_thresh;
+	
+	//get parameters from parameter server if possible or take default values
+	if(n.hasParam("/cob_vel_integrator/circular_buffer_capacity"))
+	{
+		n.getParam("/cob_vel_integrator/circular_buffer_capacity",buffer_capacity);
+	}
+	else
+	{
+		buffer_capacity = 12;
+		ROS_WARN("Used default parameter for circular buffer capacity [12]");
+ 	}
 
+	if(n.hasParam("/cob_vel_integrator/maximal_time_delay"))
+	{
+		n.getParam("/cob_vel_integrator/maximal_time_delay",store_delay);
+	}
+	else
+	{
+		store_delay = 4;
+		ROS_WARN("Used default parameter for maximal time delay in seconds for saved messages [4]");
+ 	}
+
+	if(n.hasParam("/cob_vel_integrator/thresh_max_acc"))
+	{
+		n.getParam("/cob_vel_integrator/thresh_max_acc",thresh);
+	}
+
+	else
+	{
+		thresh = 0.02;
+		ROS_WARN("Used default parameter for maximal allowed acceleration in m per s [0.02]");
+ 	}
+
+	//set a geometry message containing zero-values
 	zero_values.linear.x=0;
 	zero_values.linear.y=0;
 	zero_values.linear.z=0;
@@ -68,7 +164,7 @@ cob_vel_integrator::cob_vel_integrator(int cap, double delay, double zero_thresh
 	zero_values.angular.y=0;
 	zero_values.angular.z=0;
 
-	//initialize crcular buffers
+	//initialize circular buffers
 	cb.set_capacity(buffer_capacity);
 	cb_out.set_capacity(buffer_capacity);
 	cb_time.set_capacity(buffer_capacity);
@@ -85,7 +181,7 @@ cob_vel_integrator::cob_vel_integrator(int cap, double delay, double zero_thresh
 	}
 
 	pub = n.advertise<geometry_msgs::Twist>("output", 1);
-
+	
 };
 
 //returns true if all messages in cb are out of date in consideration of store_delay
@@ -109,6 +205,7 @@ bool cob_vel_integrator::CircBuffOutOfDate(ros::Time now)
 
 };
 
+//functions to calculate the mean values for linear/x
 double cob_vel_integrator::meanValueX()
 {
 	double result = 0;
@@ -148,6 +245,7 @@ double cob_vel_integrator::meanValueX()
 	
 };
 
+//functions to calculate the mean values for linear/y
 double cob_vel_integrator::meanValueY()
 {
 	double result = 0;
@@ -188,6 +286,7 @@ double cob_vel_integrator::meanValueY()
 	
 };
 
+//functions to calculate the mean values for angular/z
 double cob_vel_integrator::meanValueZ()
 {
 	double result = 0;
@@ -229,35 +328,7 @@ double cob_vel_integrator::meanValueZ()
 	
 };
 
-//returns true if the input geometry messages are equal
-bool cob_vel_integrator::IsEqual(geometry_msgs::Twist msg1, geometry_msgs::Twist msg2)
-{
-	if( (msg1.linear.x == msg2.linear.x) && (msg1.linear.y == msg2.linear.y) && (msg1.linear.z == msg2.linear.z) && (msg1.angular.x == msg2.angular.x) && (msg1.angular.y == msg2.angular.y) && (msg1.angular.z == msg2.angular.z)){
-		return true;
-	}
-	else{	
-		return false;
-	}
-};
-
-bool cob_vel_integrator::IsCircBuffZero()
-{
-	bool result=true;
-	long unsigned int count=0;
-	long unsigned int size = cb.size();
-
-	while( (count < size) && (result == true) ){
-
-		if(this->IsEqual(zero_values, cb[count]) == false){
-			result=false;
-		}
-		count++;
-	}
-
-	return result;
-
-};
-
+//function that updates the circular buffer after receiving a new geometry message
 void cob_vel_integrator::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_vel)
 {
 	if(this->CircBuffOutOfDate(now) == true){
@@ -300,59 +371,68 @@ void cob_vel_integrator::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_
 	}
 };
 
-//calculates the mean values of all twist geometry messages contained in the circular buffer
+
+//function for the actual computation
+//calls the reviseCircBuff and the meanValue-functions and limits the acceleration under thresh
+//returns the resulting geometry message to be published to the base_controller
 geometry_msgs::Twist cob_vel_integrator::setOutput(geometry_msgs::Twist cmd_vel)
 {
 	geometry_msgs::Twist result = zero_values;
 	
 	//set actual ros::Time
 	ros::Time now=ros::Time::now();
-	//some pre-conditions
+	//update the circular buffers
 	this->reviseCircBuff(now, cmd_vel);
 
+	//calculate the mean values for each direction
 	result.linear.x = meanValueX();
 	result.linear.y = meanValueY();
 	result.angular.z = meanValueZ();
+
+	//limit the acceleration under thresh
+	// only if cob_vel_integrator has published a message yet
+	if( cb_out.size() > 1){
 	
-	//set delty velocity and acceleration values
-	double deltaX = result.linear.x - cb_out.front().linear.x;
-	double accX = deltaX / ( now.toSec() - cb_time.front().toSec() );
+		//set delty velocity and acceleration values
+		double deltaX = result.linear.x - cb_out.front().linear.x;
+		double accX = deltaX / ( now.toSec() - cb_time.front().toSec() );
 
-	double deltaY = result.linear.y - cb_out.front().linear.y;
-	double accY = deltaY / ( now.toSec() - cb_time.front().toSec() );
+		double deltaY = result.linear.y - cb_out.front().linear.y;
+		double accY = deltaY / ( now.toSec() - cb_time.front().toSec() );
 
-	double deltaZ = result.angular.z - cb_out.front().linear.y;
-	double accZ = deltaZ /  ( now.toSec() - cb_time.front().toSec() );
+		double deltaZ = result.angular.z - cb_out.front().linear.y;
+		double accZ = deltaZ /  ( now.toSec() - cb_time.front().toSec() );
 
+		if( abs(accX) > thresh){
+			result.linear.x = cb_out.front().linear.x + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
+		}
+		if( abs(accY) > thresh){
+			result.linear.y = cb_out.front().linear.y + ( thresh *  ( now.toSec() - cb_time.front().toSec() ));
+		}
+		if( abs(accZ) > thresh){
+			result.angular.z = cb_out.front().angular.z + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
+		}
 
-	if( abs(accX) > thresh){
-		result.linear.x = cb_out.front().linear.x + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
+		cb_out.push_front(result);
 	}
-	if( abs(accY) > thresh){
-		result.linear.y = cb_out.front().linear.y + ( thresh *  ( now.toSec() - cb_time.front().toSec() ));
-	}
-	if( abs(accZ) > thresh){
-		result.angular.z = cb_out.front().angular.z + ( thresh *  ( now.toSec() - cb_time.front().toSec() ) );
-	}
-
-	cb_out.push_front(result);
 
 	return result;
 
 }
 
+//callback function to subsribe to the geometry messages cmd_vel and publish to base_controller/command
 void cob_vel_integrator::geometryCallback(const geometry_msgs::Twist& cmd_vel)
 {
 
-	ROS_INFO("%s","I heard something, so here's the callBack-Function!");
-
-	cout << "subscribed-message: " << cmd_vel << endl;
+	//ROS_INFO("%s","I heard something, so here's the callBack-Function!");
+	//cout << "subscribed-message: " << cmd_vel << endl;
 	
 	//generate Output messages
 	geometry_msgs::Twist result = this->setOutput(cmd_vel);
 
 	//print result
-	cout << "result message: " << result << endl;
+	//cout << "result message: " << result << endl;
+
 	//publish result
 	pub.publish(result);
 
@@ -362,12 +442,13 @@ int main(int argc, char **argv)
 {
 
 	ros::init(argc, argv, "cob_vel_integrator");
-
-	cob_vel_integrator my_cvi = cob_vel_integrator(12,4,0.1);
 	
-	ros::Subscriber sub=my_cvi.n.subscribe("input", 1, &cob_vel_integrator::geometryCallback, &my_cvi);
+	cob_vel_integrator my_cvi = cob_vel_integrator();
 
+	ros::Subscriber sub=my_cvi.n.subscribe("input", 1, &cob_vel_integrator::geometryCallback, &my_cvi);
+	
 	ros::spin();
 
 	return 0;
 }
+
