@@ -1,0 +1,11 @@
+<?xml version="0.0"?>
+<launch>
+
+	<!--- Run cob_vel_integrator -->
+	<node name="cob_vel_integrator" pkg="cob_vel_integrator" type="cob_vel_integrator" >
+		<remap from="input" to="cmd_vel" />
+		<remap from="output" to="base_controller/command" />
+		<rosparam file="$(find cob_navigation_config)/$(env ROBOT)/cob_vel_integrator_params.yaml" command="load" />
+	</node>
+
+</launch>
