@@ -12,6 +12,7 @@
 
   <depend package="move_base"/>
   <depend package="cob_navigation_config"/>
+  <depend package="cob_vel_integrator"/>
 
 </package>
 

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+
+	<arg name="map" default="$(find cob_default_env_config)/$(env ROBOT_ENV)/map.yaml" />
+
+	<!--- Run map_server -->
+	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
+
+	<!--- Run AMCL -->
+	<include file="$(find cob_navigation_global)/launch/amcl_node.xml" />
+	
+  <!-- Run linear nav -->
+	<include file="$(find cob_navigation_global)/launch/2dnav_linear.xml"/>
+
+</launch>

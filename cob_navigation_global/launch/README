@@ -1,0 +1,3 @@
+.launch files include localizaion and are used for standalone launching
+
+To include multiple navigation strategies into your own launch files use corresponding .xml files and include amcl localization. 
