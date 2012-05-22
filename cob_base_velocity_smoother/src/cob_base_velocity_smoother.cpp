@@ -9,7 +9,7 @@
  *
  * Project name: care-o-bot
  * ROS stack name: cob_navigation
- * ROS package name: cob_vel_integrator
+ * ROS package name: cob_base_velocity_smoother
  *  							
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *  		
@@ -65,12 +65,12 @@ using namespace std;
  * the ros navigation doesn't run very smoothly because acceleration is too high
  * --> cob has strong base motors and therefore reacts with shaking behavior 
  * (PR2 has much more meachnical damping)
- * solution: the additional node cob_vel_integrator smooths the velocities
+ * solution: the additional node cob_base_velocity_smoother smooths the velocities
  * comming from ROS-navigation, by calculating the mean values of a certain number 
  * of past messages and limiting the acceleration under a given threshold. 
- * cob_vel_integrator subsribes (input) and publishes (output) geometry_msgs::Twist.
+ * cob_base_velocity_smoother subsribes (input) and publishes (output) geometry_msgs::Twist.
  ****************************************************************/
-class cob_vel_integrator
+class cob_base_velocity_smoother
 {
 private:
 	//capacity for circular buffers (to be loaded from parameter server, otherwise set to default value 12)
@@ -85,7 +85,7 @@ private:
 public:
 	
 	//constructor
-	cob_vel_integrator();
+	cob_base_velocity_smoother();
 
 	//create node handle
 	ros::NodeHandle n;
@@ -120,13 +120,13 @@ public:
 };
 
 //constructor
-cob_vel_integrator::cob_vel_integrator()
+cob_base_velocity_smoother::cob_base_velocity_smoother()
 {
 	
 	//get parameters from parameter server if possible or take default values
-	if(n.hasParam("/cob_vel_integrator/circular_buffer_capacity"))
+	if(n.hasParam("/cob_base_velocity_smoother/circular_buffer_capacity"))
 	{
-		n.getParam("/cob_vel_integrator/circular_buffer_capacity",buffer_capacity);
+		n.getParam("/cob_base_velocity_smoother/circular_buffer_capacity",buffer_capacity);
 	}
 	else
 	{
@@ -134,9 +134,9 @@ cob_vel_integrator::cob_vel_integrator()
 		ROS_WARN("Used default parameter for circular buffer capacity [12]");
  	}
 
-	if(n.hasParam("/cob_vel_integrator/maximal_time_delay"))
+	if(n.hasParam("/cob_base_velocity_smoother/maximal_time_delay"))
 	{
-		n.getParam("/cob_vel_integrator/maximal_time_delay",store_delay);
+		n.getParam("/cob_base_velocity_smoother/maximal_time_delay",store_delay);
 	}
 	else
 	{
@@ -144,9 +144,9 @@ cob_vel_integrator::cob_vel_integrator()
 		ROS_WARN("Used default parameter for maximal time delay in seconds for saved messages [4]");
  	}
 
-	if(n.hasParam("/cob_vel_integrator/thresh_max_acc"))
+	if(n.hasParam("/cob_base_velocity_smoother/thresh_max_acc"))
 	{
-		n.getParam("/cob_vel_integrator/thresh_max_acc",thresh);
+		n.getParam("/cob_base_velocity_smoother/thresh_max_acc",thresh);
 	}
 
 	else
@@ -185,7 +185,7 @@ cob_vel_integrator::cob_vel_integrator()
 };
 
 //returns true if all messages in cb are out of date in consideration of store_delay
-bool cob_vel_integrator::CircBuffOutOfDate(ros::Time now)
+bool cob_base_velocity_smoother::CircBuffOutOfDate(ros::Time now)
 {
 	bool result=true;
 
@@ -206,7 +206,7 @@ bool cob_vel_integrator::CircBuffOutOfDate(ros::Time now)
 };
 
 //functions to calculate the mean values for linear/x
-double cob_vel_integrator::meanValueX()
+double cob_base_velocity_smoother::meanValueX()
 {
 	double result = 0;
 	long unsigned int size = cb.size();
@@ -246,7 +246,7 @@ double cob_vel_integrator::meanValueX()
 };
 
 //functions to calculate the mean values for linear/y
-double cob_vel_integrator::meanValueY()
+double cob_base_velocity_smoother::meanValueY()
 {
 	double result = 0;
 	long unsigned int size = cb.size();
@@ -287,7 +287,7 @@ double cob_vel_integrator::meanValueY()
 };
 
 //functions to calculate the mean values for angular/z
-double cob_vel_integrator::meanValueZ()
+double cob_base_velocity_smoother::meanValueZ()
 {
 	double result = 0;
 	long unsigned int size = cb.size();
@@ -329,7 +329,7 @@ double cob_vel_integrator::meanValueZ()
 };
 
 //function that updates the circular buffer after receiving a new geometry message
-void cob_vel_integrator::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_vel)
+void cob_base_velocity_smoother::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_vel)
 {
 	if(this->CircBuffOutOfDate(now) == true){
 
@@ -375,7 +375,7 @@ void cob_vel_integrator::reviseCircBuff(ros::Time now, geometry_msgs::Twist cmd_
 //function for the actual computation
 //calls the reviseCircBuff and the meanValue-functions and limits the acceleration under thresh
 //returns the resulting geometry message to be published to the base_controller
-geometry_msgs::Twist cob_vel_integrator::setOutput(geometry_msgs::Twist cmd_vel)
+geometry_msgs::Twist cob_base_velocity_smoother::setOutput(geometry_msgs::Twist cmd_vel)
 {
 	geometry_msgs::Twist result = zero_values;
 	
@@ -390,7 +390,7 @@ geometry_msgs::Twist cob_vel_integrator::setOutput(geometry_msgs::Twist cmd_vel)
 	result.angular.z = meanValueZ();
 
 	//limit the acceleration under thresh
-	// only if cob_vel_integrator has published a message yet
+	// only if cob_base_velocity_smoother has published a message yet
 	if( cb_out.size() > 1){
 	
 		//set delty velocity and acceleration values
@@ -421,7 +421,7 @@ geometry_msgs::Twist cob_vel_integrator::setOutput(geometry_msgs::Twist cmd_vel)
 }
 
 //callback function to subsribe to the geometry messages cmd_vel and publish to base_controller/command
-void cob_vel_integrator::geometryCallback(const geometry_msgs::Twist& cmd_vel)
+void cob_base_velocity_smoother::geometryCallback(const geometry_msgs::Twist& cmd_vel)
 {
 
 	//ROS_INFO("%s","I heard something, so here's the callBack-Function!");
@@ -441,11 +441,11 @@ void cob_vel_integrator::geometryCallback(const geometry_msgs::Twist& cmd_vel)
 int main(int argc, char **argv)
 {
 
-	ros::init(argc, argv, "cob_vel_integrator");
+	ros::init(argc, argv, "cob_base_velocity_smoother");
 	
-	cob_vel_integrator my_cvi = cob_vel_integrator();
+	cob_base_velocity_smoother my_cvi = cob_base_velocity_smoother();
 
-	ros::Subscriber sub=my_cvi.n.subscribe("input", 1, &cob_vel_integrator::geometryCallback, &my_cvi);
+	ros::Subscriber sub=my_cvi.n.subscribe("input", 1, &cob_base_velocity_smoother::geometryCallback, &my_cvi);
 	
 	ros::spin();
 

@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b cob_vel_integrator is ... 
+\b cob_base_velocity_smoother is ... 
 
 <!-- 
 Provide an overview of your package.
