@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <launch>
+	<!--delete old parameters -->
+	<rosparam command="delete" param="/move_base"/>
 
 	<!--- Run move base -->
 	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-		<!--remap from="cmd_vel" to="base_controller/command"/-->
+		<remap from="cmd_vel" to="base_controller/command"/>
 		<remap from="odom" to="base_controller/odometry"/>
 		<param name="controller_frequency" value="12"/>
 

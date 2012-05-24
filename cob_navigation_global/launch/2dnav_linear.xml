@@ -5,7 +5,7 @@
     <!-- remap inputs -->
     <remap from="odom" to="/base_controller/odometry"/>
     <!-- remap outputs -->
-    <remap from="cmd_vel" to="/base_controller/safety_command"/>
+    <remap from="cmd_vel" to="/base_controller/command_safe"/>
     <rosparam file="$(find cob_navigation_config)/common/linear/ctrl_params.yaml" command="load" />
   </node>
 
