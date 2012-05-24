@@ -1,7 +1,7 @@
 <package>
   <description brief="cob_navigation_config">
 
-    This package holds common configuration files for running the move_base node on the Care-O-Bot.
+    This package holds common configuration files for running the [[move_base]] node and other navigation related nodes on the [[care-o-bot|Care-O-bot]].
 
   </description>
   <author>Matthias Gruhler</author>

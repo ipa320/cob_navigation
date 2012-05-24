@@ -1,7 +1,7 @@
 <stack>
   <description brief="Care-O-bot stack with navigation packages">
 
-     The cob_navigation stack provides different navigation packages for Care-O-bot.
+     The cob_navigation stack provides different navigation packages for [[care-o-bot|Care-O-bot]].
 
   </description>
   <author>Maintained by Matthias Gruhler</author>
@@ -14,7 +14,7 @@
   <depend stack="geometry" /> <!-- tf -->
   <depend stack="navigation" /> <!-- move_base, move_base_msgs, map_server, amcl, robot_pose_ekf -->
   <depend stack="ros" />
-  <depend stack="ros_comm" /> <!-- rospy, topic_tools, std_msgs, roscpp -->
+  <depend stack="ros_comm" /> <!-- topic_tools, std_msgs, roscpp -->
   <depend stack="slam_gmapping" /> <!-- gmapping -->
 
 </stack>

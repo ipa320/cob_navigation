@@ -1,7 +1,7 @@
 <package>
   <description brief="cob_mapping_slam">
 
-     cob_mapping_slam holds launch files for running SLAM using the gmapping package.
+     cob_mapping_slam holds launch files for running SLAM using the [[gmapping]] package.
 
   </description>
   <author>Matthias Gruhler</author>
