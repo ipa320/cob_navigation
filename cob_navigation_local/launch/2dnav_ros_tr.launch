@@ -4,7 +4,4 @@
 	<!--- Run move base -->
 	<include file="$(find cob_navigation_local)/launch/2dnav_ros_tr.xml" />
 
-	<!--- Run cob_vel_integrator -->
-	<include file="$(find cob_navigation_local)/launch/cob_vel_integrator.xml" />
-
 </launch>
