@@ -83,7 +83,7 @@ class NodeClass
 	ros::NodeHandle nh_;
 		
 	// declaration of topics
-	ros::Publisher topic_pub_command_, action_goal_pub_;
+	ros::Publisher topic_pub_command_;
 
 	ros::Subscriber goal_sub_, odometry_sub_;
 	
