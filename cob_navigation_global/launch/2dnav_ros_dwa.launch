@@ -8,11 +8,8 @@
 
 	<!--- Run AMCL -->
 	<include file="$(find cob_navigation_global)/launch/amcl_node.xml" />
-
-	<!--- Run cob_vel_integrator -->
-	<include file="$(find cob_navigation_global)/launch/cob_vel_integrator.xml" />
 	
-<!--- Run move base -->
+	<!--- Run move base -->
 	<include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.xml" />
 
 </launch>
