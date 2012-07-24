@@ -13,7 +13,7 @@ transform_tolerance: 0.4
 obstacle_range: 2.5
 raytrace_range: 3.0
 inflation_radius: 0.55
-footprint: [[0.5,0.3],[-0.5,0.3],[-0.5,-0.3],[0.5,-0.3]]
+footprint: [[0.55,0.35],[-0.55,0.35],[-0.55,-0.35],[0.55,-0.35]]
 
 # BEGIN VOXEL STUFF
 observation_sources: laser_scan_front laser_scan_rear laser_scan_top #cloud_cam3d
