@@ -6,7 +6,7 @@
 	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 		<remap from="cmd_vel" to="base_controller/command"/>
 		<remap from="odom" to="base_controller/odometry"/>
-		<param name="controller_frequency" value="12"/>
+		<param name="controller_frequency" value="10"/>
 
  		<!-- Use the dwa local planner for the PR2 -->
  		<param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
