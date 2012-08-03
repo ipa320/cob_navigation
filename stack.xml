@@ -1,7 +1,7 @@
 <stack>
   <description brief="Care-O-bot stack with navigation packages">
 
-     The cob_navigation stack provides different navigation packages for [[care-o-bot|Care-O-bot]].
+     The cob_navigation stack provides different navigation packages for <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a>.
 
   </description>
   <author>Maintained by Matthias Gruhler</author>
