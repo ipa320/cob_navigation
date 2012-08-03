@@ -83,7 +83,7 @@ class NodeClass
 	ros::NodeHandle nh_;
 		
 	// declaration of topics
-	ros::Publisher topic_pub_command_, action_goal_pub_;
+	ros::Publisher topic_pub_command_;
 
 	ros::Subscriber goal_sub_, odometry_sub_;
 	
@@ -192,8 +192,9 @@ class NodeClass
 	void topicCB(const geometry_msgs::PoseStamped::ConstPtr& goal){
 		ROS_INFO("In ROS goal callback, wrapping the PoseStamped in the action message and re-sending to the server.");
 		move_base_msgs::MoveBaseGoal action_goal;
-		action_goal.target_pose = *goal;
 
+    action_goal.target_pose = transformGoalToMap(*goal);
+    
 		action_client_->sendGoal(action_goal);
 		action_client_->stopTrackingGoal();
 	}
@@ -324,7 +325,7 @@ geometry_msgs::PoseStamped NodeClass::transformGoalToMap(geometry_msgs::PoseStam
 	geometry_msgs::PoseStamped goal_global_;
 	if(goal_pose.header.frame_id == global_frame_) return goal_pose;
 	else if(tf_listener_.canTransform(global_frame_, goal_pose.header.frame_id, ros::Time(0), new std::string)) {
-		tf_listener_.transformPose(global_frame_, goal_pose, goal_global_);
+		tf_listener_.transformPose(global_frame_, ros::Time(0), goal_pose, "/base_link", goal_global_);
 		return goal_global_;
 	} else {
 		ROS_WARN("Can't transform goal to global frame %s", global_frame_.c_str());
