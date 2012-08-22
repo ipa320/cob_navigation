@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!--- Run move base -->
+	<include file="$(find cob_navigation_local)/launch/2dnav_ros_dwa.xml" />
+
+</launch>

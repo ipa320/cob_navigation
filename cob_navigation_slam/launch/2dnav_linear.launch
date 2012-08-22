@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- dynamic map generation -->
+	<include file="$(find cob_mapping_slam)/launch/2dslam.xml" />
+
+	<!--- Run move base -->
+	<include file="$(find cob_navigation_global)/launch/2dnav_linear.xml" />
+
+</launch>
