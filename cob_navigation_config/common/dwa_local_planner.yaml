@@ -1,18 +1,18 @@
-acc_lim_th: 1.0
-acc_lim_x: 1.0
-acc_lim_y: 1.0
+acc_lim_th: 3.2
+acc_lim_x: 2.5
+acc_lim_y: 2.5
 
-max_vel_x: 0.2
-min_vel_x: -0.1
+max_vel_x: 0.3
+min_vel_x: 0.01
 
 max_vel_y: 0.2
 min_vel_y: -0.2
 
-max_trans_vel: 0.2
+max_trans_vel: 0.3
 min_trans_vel: 0.01
 
-max_rot_vel: 0.4
-min_rot_vel: 0.0
+max_rot_vel: 0.6
+min_rot_vel: 0.01
 
 sim_time: 1.7
 sim_granularity: 0.025
