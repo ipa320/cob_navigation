@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+
+	<!-- start rviz with configuration -->
+	<node pkg="rviz" type="rviz" name="$(anon rviz)" args="-d $(find cob_navigation_local)/config/rviz.vcg" respawn="false" output="screen" />
+
+</launch>
+
