@@ -12,5 +12,6 @@
   <depend package="cob_navigation_config"/>
   <depend package="cob_navigation_global"/>
   <depend package="cob_mapping_slam"/>
+  <depend package="rviz"/>
   
 </package>
