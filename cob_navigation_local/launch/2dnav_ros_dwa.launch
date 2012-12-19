@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 <launch>
 
+	<arg name="robot" default="$(optenv ROBOT !!NO_ROBOT_SET!!)"/>
+
 	<!--- Run move base -->
-	<include file="$(find cob_navigation_local)/launch/2dnav_ros_dwa.xml" />
+	<include file="$(find cob_navigation_local)/launch/2dnav_ros_dwa.xml" >
+		<arg name="robot" value="$(arg robot)"/>
+	</include>
 
 </launch>
