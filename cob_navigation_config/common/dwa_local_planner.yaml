@@ -3,7 +3,7 @@ acc_lim_x: 2.5
 acc_lim_y: 2.5
 
 max_vel_x: 0.3
-min_vel_x: 0.01
+min_vel_x: -0.3
 
 max_vel_y: 0.2
 min_vel_y: -0.2
@@ -14,8 +14,13 @@ min_trans_vel: 0.01
 max_rot_vel: 0.6
 min_rot_vel: 0.01
 
+#param for rotating behaviour
+#max_rotational_vel: 0.04
+#min_in_place_rotational_vel: 0.01
+
+
 sim_time: 1.7
-sim_granularity: 0.025
+sim_granularity: 0.017
 
 goal_distance_bias: 32.0
 path_distance_bias: 24.0
