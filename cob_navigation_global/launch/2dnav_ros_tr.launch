@@ -8,6 +8,10 @@
 	<!--- Run map_server -->
 	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
 
+	<node pkg="costmap_2d" type="costmap_2d_markers"  name="voxel_visualizer">
+		<remap from="voxel_grid" to="/move_base/global_costmap/voxel_grid"/>
+	</node>
+
 	<!--- Run AMCL -->
 	<include file="$(find cob_navigation_global)/launch/amcl_node.xml" />
 	
