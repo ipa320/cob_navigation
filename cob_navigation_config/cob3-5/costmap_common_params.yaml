@@ -1,12 +1,14 @@
 #BEGIN VOXEL STUFF
-#map_type: voxel
-map_type: costmap
+map_type: voxel
+#map_type: costmap
 origin_z: 0.0
-z_voxels: 16
-z_resolution: 0.1125
+z_voxels: 2
+z_resolution: 0.23
+
 unknown_cost_value: 0
-unknown_threshold: 8
+unknown_threshold: 2 
 mark_threshold: 0
+publish_voxel_map: true
 #END VOXEL STUFF
 
 transform_tolerance: 0.4
@@ -22,7 +24,7 @@ laser_scan_front: {sensor_frame: base_laser_front_link, topic: /scan_front, data
 
 laser_scan_rear: {sensor_frame: base_laser_rear_link, topic: /scan_rear, data_type: LaserScan, marking: true, clearing: true}
 
-laser_scan_top: {sensor_frame: base_laser_top_link, topic: /scan_top, data_type: LaserScan, marking: true, clearing: false}
+laser_scan_top: {sensor_frame: base_laser_top_link, topic: /scan_top, data_type: LaserScan, marking: true, clearing: true}
 
 cloud_cam3d: {sensor_frame: head_cam3d_link, topic: /voxel_grid/output, data_type: PointCloud2, marking: true, clearing: true, min_obstacle_height: 0.12}
 # END VOXEL STUFF
