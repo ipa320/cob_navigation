@@ -11,6 +11,7 @@
   <url>http://ros.org/wiki/cob_navigation_local</url>
 
   <depend package="move_base"/>
+  <depend package="rviz"/>
   <depend package="cob_navigation_config"/>
   <depend package="cob_base_velocity_smoother"/>
 
