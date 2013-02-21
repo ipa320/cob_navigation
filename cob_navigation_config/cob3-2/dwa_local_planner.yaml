@@ -2,11 +2,11 @@ acc_lim_th: 3.2
 acc_lim_x: 2.5
 acc_lim_y: 2.5
 
-max_vel_x: 0.3
-min_vel_x: -0.3
+max_vel_x: 0.2
+min_vel_x: -0.1
 
-max_vel_y: 0.2
-min_vel_y: -0.2
+max_vel_y: 0.1
+min_vel_y: -0.1
 
 max_trans_vel: 0.3
 min_trans_vel: 0.01
