@@ -8,7 +8,6 @@
   <license>LGPL</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/cob_navigation</url>
-  <depend stack="cob_driver" /> <!-- cob_base_velocity_smoother -->
   <depend stack="cob_environments" /> <!-- cob_default_env_config -->
   <depend stack="common" /> <!-- actionlib -->
   <depend stack="common_msgs" /> <!-- nav_msgs -->
