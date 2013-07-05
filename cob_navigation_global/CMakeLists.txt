@@ -57,7 +57,7 @@ ipa-apartment
 # loop through list of robots for testing
 FOREACH(robot ${robotlist})
 	FOREACH(env ${envlist})
-		MESSAGE("testing for robot: ${robot}")
+		MESSAGE("testing for robot: ${robot} in env: ${env}")
 		rosbuild_add_roslaunch_check(launch ROBOT=${robot} ROBOT_ENV=${env})
 		rosbuild_add_roslaunch_check(launch robot:=${robot} robot_env:=${env})
 	ENDFOREACH(env)
