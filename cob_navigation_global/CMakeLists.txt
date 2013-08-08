@@ -33,6 +33,32 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rospack_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-# rostest
-rosbuild_add_roslaunch_check(launch ROBOT=cob3-3 ROBOT_ENV=ipa-kitchen)
-rosbuild_add_roslaunch_check(launch robot:=cob3-3 robot_env:=ipa-kitchen)
+
+# rostest for robots
+SET(robotlist
+cob3-1
+cob3-2
+cob3-3
+cob3-4
+cob3-5
+cob3-6
+raw3-1
+raw3-2
+raw3-3
+raw3-4
+desire
+)
+
+SET(envlist
+ipa-kitchen
+ipa-apartment
+)
+
+# loop through list of robots for testing
+FOREACH(robot ${robotlist})
+	FOREACH(env ${envlist})
+		MESSAGE("testing for robot: ${robot} in env: ${env}")
+		rosbuild_add_roslaunch_check(launch ROBOT=${robot} ROBOT_ENV=${env})
+		rosbuild_add_roslaunch_check(launch robot:=${robot} robot_env:=${env})
+	ENDFOREACH(env)
+ENDFOREACH(robot)

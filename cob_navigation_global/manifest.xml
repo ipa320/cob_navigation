@@ -16,7 +16,6 @@
   <depend package="topic_tools"/>
   <depend package="cob_default_env_config"/>
   <depend package="cob_linear_nav"/>
-  <depend package="cob_base_velocity_smoother"/>
   <depend package="cob_navigation_config"/>
   <depend package="rviz"/>
 
