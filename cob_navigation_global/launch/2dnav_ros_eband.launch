@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+
+	<arg name="robot" default="$(optenv ROBOT !!NO_ROBOT_SET!!)"/>
+	<arg name="robot_env" default="$(optenv ROBOT_ENV !!NO_ROBOT_ENV_SET!!)"/>
+	<arg name="map" default="$(find cob_default_env_config)/$(arg robot_env)/map.yaml" />
+
+	<!--- Run map_server -->
+	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
+
+	<!--- Run AMCL -->
+	<include file="$(find cob_navigation_global)/launch/amcl_node.xml" />
+	
+	<!--- Run move base -->
+	<include file="$(find cob_navigation_global)/launch/2dnav_ros_eband.xml" >
+		<arg name="robot" value="$(arg robot)"/>
+	</include>
+
+</launch>
