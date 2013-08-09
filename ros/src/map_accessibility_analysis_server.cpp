@@ -5,15 +5,16 @@
 MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 : node_handle_(nh)
 {
-	// todo: read in parameters
-	robot_radius_ = 0.4;
-	// 	ros::param::get("/move_base/local_costmap/robot_radius", robot_radius_);
-	approach_path_accessibility_check_ = true;
-	map_topic_name_ = "/map";
-	obstacles_topic_name_ = "/move_base/local_costmap/obstacles";
-	inflated_obstacles_topic_name_ = "/move_base/local_costmap/inflated_obstacles";
-	map_link_name_ = "/map";
-	robot_base_link_name_ = "/base_link";
+	// read in parameters
+	std::cout << "\n--------------------------------------\nMap Accessibility Analysis Parameters:\n--------------------------------------\n";
+	node_handle_.param("map_accessibility_analysis/approach_path_accessibility_check", approach_path_accessibility_check_, true);
+	std::cout << "approach_path_accessibility_check = " << approach_path_accessibility_check_ << std::endl;
+	node_handle_.param<std::string>("map_accessibility_analysis/map_link_name", map_link_name_, "/map");
+	std::cout << "map_link_name = " << map_link_name_ << std::endl;
+	node_handle_.param<std::string>("map_accessibility_analysis/robot_base_link_name", robot_base_link_name_, "/base_link");
+	std::cout << "robot_base_link_name_ = " << robot_base_link_name_ << std::endl;
+	node_handle_.param("/move_base/local_costmap/robot_radius", robot_radius_, 0.8);
+	std::cout << "robot_radius = " << robot_radius_ << std::endl;
 
 	// receive ground floor map once
 	mapInit(node_handle_);
@@ -32,7 +33,7 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 void MapAccessibilityAnalysis::mapInit(ros::NodeHandle& nh)
 {
 	map_data_recieved_ = false;
-	map_msg_sub_ = nh.subscribe<nav_msgs::OccupancyGrid>(map_topic_name_, 1, &MapAccessibilityAnalysis::mapDataCallback, this);
+	map_msg_sub_ = nh.subscribe<nav_msgs::OccupancyGrid>("map", 1, &MapAccessibilityAnalysis::mapDataCallback, this);
 	ROS_INFO("MapPointAccessibilityCheck: Waiting to receive map...");
 	while (map_data_recieved_ == false)
 		ros::spinOnce();
@@ -41,8 +42,8 @@ void MapAccessibilityAnalysis::mapInit(ros::NodeHandle& nh)
 
 void MapAccessibilityAnalysis::inflationInit(ros::NodeHandle& nh)
 {
-	obstacles_sub_.subscribe(nh, obstacles_topic_name_, 1);
-	inflated_obstacles_sub_.subscribe(nh, inflated_obstacles_topic_name_, 1);
+	obstacles_sub_.subscribe(nh, "obstacles", 1);
+	inflated_obstacles_sub_.subscribe(nh, "inflated_obstacles", 1);
 
 	inflated_obstacles_sub_sync_ = boost::shared_ptr<message_filters::Synchronizer<InflatedObstaclesSyncPolicy> >(new message_filters::Synchronizer<InflatedObstaclesSyncPolicy>(InflatedObstaclesSyncPolicy(5)));
 	inflated_obstacles_sub_sync_->connectInput(obstacles_sub_, inflated_obstacles_sub_);
@@ -101,17 +102,36 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 {
 	ROS_INFO("Received request to check accessibility of %i points.",req.points_to_check.size());
 
-	res.accessibility_flags.resize(req.points_to_check.size(), true);
+	// determine robot pose if approach path analysis activated
+	cv::Point robot_location(0,0);
+	if (approach_path_accessibility_check_ == true)
+	    robot_location = getRobotLocationInPixelCoordinates();
+
+
+	res.accessibility_flags.resize(req.points_to_check.size(), false);
 	{
 		boost::mutex::scoped_lock lock(mutex_inflated_map_);
 
 #ifdef __DEBUG_DISPLAYS__
 		cv::Mat display_map = inflated_map_.clone();
 #endif
+
+		// find the individual connected areas
+		std::vector< std::vector<cv::Point> > area_contours;		// first index=contour index;  second index=point index within contour
+		if (approach_path_accessibility_check_ == true)
+		{
+			cv::Mat inflated_map_copy = inflated_map_.clone();
+			cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+		}
+
 		for (unsigned int i=0; i<req.points_to_check.size(); ++i)
 		{
-			if (inflated_map_.at<uchar>((req.points_to_check[i].y-map_origin_.y)*inverse_map_resolution_, (req.points_to_check[i].x-map_origin_.x)*inverse_map_resolution_) == 0)
-				res.accessibility_flags[i] = false;
+			int u = cvRound((req.points_to_check[i].x-map_origin_.x)*inverse_map_resolution_);
+			int v = cvRound((req.points_to_check[i].y-map_origin_.y)*inverse_map_resolution_);
+			if (inflated_map_.at<uchar>(v, u) != 0)
+				// check if robot can approach this position
+				if (approach_path_accessibility_check_==false || isApproachPositionAccessible(robot_location, cv::Point(u,v), area_contours)==true)
+					res.accessibility_flags[i] = true;
 
 #ifdef __DEBUG_DISPLAYS__
 			if (res.accessibility_flags[i] == false)
@@ -123,7 +143,7 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 
 #ifdef __DEBUG_DISPLAYS__
 		cv::imshow("points", display_map);
-		cv::waitKey(10);
+		cv::waitKey(50);
 #endif
 	}
 
@@ -134,12 +154,32 @@ bool MapAccessibilityAnalysis::checkPerimeterCallback(cob_map_accessibility_anal
 {
 	ROS_INFO("Received request to check accessibility of point (%f,%f).",req.center.x, req.center.y);
 
+	if (req.rotational_sampling_step == 0.0)
+	{
+		req.rotational_sampling_step = 10./180.*CV_PI;
+		ROS_WARN("rotational_sampling_step was provided as 0.0. Automatically changed it to %f.", req.rotational_sampling_step);
+	}
+
+	// determine robot pose if approach path analysis activated
+	cv::Point robot_location(0,0);
+	if (approach_path_accessibility_check_ == true)
+	    robot_location = getRobotLocationInPixelCoordinates();
+
 	{
 		boost::mutex::scoped_lock lock(mutex_inflated_map_);
 
 #ifdef __DEBUG_DISPLAYS__
 		cv::Mat display_map = inflated_map_.clone();
 #endif
+
+		// find the individual connected areas
+		std::vector< std::vector<cv::Point> > area_contours;		// first index=contour index;  second index=point index within contour
+		if (approach_path_accessibility_check_ == true)
+		{
+			cv::Mat inflated_map_copy = inflated_map_.clone();
+			cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+		}
+
 		for (double angle=req.center.theta; angle<req.center.theta+2*CV_PI; angle+=req.rotational_sampling_step)
 		{
 			double x = req.center.x + req.radius * cos(angle);
@@ -148,26 +188,30 @@ bool MapAccessibilityAnalysis::checkPerimeterCallback(cob_map_accessibility_anal
 			int v = (y-map_origin_.y)*inverse_map_resolution_;
 			if (inflated_map_.at<uchar>(v, u) == 255)
 			{
-				// add accessible point to results
-				geometry_msgs::Pose2D pose;
-				pose.x = x;
-				pose.y = y;
-				pose.theta = angle + CV_PI;
-				while (pose.theta > 2*CV_PI)
-					pose.theta -= 2*CV_PI;
-				while (pose.theta < 0.)
-					pose.theta += 2*CV_PI;
-				res.accessible_poses_on_perimeter.push_back(pose);
+				// check if robot can approach this position
+				if (approach_path_accessibility_check_==false || isApproachPositionAccessible(robot_location, cv::Point(u,v), area_contours)==true)
+				{
+					// add accessible point to results
+					geometry_msgs::Pose2D pose;
+					pose.x = x;
+					pose.y = y;
+					pose.theta = angle + CV_PI;
+					while (pose.theta > 2*CV_PI)
+						pose.theta -= 2*CV_PI;
+					while (pose.theta < 0.)
+						pose.theta += 2*CV_PI;
+					res.accessible_poses_on_perimeter.push_back(pose);
 
 #ifdef __DEBUG_DISPLAYS__
-				cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 2);
+					cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 2);
 #endif
+				}
 			}
 		}
 
 #ifdef __DEBUG_DISPLAYS__
 		cv::imshow("perimeter", display_map);
-		cv::waitKey(10);
+		cv::waitKey(50);
 #endif
 	}
 
@@ -176,20 +220,10 @@ bool MapAccessibilityAnalysis::checkPerimeterCallback(cob_map_accessibility_anal
 
 bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetApproachPoseForPolygon::Request& req, cob_3d_mapping_msgs::GetApproachPoseForPolygon::Response& res)
 {
-	// determine robot pose
-	tf::StampedTransform transform;
-	try
-	{
-		tf_listener_.waitForTransform(map_link_name_, robot_base_link_name_, ros::Time(0), ros::Duration(1));
-		tf_listener_.lookupTransform(map_link_name_, robot_base_link_name_, ros::Time(0), transform);
-	}
-    catch (tf::TransformException ex)
-    {
-      ROS_ERROR("[registration] : %s",ex.what());
-      return false;
-    }
-    tf::Vector3 pose = transform.getOrigin();
-    cv::Point robot_location = convertFromMeterToPixelCoordinates<cv::Point>(Pose(pose.x(), pose.y(), 0));
+	// determine robot pose if approach path analysis activated
+	cv::Point robot_location(0,0);
+	if (approach_path_accessibility_check_ == true)
+	    robot_location = getRobotLocationInPixelCoordinates();
 
 	// copy contours
 	std::vector< std::vector<cv::Point> > polygon_contours;
@@ -222,15 +256,22 @@ bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetAppr
 	}
 #ifdef __DEBUG_DISPLAYS__
 	cv::imshow("inflated polygon map", inflated_map);
-	cv::waitKey(10);
+	cv::waitKey(50);
 #endif
 
 	// find the individual connected areas
 	std::vector< std::vector<cv::Point> > area_contours;		// first index=contour index;  second index=point index within contour
-	cv::Mat inflated_map_copy = inflated_map.clone();
-	cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+	if (approach_path_accessibility_check_ == true)
+	{
+		cv::Mat inflated_map_copy = inflated_map.clone();
+		cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+	}
 
 	// iterate through all white points and consider those as potential approach poses that have an expanded table pixel in their neighborhood
+#ifdef __DEBUG_DISPLAYS__
+	cv::Mat map_expanded_copy = inflated_map.clone();
+	cv::drawContours(map_expanded_copy, area_contours, -1, cv::Scalar(128,128,128,128), 2);
+#endif
 	for (int y=1; y<inflated_map.rows-1; y++)
 	{
 		for (int x=1; x<inflated_map.cols-1; x++)
@@ -269,23 +310,41 @@ bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetAppr
 
 #ifdef __DEBUG_DISPLAYS__
 					// display found contours
-					cv::Mat map_expanded_copy = inflated_map.clone();
-					cv::drawContours(map_expanded_copy, area_contours, -1, cv::Scalar(128,128,128,128), 2);
 					cv::circle(map_expanded_copy, robot_location, 3, cv::Scalar(200,200,200,200), -1);
 					cv::circle(map_expanded_copy, cv::Point(x,y), 3, cv::Scalar(200,200,200,200), -1);
-					std::cout << " x=" << x << "  y=" << y << "\n";
-					cv::imshow("contour areas", map_expanded_copy);
-					cv::waitKey(10);
+//					std::cout << " x=" << x << "  y=" << y << "\n";
 #endif
 				}
 			}
 		}
 	}
+#ifdef __DEBUG_DISPLAYS__
+	cv::imshow("contour areas", map_expanded_copy);
+	cv::waitKey(50);
+#endif
 
 	return true;
 }
 
-// this function computes whether a given point (potentialApproachPose) is accessible by the robot at location robotLocation
+cv::Point MapAccessibilityAnalysis::getRobotLocationInPixelCoordinates()
+{
+	tf::StampedTransform transform;
+	try
+	{
+		tf_listener_.waitForTransform(map_link_name_, robot_base_link_name_, ros::Time(0), ros::Duration(1));
+		tf_listener_.lookupTransform(map_link_name_, robot_base_link_name_, ros::Time(0), transform);
+	}
+    catch (tf::TransformException ex)
+    {
+      ROS_ERROR("[registration] : %s",ex.what());
+      return cv::Point(0,0);
+    }
+    tf::Vector3 pose = transform.getOrigin();
+    cv::Point robot_location = convertFromMeterToPixelCoordinates<cv::Point>(Pose(pose.x(), pose.y(), 0));
+
+    return robot_location;
+}
+
 bool MapAccessibilityAnalysis::isApproachPositionAccessible(const cv::Point& robotLocation, const cv::Point& potentialApproachPose, std::vector< std::vector<cv::Point> > contours)
 {
 	// check whether potentialApproachPose and robotLocation are in the same area (=same contour)

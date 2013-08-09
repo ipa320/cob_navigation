@@ -83,6 +83,9 @@ protected:
 	// callback for service checking the accessibility of a perimeter around a polygon
 	bool checkPolygonCallback(cob_3d_mapping_msgs::GetApproachPoseForPolygon::Request& req, cob_3d_mapping_msgs::GetApproachPoseForPolygon::Response& res);
 
+	// reads the robot coordinates from tf
+	cv::Point getRobotLocationInPixelCoordinates();
+
 	// this function computes whether a given point (potentialApproachPose) is accessible by the robot at location robotLocation
 	bool isApproachPositionAccessible(const cv::Point& robotLocation, const cv::Point& potentialApproachPose, std::vector< std::vector<cv::Point> > contours);
 
@@ -98,15 +101,12 @@ protected:
 	ros::NodeHandle node_handle_;
 
 	ros::Subscriber map_msg_sub_;		// subscriber to the map topic
-	std::string map_topic_name_;		// name of the map topic
 	bool map_data_recieved_;			// flag whether the map has already been received by the node
 
 	message_filters::Subscriber<nav_msgs::GridCells> obstacles_sub_;
 	message_filters::Subscriber<nav_msgs::GridCells> inflated_obstacles_sub_;
 	typedef message_filters::sync_policies::ApproximateTime<nav_msgs::GridCells, nav_msgs::GridCells> InflatedObstaclesSyncPolicy;
 	boost::shared_ptr<message_filters::Synchronizer<InflatedObstaclesSyncPolicy> > inflated_obstacles_sub_sync_; //< Synchronizer
-	std::string obstacles_topic_name_;				// name of obstacle topic
-	std::string inflated_obstacles_topic_name_;		// name of inflated obstacles topic
 
 	tf::TransformListener tf_listener_;
 
@@ -130,7 +130,7 @@ protected:
 	// robot
 	double robot_radius_; // in [m]
 	std::string robot_base_link_name_;
-	double approach_path_accessibility_check_;		// if true, the path to a goal position must be accessible as well
+	bool approach_path_accessibility_check_;		// if true, the path to a goal position must be accessible as well
 
 };
 

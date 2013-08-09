@@ -24,9 +24,6 @@ rosbuild_gensrv()
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/ros/include
 					${PROJECT_SOURCE_DIR}/common/include)
 
-rosbuild_add_executable(compute_approach_pose_node ros/src/compute_approach_pose_node.cpp)
-rosbuild_add_executable(compute_approach_pose_client ros/src/compute_approach_pose_client.cpp)
-
 rosbuild_add_executable(map_accessibility_analysis_server ros/src/map_accessibility_analysis_server.cpp)
 rosbuild_add_executable(map_accessibility_analysis_client ros/src/map_accessibility_analysis_client.cpp)
 

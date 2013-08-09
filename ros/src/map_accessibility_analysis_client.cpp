@@ -40,9 +40,9 @@ int main(int argc, char **argv)
 	*/
 	ros::NodeHandle n;
 
-	std::string points_service_name = "/map_points_accessibility_check";
-	std::string perimeter_service_name = "/map_perimeter_accessibility_check";
-	std::string polygon_service_name = "/map_polygon_accessibility_check";
+	std::string points_service_name = "/map_accessibility_analysis/map_points_accessibility_check";
+	std::string perimeter_service_name = "/map_accessibility_analysis/map_perimeter_accessibility_check";
+	std::string polygon_service_name = "/map_accessibility_analysis/map_polygon_accessibility_check";
 
 	// here we wait until the service is available; please use the same service name as the one in the server; you may define a timeout if the service does not show up
 	std::cout << "Waiting for service server to become available..." << std::endl;
@@ -139,6 +139,7 @@ int main(int argc, char **argv)
 
 	if (success == true)
 	{
+		printf("Accessible points around the polygon:\n");
 		for (unsigned int i=0; i<res_polygon.approach_poses.poses.size(); i++)
 		{
 			tf::Quaternion q;
