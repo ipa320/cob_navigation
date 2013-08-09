@@ -1,0 +1,24 @@
+<package>
+  <description brief="cob_map_accessibility_analysis">
+
+     cob_map_accessibility_analysis
+
+  </description>
+  <author>Richard Bormann</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cob_map_accessibility_analysis</url>
+
+  <depend package="pcl"/>
+  <depend package="roscpp"/>
+  <depend package="opencv2"/>
+  <depend package="tf"/>
+  <depend package="message_filters"/>
+  <depend package="nav_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="cob_3d_mapping_msgs"/>
+  <depend package="cob_3d_mapping_common"/>
+
+</package>
+
+
