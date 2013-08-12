@@ -60,7 +60,7 @@
 
 #include <cob_map_accessibility_analysis/map_accessibility_analysis_server.h>
 
-#define __DEBUG_DISPLAYS__
+//#define __DEBUG_DISPLAYS__
 
 MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 : node_handle_(nh)
