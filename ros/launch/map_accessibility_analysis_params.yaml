@@ -9,3 +9,7 @@ map_link_name: "/map"
 # link name of the robot base in tf
 # string
 robot_base_link_name: "/base_link"
+
+# update rate for incoming messages about obstacles (provided in [Hz])
+# double
+obstacle_topic_update_rate: 5.0
