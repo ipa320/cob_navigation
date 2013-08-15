@@ -1,5 +1,5 @@
 max_vel_lin: 0.74
-max_vel_th: 1.0
+max_vel_th: 0.5
 
 min_vel_lin: 0.1
 min_vel_th: 0.0
@@ -14,15 +14,15 @@ tolerance_timeout: 0.5
 k_prop: 4.0
 k_damp: 3.5
 
-Ctrl_Rate: 10.0
+Ctrl_Rate: 15.0
 
-max_acceleration: 0.5
+max_acceleration: 0.3
 virtual_mass: 0.75
 
-max_translational_acceleration: 0.5
+max_translational_acceleration: 0.3
 max_rotational_acceleration: 1.5
 
-rotation_correction_threshold: 0.5
+rotation_correction_threshold: 2.0
 
 
 #Stuff from utexas which we don't need for Care-O-bot 3

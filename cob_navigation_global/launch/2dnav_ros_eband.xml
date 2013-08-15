@@ -24,7 +24,6 @@
 
 		<!--- load planner parameters -->
 		<rosparam file="$(find cob_navigation_config)/$(arg robot)/base_local_planner_params.yaml" command="load" />
- 		<rosparam file="$(find cob_navigation_config)/$(arg robot)/dwa_local_planner.yaml" command="load" ns="DWAPlannerROS" />
 
 	</node>
 
