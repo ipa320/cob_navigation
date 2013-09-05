@@ -77,14 +77,34 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 	std::cout << "obstacle_topic_update_rate = " << obstacle_topic_update_rate_ << std::endl;
 	obstacle_topic_update_delay_ = ros::Duration(1.0/obstacle_topic_update_rate_);
 	last_update_time_obstacles_ = ros::Time::now();
-	node_handle_.param("/move_base/local_costmap/robot_radius", robot_radius_, 0.8);
+	robot_radius_=0.;
+	if (node_handle_.hasParam("/move_base/local_costmap/footprint"))
+	{
+		// compute robot radius from footprint
+		XmlRpc::XmlRpcValue footprint_list;
+		node_handle_.getParam("/move_base/local_costmap/footprint", footprint_list);
+		std::vector<geometry_msgs::Point> footprint = loadRobotFootprint(footprint_list);
+		std::cout << "footprint = [ ";
+		for (unsigned int i=0; i<footprint.size(); ++i)
+		{
+			robot_radius_ = std::max<double>(robot_radius_, sqrt(footprint[i].x*footprint[i].x+footprint[i].y*footprint[i].y));
+			std::cout << "[" << footprint[i].x << ", " << footprint[i].y << "] ";
+		}
+		std::cout << "]\n";
+	}
+	if (robot_radius_==0.0)
+	{
+		// if no footprint is set take the robot radius
+		node_handle_.param("/move_base/local_costmap/robot_radius", robot_radius_, 0.8);
+	}
 	std::cout << "robot_radius = " << robot_radius_ << std::endl;
 
 	// receive ground floor map once
 	mapInit(node_handle_);
 
 	// then set up dynamic obstacle callbacks
-	inflationInit(node_handle_);
+	//inflationInit(node_handle_);
+	dynamicObstaclesInit(node_handle_);
 
 	// advertise services
 	map_points_accessibility_check_server_ = node_handle_.advertiseService("map_points_accessibility_check", &MapAccessibilityAnalysis::checkPose2DArrayCallback, this);
@@ -92,6 +112,149 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 	map_polygon_accessibility_check_server_ = node_handle_.advertiseService("map_polygon_accessibility_check", &MapAccessibilityAnalysis::checkPolygonCallback, this);
 
 	ROS_INFO("MapPointAccessibilityCheck initialized.");
+}
+
+std::vector<geometry_msgs::Point> MapAccessibilityAnalysis::loadRobotFootprint(XmlRpc::XmlRpcValue& footprint_list)
+{
+	std::vector<geometry_msgs::Point> footprint;
+	geometry_msgs::Point pt;
+	double scale_factor = 1.0;
+
+	//grab the footprint from the provided parameter
+	std::string footprint_string;
+	std::vector<std::string> footstring_list;
+	if (footprint_list.getType() == XmlRpc::XmlRpcValue::TypeString)
+	{
+		footprint_string = std::string(footprint_list);
+
+		//if there's just an empty footprint up there, return
+		if (footprint_string == "[]" || footprint_string == "")
+			return footprint;
+
+		boost::erase_all(footprint_string, " ");
+
+		boost::char_separator<char> sep("[]");
+		boost::tokenizer < boost::char_separator<char> > tokens(footprint_string, sep);
+		footstring_list = std::vector<std::string>(tokens.begin(), tokens.end());
+	}
+	//make sure we have a list of lists
+	if (!(footprint_list.getType() == XmlRpc::XmlRpcValue::TypeArray && footprint_list.size() > 2) && !(footprint_list.getType() == XmlRpc::XmlRpcValue::TypeString && footstring_list.size() > 5))
+	{
+		ROS_FATAL("The footprint must be specified as list of lists on the parameter server, but it was specified as %s", std::string(footprint_list).c_str());
+		throw std::runtime_error("The footprint must be specified as list of lists on the parameter server with at least 3 points eg: [[x1, y1], [x2, y2], ..., [xn, yn]]");
+	}
+
+	if (footprint_list.getType() == XmlRpc::XmlRpcValue::TypeArray)
+	{
+		for (int i = 0; i < footprint_list.size(); ++i)
+		{
+			//make sure we have a list of lists of size 2
+			XmlRpc::XmlRpcValue point = footprint_list[i];
+			if (!(point.getType() == XmlRpc::XmlRpcValue::TypeArray && point.size() == 2))
+			{
+				ROS_FATAL("The footprint must be specified as list of lists on the parameter server eg: [[x1, y1], [x2, y2], ..., [xn, yn]], but this spec is not of that form");
+				throw std::runtime_error("The footprint must be specified as list of lists on the parameter server eg: [[x1, y1], [x2, y2], ..., [xn, yn]], but this spec is not of that form");
+			}
+
+			//make sure that the value we're looking at is either a double or an int
+			if (!(point[0].getType() == XmlRpc::XmlRpcValue::TypeInt || point[0].getType() == XmlRpc::XmlRpcValue::TypeDouble))
+			{
+				ROS_FATAL("Values in the footprint specification must be numbers");
+				throw std::runtime_error("Values in the footprint specification must be numbers");
+			}
+			pt.x = point[0].getType() == XmlRpc::XmlRpcValue::TypeInt ? (int)(point[0]) : (double)(point[0]);
+			pt.x *= scale_factor;
+
+			//make sure that the value we're looking at is either a double or an int
+			if (!(point[1].getType() == XmlRpc::XmlRpcValue::TypeInt || point[1].getType() == XmlRpc::XmlRpcValue::TypeDouble))
+			{
+				ROS_FATAL("Values in the footprint specification must be numbers");
+				throw std::runtime_error("Values in the footprint specification must be numbers");
+			}
+			pt.y = point[1].getType() == XmlRpc::XmlRpcValue::TypeInt ? (int)(point[1]) : (double)(point[1]);
+			pt.y *= scale_factor;
+
+			footprint.push_back(pt);
+
+//				node.deleteParam(footprint_param);
+//				std::ostringstream oss;
+//				bool first = true;
+//				BOOST_FOREACH(geometry_msgs::Point p, footprint)
+//							{
+//								if (first)
+//								{
+//									oss << "[[" << p.x << "," << p.y << "]";
+//									first = false;
+//								}
+//								else
+//								{
+//									oss << ",[" << p.x << "," << p.y << "]";
+//								}
+//							}
+//				oss << "]";
+//				node.setParam(footprint_param, oss.str().c_str());
+//				node.setParam("footprint", oss.str().c_str());
+		}
+	}
+	else if (footprint_list.getType() == XmlRpc::XmlRpcValue::TypeString)
+	{
+		std::vector<geometry_msgs::Point> footprint_spec;
+		bool valid_foot = true;
+		BOOST_FOREACH(std::string t, footstring_list)
+					{
+						if (t != ",")
+						{
+							boost::erase_all(t, " ");
+							boost::char_separator<char> pt_sep(",");
+							boost::tokenizer < boost::char_separator<char> > pt_tokens(t, pt_sep);
+							std::vector<std::string> point(pt_tokens.begin(), pt_tokens.end());
+
+							if (point.size() != 2)
+							{
+								ROS_WARN("Each point must have exactly 2 coordinates");
+								valid_foot = false;
+								break;
+							}
+
+							std::vector<double> tmp_pt;
+							BOOST_FOREACH(std::string p, point)
+										{
+											std::istringstream iss(p);
+											double temp;
+											if (iss >> temp)
+											{
+												tmp_pt.push_back(temp);
+											}
+											else
+											{
+												ROS_WARN("Each coordinate must convert to a double.");
+												valid_foot = false;
+												break;
+											}
+										}
+							if (!valid_foot)
+								break;
+
+							geometry_msgs::Point pt;
+							pt.x = tmp_pt[0];
+							pt.y = tmp_pt[1];
+
+							footprint_spec.push_back(pt);
+						}
+					}
+		if (valid_foot)
+		{
+			footprint = footprint_spec;
+			//node.setParam("footprint", footprint_string);
+		}
+		else
+		{
+			ROS_FATAL("This footprint is not valid it must be specified as a list of lists with at least 3 points, you specified %s", footprint_string.c_str());
+			throw std::runtime_error("The footprint must be specified as list of lists on the parameter server with at least 3 points eg: [[x1, y1], [x2, y2], ..., [xn, yn]]");
+		}
+	}
+
+	return footprint;
 }
 
 void MapAccessibilityAnalysis::mapInit(ros::NodeHandle& nh)
@@ -111,7 +274,13 @@ void MapAccessibilityAnalysis::inflationInit(ros::NodeHandle& nh)
 
 	inflated_obstacles_sub_sync_ = boost::shared_ptr<message_filters::Synchronizer<InflatedObstaclesSyncPolicy> >(new message_filters::Synchronizer<InflatedObstaclesSyncPolicy>(InflatedObstaclesSyncPolicy(5)));
 	inflated_obstacles_sub_sync_->connectInput(obstacles_sub_, inflated_obstacles_sub_);
-	inflated_obstacles_sub_sync_->registerCallback(boost::bind(&MapAccessibilityAnalysis::obstacleDataCallback, this, _1, _2));
+	inflated_obstacles_sub_sync_->registerCallback(boost::bind(&MapAccessibilityAnalysis::inflatedObstacleDataCallback, this, _1, _2));
+}
+
+void MapAccessibilityAnalysis::dynamicObstaclesInit(ros::NodeHandle& nh)
+{
+	obstacles_sub_.subscribe(nh, "obstacles", 1);
+	obstacles_sub_.registerCallback(boost::bind(&MapAccessibilityAnalysis::obstacleDataCallback, this, _1));
 }
 
 void MapAccessibilityAnalysis::mapDataCallback(const nav_msgs::OccupancyGrid::ConstPtr& map_msg_data)
@@ -133,18 +302,14 @@ void MapAccessibilityAnalysis::mapDataCallback(const nav_msgs::OccupancyGrid::Co
 	}
 
 	// compute inflated static map
-	std::cout << "inflation thickness: " << robot_radius_ << std::endl;
+	std::cout << "inflation thickness: " << cvRound(robot_radius_*inverse_map_resolution_) << std::endl;
 	cv::erode(original_map_, inflated_original_map_, cv::Mat(), cv::Point(-1,-1), cvRound(robot_radius_*inverse_map_resolution_));
-
-	// todo: you can comment the following two lines to not pop up the inflated original map
-//	cv::imshow("Inflated Original Map", inflated_original_map_);
-//	cv::waitKey();
 
 	map_data_recieved_ = true;
 	map_msg_sub_.shutdown();
 }
 
-void MapAccessibilityAnalysis::obstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data, const nav_msgs::GridCells::ConstPtr& inflated_obstacles_data)
+void MapAccessibilityAnalysis::inflatedObstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data, const nav_msgs::GridCells::ConstPtr& inflated_obstacles_data)
 {
 	if (obstacle_topic_update_rate_!=0.0  &&  (ros::Time::now()-last_update_time_obstacles_) > obstacle_topic_update_delay_)
 	{
@@ -159,10 +324,27 @@ void MapAccessibilityAnalysis::obstacleDataCallback(const nav_msgs::GridCells::C
 
 		last_update_time_obstacles_ = ros::Time::now();
 	}
+}
 
-	//TODO: you can comment the following two lines to not pop up the inflated original map
-//	cv::imshow("Inflated Map", inflated_map_);
-//	cv::waitKey(10);
+void MapAccessibilityAnalysis::obstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data)
+{
+	if (obstacle_topic_update_rate_!=0.0  &&  (ros::Time::now()-last_update_time_obstacles_) > obstacle_topic_update_delay_)
+	{
+		double radius = cvRound(robot_radius_*inverse_map_resolution_);
+
+		boost::mutex::scoped_lock lock(mutex_inflated_map_);
+
+		inflated_map_ = inflated_original_map_.clone();
+		for (unsigned int i=0; i<obstacles_data->cells.size(); ++i)
+		{
+			int x = (obstacles_data->cells[i].x - map_origin_.x) * inverse_map_resolution_;
+			int y = (obstacles_data->cells[i].y - map_origin_.y) * inverse_map_resolution_;
+			inflated_map_.at<uchar>(y, x) = 0;
+			cv::circle(inflated_map_, cv::Point(x,y), radius, cv::Scalar(0,0,0,0), -1);
+		}
+
+		last_update_time_obstacles_ = ros::Time::now();
+	}
 }
 
 bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_analysis::CheckPointAccessibility::Request &req, cob_map_accessibility_analysis::CheckPointAccessibility::Response &res)
@@ -219,7 +401,7 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 
 bool MapAccessibilityAnalysis::checkPerimeterCallback(cob_map_accessibility_analysis::CheckPerimeterAccessibility::Request &req, cob_map_accessibility_analysis::CheckPerimeterAccessibility::Response &res)
 {
-	ROS_INFO("Received request to check accessibility of point (%f,%f).",req.center.x, req.center.y);
+	ROS_INFO("Received request to check accessibility of a circle with center (%f,%f), radius %f and sampling step %f.",req.center.x, req.center.y, req.radius, req.rotational_sampling_step);
 
 	if (req.rotational_sampling_step == 0.0)
 	{
@@ -287,6 +469,8 @@ bool MapAccessibilityAnalysis::checkPerimeterCallback(cob_map_accessibility_anal
 
 bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetApproachPoseForPolygon::Request& req, cob_3d_mapping_msgs::GetApproachPoseForPolygon::Response& res)
 {
+	ROS_INFO("Received request to check accessibility around a polygon.");
+
 	// determine robot pose if approach path analysis activated
 	cv::Point robot_location(0,0);
 	if (approach_path_accessibility_check_ == true)
@@ -424,7 +608,7 @@ bool MapAccessibilityAnalysis::isApproachPositionAccessible(const cv::Point& rob
 		if (0 <= cv::pointPolygonTest(contours[i], robotLocation, false))
 			contourIndexRobot = i;
 	}
-	std::cout << "contourIndexPotentialApproachPose=" << contourIndexPotentialApproachPose << "  contourIndexRobot=" << contourIndexRobot << std::endl;
+	//std::cout << "contourIndexPotentialApproachPose=" << contourIndexPotentialApproachPose << "  contourIndexRobot=" << contourIndexRobot << std::endl;
 	if (contourIndexRobot != contourIndexPotentialApproachPose || (contourIndexRobot==-1 && contourIndexPotentialApproachPose==-1))
 		return false;
 

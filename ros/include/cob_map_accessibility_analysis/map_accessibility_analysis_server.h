@@ -67,8 +67,10 @@
 #include <math.h>
 
 #include <ros/ros.h>
+#include <XmlRpc.h>
 
 #include <nav_msgs/OccupancyGrid.h>
+#include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose2D.h>
 #include <nav_msgs/GridCells.h>
 
@@ -92,6 +94,9 @@
 
 #include <boost/thread/mutex.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 
 class MapAccessibilityAnalysis
@@ -122,17 +127,26 @@ protected:
 	    }
 	};
 
+	// reads out the robot footprint from a string or array
+	std::vector<geometry_msgs::Point> loadRobotFootprint(XmlRpc::XmlRpcValue& footprint_list);
+
 	// original map initializer
 	void mapInit(ros::NodeHandle& nh_map);
 
-	// dynamic obstacles map initializer
+	// dynamic obstacles map initializer using obstacles and inflated obstacles topics
 	void inflationInit(ros::NodeHandle& nh);
+
+	// dynamic obstacles map initializer using obstacles and robot radius
+	void dynamicObstaclesInit(ros::NodeHandle& nh);
 
 	// map data call-back function to get the original map and also to write original inflated map for the obstacles
 	void mapDataCallback(const nav_msgs::OccupancyGrid::ConstPtr& map_msg_data);
 
-	// to create dynamic obstacles map
-	void obstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data, const nav_msgs::GridCells::ConstPtr& inflated_obstacles_data);
+	// to create dynamic obstacles map from obstacles and inflated obstacles topics
+	void inflatedObstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data, const nav_msgs::GridCells::ConstPtr& inflated_obstacles_data);
+
+	// to create dynamic obstacles map from obstacles topic and robot radius
+	void obstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data);
 
 	// callback for service checking the accessibility of a vector of points
 	bool checkPose2DArrayCallback(cob_map_accessibility_analysis::CheckPointAccessibility::Request &req, cob_map_accessibility_analysis::CheckPointAccessibility::Response &res);
@@ -191,6 +205,7 @@ protected:
 	std::string map_link_name_;
 
 	// robot
+	std::vector<geometry_msgs::Point> footprint_;	// polygonal footprint of the robot in [m]
 	double robot_radius_; // in [m]
 	std::string robot_base_link_name_;
 	bool approach_path_accessibility_check_;		// if true, the path to a goal position must be accessible as well
