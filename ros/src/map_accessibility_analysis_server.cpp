@@ -78,11 +78,11 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 	obstacle_topic_update_delay_ = ros::Duration(1.0/obstacle_topic_update_rate_);
 	last_update_time_obstacles_ = ros::Time::now();
 	robot_radius_=0.;
-	if (node_handle_.hasParam("/move_base/local_costmap/footprint"))
+	if (node_handle_.hasParam("/local_costmap_node/costmap/footprint"))
 	{
 		// compute robot radius from footprint
 		XmlRpc::XmlRpcValue footprint_list;
-		node_handle_.getParam("/move_base/local_costmap/footprint", footprint_list);
+		node_handle_.getParam("/local_costmap_node/costmap/footprint", footprint_list);
 		std::vector<geometry_msgs::Point> footprint = loadRobotFootprint(footprint_list);
 		std::cout << "footprint = [ ";
 		for (unsigned int i=0; i<footprint.size(); ++i)
@@ -95,7 +95,7 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 	if (robot_radius_==0.0)
 	{
 		// if no footprint is set take the robot radius
-		node_handle_.param("/move_base/local_costmap/robot_radius", robot_radius_, 0.8);
+		node_handle_.param("/local_costmap_node/costmap/robot_radius", robot_radius_, 0.8);
 	}
 	std::cout << "robot_radius = " << robot_radius_ << std::endl;
 
