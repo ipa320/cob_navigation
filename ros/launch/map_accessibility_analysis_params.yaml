@@ -13,3 +13,7 @@ robot_base_link_name: "/base_link"
 # update rate for incoming messages about obstacles (provided in [Hz])
 # double
 obstacle_topic_update_rate: 5.0
+
+# publish the inflated map for viewing purposes
+# bool
+publish_inflated_map: true
