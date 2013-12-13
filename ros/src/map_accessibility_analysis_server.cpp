@@ -100,6 +100,8 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 		// if no footprint is set take the robot radius
 		node_handle_.param("/local_costmap_node/costmap/robot_radius", robot_radius_, 0.8);
 	}
+	// hack:
+	robot_radius_ = 0.3;
 	std::cout << "robot_radius = " << robot_radius_ << std::endl;
 
 	// receive ground floor map once
