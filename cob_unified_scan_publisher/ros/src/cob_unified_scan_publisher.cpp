@@ -8,13 +8,13 @@
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *
  * Project name: care-o-bot
- * ROS stack name: cob_driver
- * ROS package name: cob_sick_s300
+ * ROS stack name: cob_navigation
+ * ROS package name: cob_unified_scan_publisher
  * Description:
  *								
  * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
  *			
- * Author: Alexander Bubeck, email:alexander.bubeck@ipa.fhg.de
+ * Author: Florian Mirus, email:florian.mirus@ipa.fhg.de
  * Supervised by: Alexander Bubeck, email:alexander.bubeck@ipa.fhg.de
  *
  * Date of creation: Jan 2011
