@@ -2,7 +2,7 @@
 <launch>
 	<arg name="unified" default="false"/>
 	<!-- generate unified scan from front and rear scanner -->
-	<node pkg="cob_sick_s300" type="cob_unified_scan_publisher" name="cob_unified_scan_publisher" output="screen" if="$(arg unified)"/>
+	<node pkg="cob_unified_scan_publisher" type="cob_unified_scan_publisher" name="cob_unified_scan_publisher" output="screen" if="$(arg unified)"/>
 
 	<!-- dynamic map generation from unified scan -->
 	<node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">

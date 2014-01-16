@@ -11,6 +11,7 @@
 
   <depend package="gmapping"/>
   <depend package="cob_navigation_config"/>
+  <depend package="cob_unified_scan_publisher"/>
 
 </package>
 
