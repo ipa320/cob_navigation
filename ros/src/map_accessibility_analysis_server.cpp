@@ -354,7 +354,7 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 	// determine robot pose if approach path analysis activated
 	cv::Point robot_location(0,0);
 	if (approach_path_accessibility_check_ == true)
-	    robot_location = getRobotLocationInPixelCoordinates();
+		robot_location = getRobotLocationInPixelCoordinates();
 
 
 	res.accessibility_flags.resize(req.points_to_check.size(), false);
@@ -377,6 +377,7 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 		{
 			int u = cvRound((req.points_to_check[i].x-map_origin_.x)*inverse_map_resolution_);
 			int v = cvRound((req.points_to_check[i].y-map_origin_.y)*inverse_map_resolution_);
+			std::cout << "Checking accessibility of point (" << req.points_to_check[i].x << ", " << req.points_to_check[i].y << ")m / (" << u << ", " << v << ")pix." << std::endl;
 			if (inflated_map_.at<uchar>(v, u) != 0)
 				// check if robot can approach this position
 				if (approach_path_accessibility_check_==false || isApproachPositionAccessible(robot_location, cv::Point(u,v), area_contours)==true)
