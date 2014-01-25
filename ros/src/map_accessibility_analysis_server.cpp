@@ -66,6 +66,7 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 : node_handle_(nh)
 {
 	// read in parameters
+	// todo: parameters from yaml file/param server are not taken
 	std::cout << "\n--------------------------------------\nMap Accessibility Analysis Parameters:\n--------------------------------------\n";
 	node_handle_.param("map_accessibility_analysis/approach_path_accessibility_check", approach_path_accessibility_check_, true);
 	std::cout << "approach_path_accessibility_check = " << approach_path_accessibility_check_ << std::endl;
@@ -77,6 +78,8 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 	std::cout << "obstacle_topic_update_rate = " << obstacle_topic_update_rate_ << std::endl;
 	obstacle_topic_update_delay_ = ros::Duration(1.0/obstacle_topic_update_rate_);
 	last_update_time_obstacles_ = ros::Time::now();
+	node_handle_.param("map_accessibility_analysis/publish_inflated_map", publish_inflated_map_, false);
+	std::cout << "publish_inflated_map = " << publish_inflated_map_ << std::endl;
 	robot_radius_=0.;
 	if (node_handle_.hasParam("/local_costmap_node/costmap/footprint"))
 	{
@@ -97,6 +100,8 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 		// if no footprint is set take the robot radius
 		node_handle_.param("/local_costmap_node/costmap/robot_radius", robot_radius_, 0.8);
 	}
+	// hack:
+	robot_radius_ = 0.3;
 	std::cout << "robot_radius = " << robot_radius_ << std::endl;
 
 	// receive ground floor map once
@@ -106,12 +111,21 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 	//inflationInit(node_handle_);
 	dynamicObstaclesInit(node_handle_);
 
+	// advertise inflated map image
+	it_ = new image_transport::ImageTransport(node_handle_);
+	inflated_map_image_pub_ = it_->advertise("inflated_map", 1);
+
 	// advertise services
 	map_points_accessibility_check_server_ = node_handle_.advertiseService("map_points_accessibility_check", &MapAccessibilityAnalysis::checkPose2DArrayCallback, this);
 	map_perimeter_accessibility_check_server_ = node_handle_.advertiseService("map_perimeter_accessibility_check", &MapAccessibilityAnalysis::checkPerimeterCallback, this);
 	map_polygon_accessibility_check_server_ = node_handle_.advertiseService("map_polygon_accessibility_check", &MapAccessibilityAnalysis::checkPolygonCallback, this);
 
 	ROS_INFO("MapPointAccessibilityCheck initialized.");
+}
+
+MapAccessibilityAnalysis::~MapAccessibilityAnalysis()
+{
+	if (it_ != 0) delete it_;
 }
 
 std::vector<geometry_msgs::Point> MapAccessibilityAnalysis::loadRobotFootprint(XmlRpc::XmlRpcValue& footprint_list)
@@ -343,6 +357,15 @@ void MapAccessibilityAnalysis::obstacleDataCallback(const nav_msgs::GridCells::C
 			cv::circle(inflated_map_, cv::Point(x,y), radius, cv::Scalar(0,0,0,0), -1);
 		}
 
+		if (publish_inflated_map_ == true)
+		{
+			// publish image
+			cv_bridge::CvImage cv_ptr;
+			cv_ptr.image = inflated_map_;
+			cv_ptr.encoding = "mono8";
+			inflated_map_image_pub_.publish(cv_ptr.toImageMsg());
+		}
+
 		last_update_time_obstacles_ = ros::Time::now();
 	}
 }
@@ -413,7 +436,7 @@ bool MapAccessibilityAnalysis::checkPerimeterCallback(cob_map_accessibility_anal
 	// determine robot pose if approach path analysis activated
 	cv::Point robot_location(0,0);
 	if (approach_path_accessibility_check_ == true)
-	    robot_location = getRobotLocationInPixelCoordinates();
+		robot_location = getRobotLocationInPixelCoordinates();
 
 	{
 		boost::mutex::scoped_lock lock(mutex_inflated_map_);
@@ -583,8 +606,9 @@ cv::Point MapAccessibilityAnalysis::getRobotLocationInPixelCoordinates()
 	tf::StampedTransform transform;
 	try
 	{
-		tf_listener_.waitForTransform(map_link_name_, robot_base_link_name_, ros::Time(0), ros::Duration(1));
-		tf_listener_.lookupTransform(map_link_name_, robot_base_link_name_, ros::Time(0), transform);
+		ros::Time request_time = ros::Time(0);
+		tf_listener_.waitForTransform(map_link_name_, robot_base_link_name_, request_time, ros::Duration(10));
+		tf_listener_.lookupTransform(map_link_name_, robot_base_link_name_, request_time, transform);
 	}
     catch (tf::TransformException ex)
     {

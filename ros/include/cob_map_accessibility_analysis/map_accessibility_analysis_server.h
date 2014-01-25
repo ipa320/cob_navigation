@@ -74,6 +74,8 @@
 #include <geometry_msgs/Pose2D.h>
 #include <nav_msgs/GridCells.h>
 
+#include <image_transport/image_transport.h>
+
 #include <message_filters/subscriber.h>
 #include <message_filters/sync_policies/approximate_time.h>
 #include <message_filters/synchronizer.h>
@@ -85,8 +87,11 @@
 #include <cob_map_accessibility_analysis/CheckPerimeterAccessibility.h>
 #include <cob_3d_mapping_msgs/GetApproachPoseForPolygon.h>
 
+// opencv
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include <cv_bridge/cv_bridge.h>
+#include <sensor_msgs/image_encodings.h>
 
 
 #include <pcl/ros/conversions.h>
@@ -103,6 +108,7 @@ class MapAccessibilityAnalysis
 {
 public:
 	MapAccessibilityAnalysis(ros::NodeHandle nh);
+	~MapAccessibilityAnalysis();
 
 protected:
 
@@ -177,6 +183,9 @@ protected:
 	ros::Subscriber map_msg_sub_;		// subscriber to the map topic
 	bool map_data_recieved_;			// flag whether the map has already been received by the node
 
+	image_transport::ImageTransport* it_;
+	image_transport::Publisher inflated_map_image_pub_;
+	bool publish_inflated_map_;
 	message_filters::Subscriber<nav_msgs::GridCells> obstacles_sub_;
 	message_filters::Subscriber<nav_msgs::GridCells> inflated_obstacles_sub_;
 	typedef message_filters::sync_policies::ApproximateTime<nav_msgs::GridCells, nav_msgs::GridCells> InflatedObstaclesSyncPolicy;
