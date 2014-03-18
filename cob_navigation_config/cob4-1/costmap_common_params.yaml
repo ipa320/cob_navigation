@@ -1,9 +1,9 @@
 #BEGIN VOXEL STUFF
-map_type: voxel
-#map_type: costmap
-origin_z: 0.0
-z_voxels: 2
-z_resolution: 0.23
+#map_type: voxel
+map_type: costmap
+#origin_z: 0.0
+#z_voxels: 2
+#z_resolution: 0.23
 
 unknown_cost_value: 0
 unknown_threshold: 2 
