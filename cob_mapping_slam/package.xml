@@ -14,6 +14,7 @@
 
   <run_depend>gmapping</run_depend>
   <run_depend>cob_navigation_config</run_depend>
+  <run_depend>cob_unified_scan_publisher</run_depend>
 
 </package>
 
