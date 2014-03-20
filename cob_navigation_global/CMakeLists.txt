@@ -3,7 +3,17 @@ project(cob_navigation_global)
 
 find_package(catkin REQUIRED)
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS
+    acml
+    cob_default_env_config
+    cob_linear_nav
+    cob_navigation_config
+    map_server
+    move_base
+    rviz
+    topic_tools
+)
 
 
 #############

@@ -12,8 +12,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>robot_pose_ekf</run_depend>
-
 </package>
 
 

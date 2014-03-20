@@ -3,7 +3,12 @@ project(cob_navigation_local)
 
 find_package(catkin REQUIRED)
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS
+    move_base
+    rviz
+    cob_navigation_config
+)
 
 
 #############

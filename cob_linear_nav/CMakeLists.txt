@@ -1,9 +1,22 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(cob_linear_nav)
 
-find_package(catkin REQUIRED COMPONENTS roscpp move_base_msgs nav_msgs actionlib tf)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  move_base_msgs
+  nav_msgs
+  actionlib
+  tf
+)
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS
+    roscpp
+    move_base_msgs
+    nav_msgs
+    actionlib
+    tf
+)
 
 include_directories(${catkin_INCLUDE_DIRS})
 

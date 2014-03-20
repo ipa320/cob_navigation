@@ -2,7 +2,7 @@
   <name>cob_navigation</name>
   <version>0.1.0</version>
   <description>
-      The cob_navigation stack provides different navigation packages for <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a>.
+    The cob_navigation stack provides different navigation packages for <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a>.
   </description>
 
   <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
@@ -18,6 +18,7 @@
   <run_depend>cob_navigation_global</run_depend>
   <run_depend>cob_navigation_local</run_depend>
   <run_depend>cob_navigation_slam</run_depend>
+  <run_depend>cob_unified_scan_publisher</run_depend>
 
   <export>
     <metapackage/>
