@@ -2,7 +2,7 @@
 <launch>
 
 	<!-- start rviz with configuration -->
-	<node pkg="rviz" type="rviz" name="$(anon rviz)" args="-d $(find cob_navigation_slam)/config/rviz.vcg" respawn="false" output="screen" />
+	<node pkg="rviz" type="rviz" name="$(anon rviz)" args="-d $(find cob_navigation_slam)/config/rviz.rviz" respawn="false" output="screen" />
 
 </launch>
 

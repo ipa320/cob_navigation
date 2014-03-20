@@ -1,0 +1,19 @@
+<package>
+  <description brief="cob_unified_scan_publisher">
+
+     cob_unified_scan_publisher
+
+  </description>
+  <author>Florian Mirus</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/cob_unified_scan_publisher</url>
+  <depend package="roscpp"/>
+  <depend package="message_filters"/>
+  <depend package="tf"/>
+  <depend package="sensor_msgs"/>
+  <depend package="laser_geometry"/>
+
+</package>
+
+
