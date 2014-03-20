@@ -5,8 +5,8 @@
       The cob_navigation stack provides different navigation packages for <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a>.
   </description>
 
-  <maintainer email="todo@todo.todo">Matthias Gruhler</maintainer>
-  <author email="todo@todo.todo">Matthias Gruhler</author>
+  <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
+  <author email="mig@ipa.fraunhofer.de">Matthias Gruhler</author>
   <license>LGPL</license>
   <url>http://ros.org/wiki/cob_navigation</url>
 

@@ -6,8 +6,8 @@
      The move_base node is configured to run over a pre-specified static map.
   </description>
 
-  <maintainer email="todo@todo.todo">Matthias Gruhler</maintainer>
-  <author email="todo@todo.todo">Matthias Gruhler</author>
+  <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
+  <author email="mig@ipa.fraunhofer.de">Matthias Gruhler</author>
   <license>LGPL</license>
   <url>http://ros.org/wiki/cob_navigation_global</url>
 

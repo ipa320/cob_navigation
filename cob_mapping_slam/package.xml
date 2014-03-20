@@ -5,8 +5,8 @@
       cob_mapping_slam holds launch files for running SLAM using the <a href="http://ros.org/wiki/gmapping">gmapping</a> package.
   </description>
 
-  <maintainer email="todo@todo.todo">Matthias Gruhler</maintainer>
-  <author email="todo@todo.todo">Matthias Gruhler</author>
+  <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
+  <author email="mig@ipa.fraunhofer.de">Matthias Gruhler</author>
   <license>LGPL</license>
   <url>http://ros.org/wiki/cob_mapping_slam</url>
 
