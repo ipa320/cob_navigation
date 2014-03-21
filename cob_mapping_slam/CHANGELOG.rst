@@ -2,8 +2,8 @@
 Changelog for package cob_mapping_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.1 (2014-03-21)
+------------------
 * add changelog
 * version bump
 * remove more not needed files

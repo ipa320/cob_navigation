@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.1 (2014-03-21)
+------------------
 * add changelog
 * version bump
 * adjust CMakeLists and package.xml

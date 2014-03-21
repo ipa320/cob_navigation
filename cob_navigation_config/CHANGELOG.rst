@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.1 (2014-03-21)
+------------------
 * cob_navigation: removing cob3-5b configs
 * add changelog
 * version bump
