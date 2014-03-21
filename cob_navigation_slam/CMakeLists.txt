@@ -3,7 +3,13 @@ project(cob_navigation_slam)
 
 find_package(catkin REQUIRED)
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS
+    cob_navigation_config
+    cob_navigation_global
+    cob_mapping_slam
+    rviz
+)
 
 
 #############

@@ -3,7 +3,12 @@ project(cob_mapping_slam)
 
 find_package(catkin REQUIRED)
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS
+    gmapping
+    cob_navigation_config
+    cob_unified_scan_publisher
+)
 
 
 #############
