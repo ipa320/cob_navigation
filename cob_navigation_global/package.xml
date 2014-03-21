@@ -14,7 +14,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <run_depend>move_base</run_depend>
-  <run_depend>acml</run_depend>
+  <run_depend>amcl</run_depend>
   <run_depend>map_server</run_depend>
   <run_depend>topic_tools</run_depend>
   <run_depend>cob_default_env_config</run_depend>
