@@ -16,7 +16,7 @@ install(DIRECTORY cob3-1 cob3-2 cob3-3 cob3-4 cob3-5 cob3-6
 install(DIRECTORY cob4-1
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(DIRECTORY common desire
+install(DIRECTORY desire
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 install(DIRECTORY raw3-1 raw3-2 raw3-3 raw3-4 raw3-5 raw3-6
