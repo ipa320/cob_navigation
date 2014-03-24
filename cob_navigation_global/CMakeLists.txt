@@ -5,7 +5,7 @@ find_package(catkin REQUIRED)
 
 catkin_package(
   CATKIN_DEPENDS
-    acml
+    amcl
     cob_default_env_config
     cob_linear_nav
     cob_navigation_config
