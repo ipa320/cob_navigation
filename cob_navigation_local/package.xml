@@ -1,0 +1,21 @@
+<package>
+  <name>cob_navigation_local</name>
+  <version>0.5.1</version>
+  <description>
+    This package holds config and launch files for running the  <a href="http://ros.org/wiki/move_base">move_base</a> node on the <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a> in an odometric frame.
+    No static map is needed for the move_base node in this configuration.
+  </description>
+
+  <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
+  <author email="mig@ipa.fraunhofer.de">Matthias Gruhler</author>
+  <license>LGPL</license>
+  <url>http://ros.org/wiki/cob_navigation_local</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>move_base</run_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>cob_navigation_config</run_depend>
+
+</package>
+

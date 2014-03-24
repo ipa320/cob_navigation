@@ -1,0 +1,20 @@
+<package>
+  <name>cob_navigation_slam</name>
+  <version>0.5.1</version>
+  <description>
+    This package provides launch files for running  <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a> with the  <a href="http://ros.org/wiki/gmapping">gmapping</a> slam package of ROS. It further provides the usual navigation functionalities as provided by the <a href="http://ros.org/wiki/move_base">move_base</a> node.
+  </description>
+
+  <maintainer email="fmw@ipa.fraunhofer.de">Florian Weisshardt</maintainer>
+  <author email="fmw@ipa.fraunhofer.de">Florian Weisshardt</author>
+  <license>LGPL</license>
+  <url>http://ros.org/wiki/cob_navigation_slam</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>cob_navigation_config</run_depend>
+  <run_depend>cob_navigation_global</run_depend>
+  <run_depend>cob_mapping_slam</run_depend>
+  <run_depend>rviz</run_depend>
+
+</package>

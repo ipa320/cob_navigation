@@ -1,0 +1,28 @@
+<package>
+  <name>cob_linear_nav</name>
+  <version>0.5.1</version>
+  <description>
+    cob_linear_nav provides a simple navigation instrument driving on a linear path from current position to goal without any planning or obstacle avoidance capabilites.
+    Obstacle avoidance should be carried out in other package, e.g. <a href="http://ros.org/wiki/cob_collision_velocity_filter">cob_collision_velocity_filter</a>.
+  </description>
+
+  <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
+  <author>Philipp Koehler</author>
+  <license>LGPL</license>
+  <url>http://ros.org/wiki/cob_linear_nav</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>roscpp</build_depend>
+  <build_depend>move_base_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>
+  <build_depend>actionlib</build_depend>
+  <build_depend>tf</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>move_base_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>actionlib</run_depend>
+  <run_depend>tf</run_depend>
+
+</package>

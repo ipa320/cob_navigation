@@ -1,0 +1,21 @@
+<package>
+  <name>cob_mapping_slam</name>
+  <version>0.5.1</version>
+  <description>
+    cob_mapping_slam holds launch files for running SLAM using the <a href="http://ros.org/wiki/gmapping">gmapping</a> package.
+  </description>
+
+  <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
+  <author email="mig@ipa.fraunhofer.de">Matthias Gruhler</author>
+  <license>LGPL</license>
+  <url>http://ros.org/wiki/cob_mapping_slam</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>gmapping</run_depend>
+  <run_depend>cob_navigation_config</run_depend>
+  <run_depend>cob_unified_scan_publisher</run_depend>
+
+</package>
+
+
