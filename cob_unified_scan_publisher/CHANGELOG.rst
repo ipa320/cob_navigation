@@ -2,6 +2,9 @@
 Changelog for package cob_unified_scan_publisher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.5.1 (2014-03-21)
 ------------------
 * add changelog

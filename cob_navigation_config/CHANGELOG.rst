@@ -2,6 +2,11 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove leftover directory in install tag
+* Contributors: ipa-mig
+
 0.5.1 (2014-03-21)
 ------------------
 * cob_navigation: removing cob3-5b configs
