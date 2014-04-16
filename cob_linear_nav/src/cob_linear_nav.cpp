@@ -166,6 +166,9 @@ class NodeClass
 		if(!private_nh.hasParam("goal_abortion_time")) ROS_WARN("Used default parameter for goal_abortion_time [5.0s]");
 		private_nh.param("goal_abortion_time", goal_abortion_time_, 5.0);
 
+		if(!private_nh.hasParam("use_move_action")) ROS_WARN("Used default parameter for use_move_action [true]");
+		private_nh.param("use_move_action", use_move_action_, true);
+
     //generate robot zero_pose
 		zero_pose_.pose.position.x = 0.0;
 		zero_pose_.pose.position.y = 0.0;
@@ -187,16 +190,49 @@ class NodeClass
 		
 		//start action server, it holds the main loop while driving
 		as_.start();
+
+		if(!use_move_action_)
+			last_time_ = -1;
 	}
 	
 	void topicCB(const geometry_msgs::PoseStamped::ConstPtr& goal){
-		ROS_INFO("In ROS goal callback, wrapping the PoseStamped in the action message and re-sending to the server.");
-		move_base_msgs::MoveBaseGoal action_goal;
+		
+		if(use_move_action_)
+		{
+			ROS_INFO("In ROS goal callback, wrapping the PoseStamped in the action message and re-sending to the server.");
+			move_base_msgs::MoveBaseGoal action_goal;
 
-    action_goal.target_pose = transformGoalToMap(*goal);
-    
-		action_client_->sendGoal(action_goal);
-		action_client_->stopTrackingGoal();
+	    action_goal.target_pose = transformGoalToMap(*goal);
+	    
+			action_client_->sendGoal(action_goal);
+			action_client_->stopTrackingGoal();	
+		}
+		else
+		{
+			ROS_INFO("In ROS goal callback, using the PoseStamped as error and start control step.");
+
+	    last_time_moving_ = ros::Time::now().toSec();
+
+	    getRobotPoseGlobal();
+	    
+			if(last_time_ < 0)
+			{
+				vtheta_last_ = 0.0f;
+				vx_last_ = 0.0f;
+				vy_last_ = 0.0f;
+				last_time_ = ros::Time::now().toSec();
+			}
+
+			x_last_ = robot_pose_global_.pose.position.x;
+			y_last_ = robot_pose_global_.pose.position.y;
+			theta_last_ = tf::getYaw(robot_pose_global_.pose.orientation);
+			
+			goal_pose_global_ = transformGoalToMap(*goal);
+			
+			move_ = true;
+
+		}
+		
 	}
 	
 	void actionCB(const move_base_msgs::MoveBaseGoalConstPtr &goal){
@@ -280,7 +316,8 @@ class NodeClass
 	~NodeClass() 
 	{
 	}
-	
+	void performControllerStep();
+	bool getUseMoveAction(void);
 	private:
 	tf::TransformListener tf_listener_;
 	std::string global_frame_, robot_frame_;
@@ -292,11 +329,12 @@ class NodeClass
   double slow_down_distance_, goal_abortion_time_;
 	
 	bool finished_, move_;
+
+	bool use_move_action_;
 	
 	pthread_mutex_t m_mutex;
 	
 	//core functions:
-	void performControllerStep();
 	void publishVelocitiesGlobal(double vx, double vy, double theta);
 	geometry_msgs::PoseStamped transformGoalToMap(geometry_msgs::PoseStamped goal_pose);
 	geometry_msgs::PoseStamped getRobotPoseGlobal();
@@ -320,6 +358,11 @@ class NodeClass
   double last_time_moving_;
 
 }; //NodeClass
+
+bool NodeClass::getUseMoveAction(void)
+{
+	return use_move_action_;
+}
 
 geometry_msgs::PoseStamped NodeClass::transformGoalToMap(geometry_msgs::PoseStamped goal_pose) {
 	geometry_msgs::PoseStamped goal_global_;
@@ -425,6 +468,8 @@ void NodeClass::performControllerStep() {
   double v_max_goal = v_max_;
 
 	if(!move_) {
+		if(!use_move_action_)
+			last_time_ = ros::Time::now().toSec();
 		pthread_mutex_unlock(&m_mutex);
 		return;
 	}
@@ -444,13 +489,22 @@ void NodeClass::performControllerStep() {
 		finished_ = true;
 		move_ = false;
 		stopMovement();
+		if(!use_move_action_)
+			last_time_ = ros::Time::now().toSec();
 		pthread_mutex_unlock(&m_mutex);
 		return;
 	} else if( notMovingDueToObstacle() == true ) {
 		finished_ = false;
 		move_ = false;
 		stopMovement();
-    as_.setAborted(move_base_msgs::MoveBaseResult(), "Cancel the goal because an obstacle is blocking the path.");
+		if(use_move_action_)
+		{
+    	as_.setAborted(move_base_msgs::MoveBaseResult(), "Cancel the goal because an obstacle is blocking the path.");
+    }
+    else
+    {
+    	last_time_ = ros::Time::now().toSec();
+    }
     ROS_INFO("Cancel the goal because an obstacle is blocking the path.");
 		pthread_mutex_unlock(&m_mutex);
 		return;
@@ -517,7 +571,20 @@ int main(int argc, char** argv)
 	// create nodeClass
 	NodeClass nodeClass("move_base_linear");
 
- 	ros::spin();
+	if(nodeClass.getUseMoveAction())
+	{
+		ros::spin();
+	}
+	else
+	{
+		ros::Rate loop_rate(100);
+		while(nodeClass.nh_.ok())
+		{
+			nodeClass.performControllerStep();
+			loop_rate.sleep();
+			ros::spinOnce();
+		}
+	}
 
 	return 0;
 }
