@@ -16,11 +16,15 @@ inflation_radius: 0.55
 footprint: [[0.52,0.3],[-0.52,0.3],[-0.52,-0.3],[0.52,-0.3]]
 
 # BEGIN VOXEL STUFF
-observation_sources: laser_scan_front laser_scan_rear #cloud_cam3d
+observation_sources: laser_scan_front laser_scan_rear softkinetic_left softkinetic_right #cloud_cam3d
 
 laser_scan_front: {sensor_frame: base_laser_front_link, topic: /scan_front, data_type: LaserScan, marking: true, clearing: true}
 
 laser_scan_rear: {sensor_frame: base_laser_rear_link, topic: /scan_rear, data_type: LaserScan, marking: true, clearing: true}
+
+softkinetic_left: {sensor_frame: softkinetic_left_link, topic: /softkinetic_left/depth_registered/points, data_type: PointCloud2, marking: true, clearing: true, min_obstacle_height: 0.12, max_obstacle_height: 1.5}
+
+softkinetic_right: {sensor_frame: softkinetic_right_link, topic: /softkinetic_right/depth_registered/points, data_type: PointCloud2, marking: true, clearing: true, min_obstacle_height: 0.12, max_obstacle_height: 1.5}
 
 cloud_cam3d: {sensor_frame: head_cam3d_link, topic: /voxel_grid/output, data_type: PointCloud2, marking: true, clearing: true, min_obstacle_height: 0.12}
 # END VOXEL STUFF
