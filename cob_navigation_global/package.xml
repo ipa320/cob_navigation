@@ -1,0 +1,25 @@
+<package>
+  <name>cob_navigation_global</name>
+  <version>0.5.1</version>
+  <description>
+    This package holds config and launch files for running the  <a href="http://ros.org/wiki/move_base">move_base</a> node on the <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a>.
+    The move_base node is configured to run over a pre-specified static map.
+  </description>
+
+  <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
+  <author email="mig@ipa.fraunhofer.de">Matthias Gruhler</author>
+  <license>LGPL</license>
+  <url>http://ros.org/wiki/cob_navigation_global</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>move_base</run_depend>
+  <run_depend>amcl</run_depend>
+  <run_depend>map_server</run_depend>
+  <run_depend>topic_tools</run_depend>
+  <run_depend>cob_default_env_config</run_depend>
+  <run_depend>cob_linear_nav</run_depend>
+  <run_depend>cob_navigation_config</run_depend>
+  <run_depend>rviz</run_depend>
+
+</package>
