@@ -12,7 +12,7 @@
  *****************************************************************
  *
  * \note
- *   Repository name: ipa_navigation_driver
+ *   Repository name: cob_navigation
  * \note
  *   ROS package name: ipa_navigation_scan_unifier
  *
@@ -22,7 +22,7 @@
  *   Supervised by: Alexander Bubeck, email:alexander.bubeck@ipa.fhg.de
  *
  * \date Date of creation: January 2011
- * \date Last Modification: January 2014
+ * \date Last Modification: June 2014
  *
  * \brief
  *   Takes in several laser scans and publishes them as a single one
@@ -38,6 +38,7 @@
 // standard includes
 #include <pthread.h>
 #include <boost/lexical_cast.hpp>
+#include <XmlRpc.h>
 #include <math.h>
 
 // ROS includes
@@ -63,11 +64,14 @@ private:
 	 *  Member 'loop_rate' contains the loop rate of the ros node
 	 *  @var config_struct::start_delay 
 	 *  Member 'start_delay' contains the time delay to start calculations after node-init at the earliest
+	 *  @var config_struct::input_scan_topics 
+	 *  Member 'input_scan_topics' contains the names of the input scan topics
 	 */
 	struct config_struct{
 		int number_input_scans;
 		double loop_rate;
 		double start_delay;
+		std::vector<std::string> input_scan_topics;
 	};
 
 	/** @struct laser_scan_struct

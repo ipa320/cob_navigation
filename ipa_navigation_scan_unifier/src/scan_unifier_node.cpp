@@ -12,7 +12,7 @@
  *****************************************************************
  *
  * \note
- *   Repository name: ipa_navigation_driver
+ *   Repository name: cob_navigation
  * \note
  *   ROS package name: ipa_navigation_scan_unifier
  *
@@ -22,7 +22,7 @@
  *   Supervised by: Alexander Bubeck, email:alexander.bubeck@ipa.fhg.de
  *
  * \date Date of creation: January 2011
- * \date Last Modification: January 2014
+ * \date Last Modification: June 2014
  *
  * \brief
  *   Takes in several laser scans and publishes them as a single one
@@ -65,11 +65,6 @@ scan_unifier_node::~scan_unifier_node(){}
  */ 
 void scan_unifier_node::getParams()
 {
-	if(!pnh_.hasParam("number_scans"))
-	{
-	    ROS_WARN("No parameter number_scans on parameter server. Using default value [2].");
-	}
-	pnh_.param("number_scans", config_.number_input_scans, 2);
 
 	if(!pnh_.hasParam("loop_rate"))
 	{
@@ -82,6 +77,31 @@ void scan_unifier_node::getParams()
 	    ROS_WARN("No parameter start_delay on parameter server. Using default value [2.0].");
 	}
 	pnh_.param("start_delay", config_.start_delay, (double)2.0);
+
+	XmlRpc::XmlRpcValue topicList;
+
+	if (pnh_.getParam("input_scans", topicList))
+	{
+		ROS_ASSERT(topicList.getType() == XmlRpc::XmlRpcValue::TypeArray);
+
+		if(topicList.getType() == XmlRpc::XmlRpcValue::TypeArray)
+		{
+			for (int32_t i = 0; i < topicList.size(); ++i) 
+			{
+			  ROS_ASSERT(topicList[i].getType() == XmlRpc::XmlRpcValue::TypeString);
+			  config_.input_scan_topics.push_back(static_cast<std::string>(topicList[i]));
+			
+			  ROS_DEBUG_STREAM("Parsed the scan topic: " << config_.input_scan_topics.back());
+			}
+
+			config_.number_input_scans = config_.input_scan_topics.size();
+		}
+	}
+	else
+	{
+		config_.number_input_scans = 0;
+		ROS_ERROR("No parameter input_scans on parameter server!! Scan unifier can not subscribe to any scan topic!");
+	}
 }
 
 /**
@@ -160,7 +180,7 @@ void scan_unifier_node::initLaserScanStructs()
 	{
 		set_new_msg_received(false, i);
 		vec_laser_struct_.at(i).scan_id = i;
-		vec_laser_struct_.at(i).scan_topic = "scan_" + boost::lexical_cast<std::string>(i) + "_in";
+		vec_laser_struct_.at(i).scan_topic = config_.input_scan_topics.at(i);
 		vec_laser_struct_.at(i).current_scan_msg = sensor_msgs::LaserScan();
 		vec_laser_struct_.at(i).laser_sub = nh_.subscribe<sensor_msgs::LaserScan>
 			(vec_laser_struct_.at(i).scan_topic , 1, boost::bind(&scan_unifier_node::topicCallbackLaserScan, this, _1, i));

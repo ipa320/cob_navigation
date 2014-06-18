@@ -9,7 +9,9 @@
 	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
 
 	<!--- Run AMCL -->
-	<include file="$(find cob_navigation_global)/launch/amcl_node.xml" />
+	<include file="$(find cob_navigation_global)/launch/amcl_node.xml" >
+		<arg name="robot" value="$(arg robot)"/>
+	</include>
 	
 	<!--- Run move base -->
 	<include file="$(find cob_navigation_global)/launch/2dnav_ros_eband.xml" >

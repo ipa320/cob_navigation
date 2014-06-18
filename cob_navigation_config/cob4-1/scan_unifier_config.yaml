@@ -1,0 +1,5 @@
+#Scan_unifier_config-parameters
+
+input_scans: ["scan_front","scan_left","scan_right"]
+start_delay: 2.0
+loop_rate: 100.0
