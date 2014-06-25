@@ -14,7 +14,7 @@
  * \note
  *   Repository name: cob_navigation
  * \note
- *   ROS package name: ipa_navigation_scan_unifier
+ *   ROS package name: cob_scan_unifier
  *
  * \author
  *   Author: Florian Mirus, email:florian.mirus@ipa.fhg.de

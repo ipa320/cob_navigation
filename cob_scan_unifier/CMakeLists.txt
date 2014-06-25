@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(ipa_navigation_scan_unifier)
+project(cob_scan_unifier)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -29,7 +29,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS 
     include
-#  LIBRARIES ipa_navigation_scan_unifier
+#  LIBRARIES cob_scan_unifier
   CATKIN_DEPENDS 
     laser_geometry 
     roscpp 
@@ -47,7 +47,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  include/ipa_navigation_scan_unifier
+  include/cob_scan_unifier
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -56,7 +56,7 @@ add_executable(scan_unifier_node src/scan_unifier_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(scan_unifier_node ipa_navigation_scan_unifier_gencpp)
+add_dependencies(scan_unifier_node cob_scan_unifier_gencpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(scan_unifier_node

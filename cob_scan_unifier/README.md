@@ -1,4 +1,4 @@
-ipa\_navigation\_scan\_unifier
+cob\_scan\_unifier
 ====================
 
 General description
