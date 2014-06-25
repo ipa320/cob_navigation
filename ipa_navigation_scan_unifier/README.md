@@ -16,9 +16,6 @@ The actual node that unifies a given number of laser scans
 **loop\_rate** *(double, default: 100.0 [hz])*   
  The loop rate of the ros node.
 
-**start\_delay** *(double, default: 2 [sec])*   
- A time delay in seconds. The node will start publishing messages at the earliest after this time delay (to avoid tf-bug).
-
 #### Published Topics
 **scan\_unified** *(sensor_msgs::LaserScan)*   
  Publishes the unified scans.

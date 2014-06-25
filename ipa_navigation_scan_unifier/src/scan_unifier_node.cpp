@@ -72,12 +72,6 @@ void scan_unifier_node::getParams()
 	}
 	pnh_.param("loop_rate", config_.loop_rate, (double)100.0);
 
-	if(!pnh_.hasParam("start_delay"))
-	{
-	    ROS_WARN("No parameter start_delay on parameter server. Using default value [2.0].");
-	}
-	pnh_.param("start_delay", config_.start_delay, (double)2.0);
-
 	XmlRpc::XmlRpcValue topicList;
 
 	if (pnh_.getParam("input_scans", topicList))
@@ -115,19 +109,6 @@ void scan_unifier_node::getParams()
 double scan_unifier_node::getLoopRate()
 {
 	return config_.loop_rate;
-}
-
-/**
- * @function getStartDelay
- * @brief getter function for the start delay
- *
- * input: - 
- * output:
- * @return the start delay
- */
-double scan_unifier_node::getStartDelay()
-{
-	return config_.start_delay;	
 }
 
 /**
@@ -232,10 +213,17 @@ sensor_msgs::LaserScan scan_unifier_node::unifieLaserScans()
 		{
 			vec_cloud.at(i).header.stamp = vec_laser_struct_.at(i).current_scan_msg.header.stamp;
 			ROS_DEBUG_STREAM("Converting scans to point clouds at index: " << i << ", at time: " << vec_laser_struct_.at(i).current_scan_msg.header.stamp << " now: " << ros::Time::now());
-			listener_.waitForTransform("/base_link", vec_laser_struct_.at(i).current_scan_msg.header.frame_id, 
-				vec_laser_struct_.at(i).current_scan_msg.header.stamp, ros::Duration(3.0));
-			ROS_DEBUG("now project to point_cloud");
+			try
+			{
+				listener_.waitForTransform("/base_link", vec_laser_struct_.at(i).current_scan_msg.header.frame_id, 
+					vec_laser_struct_.at(i).current_scan_msg.header.stamp, ros::Duration(3.0));
+
+				ROS_DEBUG("now project to point_cloud");
 	  		projector_.transformLaserScanToPointCloud("/base_link",vec_laser_struct_.at(i).current_scan_msg, vec_cloud.at(i), listener_);
+			}
+			catch(tf::TransformException ex){
+				ROS_ERROR("%s",ex.what());
+			}
 		}
 		ROS_DEBUG("Creating message header");
 		unified_scan.header = vec_laser_struct_.at(0).current_scan_msg.header;
@@ -322,28 +310,19 @@ void scan_unifier_node::checkUnifieCondition()
 int main(int argc, char** argv)
 {
 	ROS_DEBUG("scan unifier: start scan unifier node");
-	ros::init(argc, argv, "cob_unified_scan_publisher");
+	ros::init(argc, argv, "cob_scan_unifier_node");
 
 	scan_unifier_node my_scan_unifier_node;
 
 	// store initialization time of the node 
 	ros::Time start = ros::Time::now();
 
-	ros::Duration delay(my_scan_unifier_node.getStartDelay());
-
 	ros::Rate rate(my_scan_unifier_node.getLoopRate());
 
-	// start the calculation at the earliest after a given time interval to avoid tf-crash
-	ROS_DEBUG_STREAM("scan unifier: sleep for " << my_scan_unifier_node.getStartDelay() << " seconds before start of scan unification");
-	ros::Duration(my_scan_unifier_node.getStartDelay()).sleep();
 	// actual calculation step with given frequency
 	while(my_scan_unifier_node.nh_.ok()){
-		// start the calculation at the earliest after a given time interval to avoid tf-crash
 		
-		if(ros::Time::now().toSec() > (start.toSec() + delay.toSec()))
-		{
-			my_scan_unifier_node.checkUnifieCondition();
-		}
+		my_scan_unifier_node.checkUnifieCondition();
 		
 		ros::spinOnce();
 		rate.sleep();

@@ -44,6 +44,8 @@
 // ROS includes
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
+#include <tf/tf.h>
+#include <tf/transform_datatypes.h>
 #include <sensor_msgs/PointCloud.h>
 #include <laser_geometry/laser_geometry.h>
 
@@ -62,15 +64,12 @@ private:
 	 *  Member 'number_input_scans' contains number of scanners to subscribe to
 	 *  @var config_struct::loop_rate 
 	 *  Member 'loop_rate' contains the loop rate of the ros node
-	 *  @var config_struct::start_delay 
-	 *  Member 'start_delay' contains the time delay to start calculations after node-init at the earliest
 	 *  @var config_struct::input_scan_topics 
 	 *  Member 'input_scan_topics' contains the names of the input scan topics
 	 */
 	struct config_struct{
 		int number_input_scans;
 		double loop_rate;
-		double start_delay;
 		std::vector<std::string> input_scan_topics;
 	};
 
@@ -166,16 +165,6 @@ public:
 	 * @return the loop rate
 	 */
 	double getLoopRate();
-
-	/**
-	 * @function getStartDelay
-	 * @brief getter function for the start delay
-	 *
-	 * input: - 
-	 * output:
-	 * @return the start delay
-	 */
-	double getStartDelay();
 
 	/**
 	 * @function initLaserScanStructs
