@@ -425,12 +425,25 @@ void NodeClass::publishVelocitiesGlobal(double vx, double vy, double theta) {
 	}
 	
   // make sure that the published velocities are in an at least somewhat reasonable range
-  ROS_ASSERT( fabs(cmd_robot.vector.x) < 2.0 ); 
-  ROS_ASSERT( fabs(cmd_robot.vector.y) < 2.0 ); 
-  ROS_ASSERT( fabs(theta) < M_PI );
-  ROS_ASSERT( !std::isnan(cmd_robot.vector.x) );
-  ROS_ASSERT( !std::isnan(cmd_robot.vector.y) );
-  ROS_ASSERT( !std::isnan(theta) );
+  try
+  {
+  	if ( ! ( fabs(cmd_robot.vector.x) < 5.0 && fabs(cmd_robot.vector.y) < 5.0 && fabs(theta) < M_PI ) )
+  	{
+  		std::string err = "linear_nav: Output velocity too high";
+  		throw err;
+  	}
+  	if ( std::isnan(cmd_robot.vector.x) || std::isnan(cmd_robot.vector.y) || std::isnan(theta) )
+  	{
+  		std::string err = "linear_nav: Output velocity contains NaN!";
+  		throw err;
+  	}
+	}
+	catch ( std::string err )
+	{
+		ROS_FATAL("%s", err.c_str());
+		ros::shutdown();
+	}
+
 
 	msg.linear = cmd_robot.vector;
 	msg.angular.z = theta;
