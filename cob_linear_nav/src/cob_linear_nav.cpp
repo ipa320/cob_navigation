@@ -173,11 +173,15 @@ class NodeClass
 		zero_pose_.pose.position.x = 0.0;
 		zero_pose_.pose.position.y = 0.0;
 		zero_pose_.pose.position.z = 0.0;
-		zero_pose_.pose.orientation = tf::createQuaternionMsgFromYaw(0.0);
+		zero_pose_.pose.orientation.x = 0.0;
+		zero_pose_.pose.orientation.y = 0.0;
+		zero_pose_.pose.orientation.z = 0.0;
+		zero_pose_.pose.orientation.w = 1.0;
 		zero_pose_.header.frame_id = robot_frame_;
 
     // at startup, the robot is should not move
     move_ = false;
+    last_time_ = ros::Time::now().toSec();
 
 		//we need to make sure that the transform between the robot base frame and the global frame is available
 		ros::Time last_error = ros::Time::now();
@@ -193,9 +197,6 @@ class NodeClass
 		
 		//start action server, it holds the main loop while driving
 		as_.start();
-
-		if(!use_move_action_)
-			last_time_ = -1;
 	}
 	
 	void topicCB(const geometry_msgs::PoseStamped::ConstPtr& goal){
@@ -381,7 +382,8 @@ geometry_msgs::PoseStamped NodeClass::transformGoalToMap(geometry_msgs::PoseStam
 
 geometry_msgs::PoseStamped NodeClass::getRobotPoseGlobal() {
 	try{
-		tf_listener_.transformPose(global_frame_, zero_pose_, robot_pose_global_);
+    tf_listener_.waitForTransform(global_frame_, robot_frame_, ros::Time(0), ros::Duration(5.0));
+		tf_listener_.transformPose(global_frame_, ros::Time(0), zero_pose_, robot_frame_, robot_pose_global_);
 	}
 	catch(tf::TransformException& ex){
 		ROS_WARN("Failed to find robot pose in global frame %s", global_frame_.c_str());
