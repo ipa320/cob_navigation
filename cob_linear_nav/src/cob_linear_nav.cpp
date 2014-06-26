@@ -176,6 +176,9 @@ class NodeClass
 		zero_pose_.pose.orientation = tf::createQuaternionMsgFromYaw(0.0);
 		zero_pose_.header.frame_id = robot_frame_;
 
+    // at startup, the robot is should not move
+    move_ = false;
+
 		//we need to make sure that the transform between the robot base frame and the global frame is available
 		ros::Time last_error = ros::Time::now();
 		std::string tf_error;
@@ -421,7 +424,14 @@ void NodeClass::publishVelocitiesGlobal(double vx, double vy, double theta) {
 		cmd_robot.vector.y = 0.0f;
 	}
 	
-	
+  // make sure that the published velocities are in an at least somewhat reasonable range
+  ROS_ASSERT( fabs(cmd_robot.vector.x) < 2.0 ); 
+  ROS_ASSERT( fabs(cmd_robot.vector.y) < 2.0 ); 
+  ROS_ASSERT( fabs(theta) < M_PI );
+  ROS_ASSERT( !std::isnan(cmd_robot.vector.x) );
+  ROS_ASSERT( !std::isnan(cmd_robot.vector.y) );
+  ROS_ASSERT( !std::isnan(theta) );
+
 	msg.linear = cmd_robot.vector;
 	msg.angular.z = theta;
 	msg.linear.z = 0.0; msg.angular.x = 0.0; msg.angular.y = 0.0;
