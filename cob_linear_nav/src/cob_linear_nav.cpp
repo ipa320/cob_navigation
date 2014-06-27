@@ -178,10 +178,16 @@ class NodeClass
 		zero_pose_.pose.orientation.z = 0.0;
 		zero_pose_.pose.orientation.w = 1.0;
 		zero_pose_.header.frame_id = robot_frame_;
-
+    zero_pose_.header.stamp = ros::Time::now();
+    robot_pose_global_ = zero_pose_;
+    robot_pose_global_.header.frame_id = global_frame_;
+    goal_pose_global_ = robot_pose_global_;
     // at startup, the robot is should not move
     move_ = false;
+
+    // also initialize variables that are used later on!
     last_time_ = ros::Time::now().toSec();
+    vtheta_last_ = 0.0;
 
 		//we need to make sure that the transform between the robot base frame and the global frame is available
 		ros::Time last_error = ros::Time::now();
@@ -201,6 +207,9 @@ class NodeClass
 	
 	void topicCB(const geometry_msgs::PoseStamped::ConstPtr& goal){
 		
+    if(!goalValid(goal->pose))
+      return;
+
 		if(use_move_action_)
 		{
 			ROS_INFO("In ROS goal callback, wrapping the PoseStamped in the action message and re-sending to the server.");
@@ -239,7 +248,10 @@ class NodeClass
 		
 	}
 	
-	void actionCB(const move_base_msgs::MoveBaseGoalConstPtr &goal){
+	void actionCB(const move_base_msgs::MoveBaseGoalConstPtr &goal)
+  {
+    if(!goalValid(goal->target_pose.pose))
+      return;
     // goal is of type geometry_msgs/PoseStamped
 		ROS_INFO("In idle mode, new goal accepted");
 
@@ -350,6 +362,7 @@ class NodeClass
 	double sign(double x);
 	void stopMovement();
   bool notMovingDueToObstacle();
+  bool goalValid(const geometry_msgs::Pose & goal);
 	
 	//Potential field Controller variables
 	double vx_last_, vy_last_, x_last_, y_last_, theta_last_, vtheta_last_;
@@ -387,6 +400,7 @@ geometry_msgs::PoseStamped NodeClass::getRobotPoseGlobal() {
 	}
 	catch(tf::TransformException& ex){
 		ROS_WARN("Failed to find robot pose in global frame %s", global_frame_.c_str());
+    robot_pose_global_ = zero_pose_;
 		return zero_pose_;
 	}
 	
@@ -479,6 +493,22 @@ bool NodeClass::notMovingDueToObstacle() {
 
   return false;
    
+}
+
+bool NodeClass::goalValid(const geometry_msgs::Pose & goal)
+{
+  if( goal.orientation.x == 0.0 &&
+      goal.orientation.y == 0.0 &&
+      goal.orientation.z == 0.0 &&
+      goal.orientation.w == 0.0 )
+  {
+    ROS_WARN("Goal invalid! Received Quaternion with all values 0.0!");
+    return false;
+  }
+  else
+  {
+    return true;
+  }
 }
 
 void NodeClass::performControllerStep() {
