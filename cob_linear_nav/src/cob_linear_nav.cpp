@@ -223,7 +223,7 @@ class NodeClass
     }
     else
     {
-      ROS_INFO("In ROS goal callback, using the PoseStamped as error and start control step.");
+      ROS_DEBUG("In ROS goal callback, using the PoseStamped as error and start control step.");
 
       last_time_moving_ = ros::Time::now().toSec();
 
