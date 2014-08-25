@@ -2,12 +2,19 @@
 <launch>
 
 	<!-- combine front and rear scanner -->
-	<node pkg="topic_tools" type="relay" name="scan_front_relay" args="scan_front scan_combined"/>
-	<node pkg="topic_tools" type="relay" name="scan_rear_relay" args="scan_rear scan_combined"/>
+	<!--node pkg="topic_tools" type="relay" name="scan_front_relay" args="scan_front scan_combined"/>
+    <node pkg="topic_tools" type="relay" name="scan_rear_relay" args="scan_rear scan_combined"/-->
+
+    <arg name="robot" default="$(optenv ROBOT !!NO_ROBOT_SET!!)"/>
+
+    <!-- start scan_unifier -->
+    <include file="$(find cob_navigation_global)/launch/scan_unifier_node.xml">
+      <arg name="robot" value="$(arg robot)" />
+    </include>
 
 	<!-- start amcl -->
 	<node pkg="amcl" type="amcl" name="amcl">
-		<remap from="scan" to="scan_combined" />
+		<remap from="scan" to="scan_unified" />
 		<param name="odom_model_type" value="omni"/>
 		<param name="transform_tolerance" value="0.2" />
 		<param name="gui_publish_rate" value="-1.0"/>

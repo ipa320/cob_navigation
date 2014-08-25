@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <launch>
-	<arg name="unified_laser_scan" default="false"/>
-	<!-- generate unified scan from front and rear scanner -->
-	<node pkg="cob_unified_scan_publisher" type="cob_unified_scan_publisher" name="cob_unified_scan_publisher" output="screen" if="$(arg unified_laser_scan)"/>
+  <arg name="unified_laser_scan" default="false"/>
+  <!-- generate unified scan from front and rear scanner -->
+  <include file="$(find cob_navigation_global)/launch/scan_unifier_node.xml" if="$(arg unified_laser_scan)"/>
 
-	<!-- dynamic map generation from unified scan -->
-	<node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
-		<remap from="scan" to="scan_front" unless="$(arg unified_laser_scan)"/>
-		<remap from="scan" to="scan_unified" if="$(arg unified_laser_scan)"/>
-		<param name="maxUrange" type="int" value="8"/>
-		<param name="xmin" type="int" value="-8"/>
-		<param name="ymin" type="int" value="-8"/>
-		<param name="xmax" type="int" value="8"/>
-		<param name="ymax" type="int" value="8"/>
-		<param name="odom_frame" type="string" value="odom_combined"/>
-	</node>
+  <!-- dynamic map generation from unified scan -->
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <remap from="scan" to="scan_front" unless="$(arg unified_laser_scan)"/>
+    <remap from="scan" to="scan_unified" if="$(arg unified_laser_scan)"/>
+    <param name="maxUrange" type="int" value="8"/>
+    <param name="xmin" type="int" value="-8"/>
+    <param name="ymin" type="int" value="-8"/>
+    <param name="xmax" type="int" value="8"/>
+    <param name="ymax" type="int" value="8"/>
+    <param name="odom_frame" type="string" value="odom_combined"/>
+  </node>
 
 </launch>
