@@ -6,8 +6,7 @@ find_package(catkin REQUIRED)
 catkin_package(
   CATKIN_DEPENDS
     gmapping
-    cob_navigation_config
-    cob_unified_scan_publisher
+    cob_navigation_global
 )
 
 
