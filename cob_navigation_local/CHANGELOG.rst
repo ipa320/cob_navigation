@@ -2,6 +2,11 @@
 Changelog for package cob_navigation_local
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update package.xml
+* Contributors: Florian Weisshardt
+
 0.5.1 (2014-03-21)
 ------------------
 * add changelog

@@ -2,6 +2,21 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* linear_nav: changed ROS_INFO to ROS_DEBUG in topicCB
+* cob_linear_nav: fix indentation
+* cob_linear_nav: initialize some more variables, check if received goal has invalid Quaternion
+* cob_linear_nav: change order of nan and high velocity check to catch them with correct error msg
+* cob_linear_nav: now hopefully really found the bug; ros::Time::now()-1 = verybig
+* cob_linear_nav: change assert to try-catch to check that in all modes
+* cob_linear_nav: initialize variable and add assertions
+* Merge remote-tracking branch 'origin-ipa-aub/hydro_dev' into feature/baer_error_control
+* included the option for linear_nav to perform the controller step frequently and update the goal with each topic callback instead of using actions
+* Changed frame_ids to non slashed versions. TF should now work with hydro.
+* add extra install tags to be consistent with rest of repos
+* Contributors: Alexander Bubeck, Florian Mirus, ipa-mig
+
 0.5.1 (2014-03-21)
 ------------------
 * add changelog
