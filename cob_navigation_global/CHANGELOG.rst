@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.2 (2014-08-28)
+------------------
 * cob_navigation_global: add launch file argument to scan_unifier launch file for changing location of param file
 * renamed ipa_navigation_scan_uniffier to cob_scan_unifier
 * updated scan_unifier to parse scan_topics for subscription from parameter-server. added scan_unifier config-files for each robot. modified launch files for navigation and amcl to use scan_unifier

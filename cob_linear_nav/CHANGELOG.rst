@@ -2,8 +2,8 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.2 (2014-08-28)
+------------------
 * linear_nav: changed ROS_INFO to ROS_DEBUG in topicCB
 * cob_linear_nav: fix indentation
 * cob_linear_nav: initialize some more variables, check if received goal has invalid Quaternion

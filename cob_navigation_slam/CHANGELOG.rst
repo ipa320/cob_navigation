@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.2 (2014-08-28)
+------------------
 * cob_navigation_slam: fix maintainer
 * Contributors: ipa-mig
 
