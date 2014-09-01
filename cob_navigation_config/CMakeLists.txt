@@ -13,7 +13,7 @@ catkin_package()
 install(DIRECTORY cob3-1 cob3-2 cob3-3 cob3-4 cob3-5 cob3-6
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(DIRECTORY cob4-1
+install(DIRECTORY cob4-1 cob4-2
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 install(DIRECTORY desire
