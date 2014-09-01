@@ -21,6 +21,7 @@
   <run_depend>cob_default_env_config</run_depend>
   <run_depend>cob_linear_nav</run_depend>
   <run_depend>cob_navigation_config</run_depend>
+  <run_depend>cob_scan_unifier</run_depend>
   <run_depend>rviz</run_depend>
 
 </package>
