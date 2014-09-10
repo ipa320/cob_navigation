@@ -18,7 +18,7 @@
   <run_depend>cob_navigation_global</run_depend>
   <run_depend>cob_navigation_local</run_depend>
   <run_depend>cob_navigation_slam</run_depend>
-  <run_depend>cob_unified_scan_publisher</run_depend>
+  <run_depend>cob_scan_unifier</run_depend>
 
   <export>
     <metapackage/>
