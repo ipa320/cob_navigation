@@ -2,6 +2,12 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'indigo_dev' into indigo_release_candidate
+* fix dependencies
+* Contributors: Florian Weisshardt
+
 0.5.2 (2014-08-28)
 ------------------
 * cob_navigation_global: add launch file argument to scan_unifier launch file for changing location of param file

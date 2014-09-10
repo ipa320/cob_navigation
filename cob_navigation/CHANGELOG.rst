@@ -2,6 +2,12 @@
 Changelog for package cob_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge branch 'indigo_dev' into indigo_release_candidate
+* fix dependencies
+* Contributors: Florian Weisshardt
+
 0.5.2 (2014-08-28)
 ------------------
 
