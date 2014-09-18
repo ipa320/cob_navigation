@@ -1,6 +1,6 @@
 <package>
   <name>cob_navigation</name>
-  <version>0.6.0</version>
+  <version>0.6.1</version>
   <description>
     The cob_navigation stack provides different navigation packages for <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a>.
   </description>

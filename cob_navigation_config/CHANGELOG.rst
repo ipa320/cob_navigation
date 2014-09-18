@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.1 (2014-09-18)
+------------------
 * added cob4-2 configuration
 * Contributors: ipa-cob4-2
 
