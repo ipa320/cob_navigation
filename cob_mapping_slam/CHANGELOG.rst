@@ -2,6 +2,9 @@
 Changelog for package cob_mapping_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.6.0 (2014-09-10)
 ------------------
 * Merge branch 'indigo_dev' into indigo_release_candidate
