@@ -261,13 +261,16 @@ class NodeClass
     getRobotPoseGlobal();
     x_last_ = robot_pose_global_.pose.position.x;
     y_last_ = robot_pose_global_.pose.position.y;
+    ROS_WARN("before getYaw");
     theta_last_ = tf::getYaw(robot_pose_global_.pose.orientation);
     vtheta_last_ = 0.0f;
     vx_last_ = 0.0f;
     vy_last_ = 0.0f;
     last_time_ = ros::Time::now().toSec();
 
+    ROS_WARN("before transformGoalToMap");
     goal_pose_global_ = transformGoalToMap(goal->target_pose);
+    ROS_WARN("after transformGoalToMap");
 
     move_ = true;
 
@@ -386,9 +389,11 @@ bool NodeClass::getUseMoveAction(void)
 
 geometry_msgs::PoseStamped NodeClass::transformGoalToMap(geometry_msgs::PoseStamped goal_pose) {
   geometry_msgs::PoseStamped goal_global_;
-  if(goal_pose.header.frame_id == global_frame_) return goal_pose;
-  else if(tf_listener_.canTransform(global_frame_, goal_pose.header.frame_id, ros::Time(0), new std::string)) {
-    tf_listener_.transformPose(global_frame_, ros::Time(0), goal_pose, "base_link", goal_global_);
+  if((goal_pose.header.frame_id == global_frame_) or (goal_pose.header.frame_id == "/" + global_frame_)){
+    return goal_pose;
+  }
+  else if(tf_listener_.canTransform(global_frame_, goal_pose.header.frame_id, ros::Time::now()-ros::Duration(1), new std::string)) {
+    tf_listener_.transformPose(global_frame_, ros::Time::now()-ros::Duration(1), goal_pose, "base_link", goal_global_);
     return goal_global_;
   } else {
     ROS_WARN("Can't transform goal to global frame %s", global_frame_.c_str());
