@@ -261,16 +261,13 @@ class NodeClass
     getRobotPoseGlobal();
     x_last_ = robot_pose_global_.pose.position.x;
     y_last_ = robot_pose_global_.pose.position.y;
-    ROS_WARN("before getYaw");
     theta_last_ = tf::getYaw(robot_pose_global_.pose.orientation);
     vtheta_last_ = 0.0f;
     vx_last_ = 0.0f;
     vy_last_ = 0.0f;
     last_time_ = ros::Time::now().toSec();
 
-    ROS_WARN("before transformGoalToMap");
     goal_pose_global_ = transformGoalToMap(goal->target_pose);
-    ROS_WARN("after transformGoalToMap");
 
     move_ = true;
 
