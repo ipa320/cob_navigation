@@ -2,6 +2,9 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.2 (2015-06-17)
+------------------
+
 0.6.1 (2014-09-18)
 ------------------
 * added cob4-2 configuration
