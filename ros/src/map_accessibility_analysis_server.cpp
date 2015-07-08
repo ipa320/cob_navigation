@@ -59,6 +59,7 @@
 
 
 #include <cob_map_accessibility_analysis/map_accessibility_analysis_server.h>
+#include <pcl_ros/point_cloud.h>
 
 //#define __DEBUG_DISPLAYS__
 

@@ -94,7 +94,7 @@
 #include <sensor_msgs/image_encodings.h>
 
 
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/point_types.h>
 
 #include <boost/thread/mutex.hpp>
