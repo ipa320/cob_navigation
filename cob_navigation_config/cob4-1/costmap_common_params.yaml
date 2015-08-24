@@ -6,7 +6,7 @@ map_type: costmap
 #z_resolution: 0.23
 
 unknown_cost_value: 0
-unknown_threshold: 2 
+unknown_threshold: 2
 mark_threshold: 0
 publish_voxel_map: true
 #END VOXEL STUFF
