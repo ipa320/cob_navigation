@@ -1,4 +1,5 @@
-<package>
+<?xml version="1.0"?>
+<package format="2">
   <name>cob_navigation_config</name>
   <version>0.6.2</version>
   <description>

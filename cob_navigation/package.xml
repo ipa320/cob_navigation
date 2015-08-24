@@ -1,4 +1,5 @@
-<package>
+<?xml version="1.0"?>
+<package format="2">
   <name>cob_navigation</name>
   <version>0.6.2</version>
   <description>
@@ -10,15 +11,15 @@
   <license>LGPL</license>
   <url>http://ros.org/wiki/cob_navigation</url>
 
-
   <buildtool_depend>catkin</buildtool_depend>
-  <run_depend>cob_linear_nav</run_depend>
-  <run_depend>cob_mapping_slam</run_depend>
-  <run_depend>cob_navigation_config</run_depend>
-  <run_depend>cob_navigation_global</run_depend>
-  <run_depend>cob_navigation_local</run_depend>
-  <run_depend>cob_navigation_slam</run_depend>
-  <run_depend>cob_scan_unifier</run_depend>
+
+  <exec_depend>cob_linear_nav</exec_depend>
+  <exec_depend>cob_mapping_slam</exec_depend>
+  <exec_depend>cob_navigation_config</exec_depend>
+  <exec_depend>cob_navigation_global</exec_depend>
+  <exec_depend>cob_navigation_local</exec_depend>
+  <exec_depend>cob_navigation_slam</exec_depend>
+  <exec_depend>cob_scan_unifier</exec_depend>
 
   <export>
     <metapackage/>

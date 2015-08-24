@@ -59,7 +59,6 @@
 
 // ROS includes
 #include <ros/ros.h>
-#include <XmlRpc.h>
 
 #include <pthread.h>
 
