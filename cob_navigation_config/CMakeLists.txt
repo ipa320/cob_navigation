@@ -6,15 +6,10 @@ find_package(catkin REQUIRED)
 catkin_package()
 
 set(ROBOTLIST
-  cob3-1
   cob3-2
-  cob3-3
-  cob3-4
-  cob3-5
   cob3-6
   cob4-1
   cob4-2
-  desire
   raw3-1
   raw3-2
   raw3-3
