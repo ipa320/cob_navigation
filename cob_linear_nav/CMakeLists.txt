@@ -2,26 +2,21 @@ cmake_minimum_required(VERSION 2.8.3)
 project(cob_linear_nav)
 
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
+  actionlib
+  geometry_msgs
   move_base_msgs
   nav_msgs
-  actionlib
+  roscpp
   tf
 )
 
-catkin_package(
-  CATKIN_DEPENDS
-    roscpp
-    move_base_msgs
-    nav_msgs
-    actionlib
-    tf
-)
+catkin_package()
 
 include_directories(${catkin_INCLUDE_DIRS})
 
-add_executable(cob_linear_nav src/cob_linear_nav.cpp)
-target_link_libraries(cob_linear_nav ${catkin_LIBRARIES})
+add_executable(${PROJECT_NAME} src/cob_linear_nav.cpp)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##

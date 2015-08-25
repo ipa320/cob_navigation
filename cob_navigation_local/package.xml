@@ -1,4 +1,5 @@
-<package>
+<?xml version="1.0"?>
+<package format="2">
   <name>cob_navigation_local</name>
   <version>0.6.2</version>
   <description>
@@ -13,10 +14,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>navigation</run_depend>
-  <run_depend>move_base</run_depend>
-  <run_depend>rviz</run_depend>
-  <run_depend>cob_navigation_config</run_depend>
+  <exec_depend>cob_navigation_config</exec_depend>
+  <exec_depend>move_base</exec_depend>
+  <exec_depend>rviz</exec_depend>
 
 </package>
 

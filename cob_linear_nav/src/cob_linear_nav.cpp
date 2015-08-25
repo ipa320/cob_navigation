@@ -30,23 +30,23 @@
  *   * Redistributions in binary form must reproduce the above copyright
  *     notice, this list of conditions and the following disclaimer in the
  *     documentation and/or other materials provided with the distribution.
- *   * Neither the name of the Fraunhofer Institute for Manufacturing 
+ *   * Neither the name of the Fraunhofer Institute for Manufacturing
  *     Engineering and Automation (IPA) nor the names of its
  *     contributors may be used to endorse or promote products derived from
  *     this software without specific prior written permission.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License LGPL as 
- * published by the Free Software Foundation, either version 3 of the 
+ * it under the terms of the GNU Lesser General Public License LGPL as
+ * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License LGPL for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public 
- * License LGPL along with this program. 
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License LGPL along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************/
@@ -59,7 +59,6 @@
 
 // ROS includes
 #include <ros/ros.h>
-#include <XmlRpc.h>
 
 #include <pthread.h>
 
@@ -86,14 +85,14 @@ class NodeClass
   ros::Publisher topic_pub_command_;
 
   ros::Subscriber goal_sub_, odometry_sub_;
-  
+
   // declaration of action server
   actionlib::SimpleActionServer<move_base_msgs::MoveBaseAction> as_;
   move_base_msgs::MoveBaseResult result_; //result is of type geometry_msgs/PoseStamped
-  
+
   //declaration of action client to forward move_base_simple messages
   actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> * action_client_;
-  
+
 
   // Constructor
   NodeClass(std::string name) :
@@ -113,7 +112,7 @@ class NodeClass
     goal_sub_ = simple_nh.subscribe<geometry_msgs::PoseStamped>("goal", 1, boost::bind(&NodeClass::topicCB, this, _1));
 
     action_client_ = new actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>(nh_, name);
-    
+
     // subscribe to odometry
     odometry_sub_ = nh_.subscribe<nav_msgs::Odometry>("odom", 1, boost::bind(&NodeClass::odometryCB, this, _1));
 
@@ -195,7 +194,7 @@ class NodeClass
     while(!tf_listener_.waitForTransform(global_frame_, robot_frame_, ros::Time(), ros::Duration(0.1), ros::Duration(0.01), &tf_error)) {
       ros::spinOnce();
       if(last_error + ros::Duration(5.0) < ros::Time::now()){
-        ROS_WARN("Waiting on transform from %s to %s to become available before running cob_linear_nav, tf error: %s", 
+        ROS_WARN("Waiting on transform from %s to %s to become available before running cob_linear_nav, tf error: %s",
         robot_frame_.c_str(), global_frame_.c_str(), tf_error.c_str());
         last_error = ros::Time::now();
       }
@@ -217,7 +216,7 @@ class NodeClass
       move_base_msgs::MoveBaseGoal action_goal;
 
       action_goal.target_pose = transformGoalToMap(*goal);
-      
+
       action_client_->sendGoal(action_goal);
       action_client_->stopTrackingGoal();
     }
@@ -228,7 +227,7 @@ class NodeClass
       last_time_moving_ = ros::Time::now().toSec();
 
       getRobotPoseGlobal();
-    
+
       if(last_time_ < 0)
       {
         vtheta_last_ = 0.0f;
@@ -246,7 +245,7 @@ class NodeClass
       move_ = true;
 
     }
-    
+
   }
 
   void actionCB(const move_base_msgs::MoveBaseGoalConstPtr &goal)
@@ -317,7 +316,7 @@ class NodeClass
   };
 
 
-  void odometryCB(const nav_msgs::Odometry::ConstPtr &odometry){ 
+  void odometryCB(const nav_msgs::Odometry::ConstPtr &odometry){
     geometry_msgs::Vector3Stamped vec_stamped;
 
     vec_stamped.vector = odometry->twist.twist.linear;
@@ -330,7 +329,7 @@ class NodeClass
   }
 
   // Destructor
-  ~NodeClass() 
+  ~NodeClass()
   {
   }
 
@@ -495,7 +494,6 @@ bool NodeClass::notMovingDueToObstacle() {
   }
 
   return false;
-   
 }
 
 bool NodeClass::goalValid(const geometry_msgs::Pose & goal)
