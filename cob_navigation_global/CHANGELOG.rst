@@ -2,6 +2,13 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove trailing whitespace
+* migration to package format v2, indentation fixes
+* remove deprecated launchfiles
+* Contributors: ipa-mig
+
 0.6.2 (2015-06-17)
 ------------------
 

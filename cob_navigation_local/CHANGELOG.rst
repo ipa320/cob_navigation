@@ -2,6 +2,11 @@
 Changelog for package cob_navigation_local
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* migration to package format v2, indentation fixes
+* Contributors: ipa-mig
+
 0.6.2 (2015-06-17)
 ------------------
 

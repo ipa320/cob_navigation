@@ -2,6 +2,12 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove trailing whitespace
+* migration to package format v2, indentation fixes
+* Contributors: ipa-mig
+
 0.6.2 (2015-06-17)
 ------------------
 
