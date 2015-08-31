@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.3 (2015-08-31)
+------------------
 * remove trailing whitespace
 * migration to package format v2, indentation fixes
 * remove deprecated launchfiles
