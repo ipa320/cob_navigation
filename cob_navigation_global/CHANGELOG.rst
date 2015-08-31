@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.3 (2015-08-31)
+------------------
 * Merge tag '0.5.2' into hydro_release_candidate
 * Contributors: ipa-mig
 
