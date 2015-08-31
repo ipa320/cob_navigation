@@ -2,6 +2,9 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.5.2 (2014-08-28)
 ------------------
 * removed start_delay from scan-unifier configs and intendation-fix

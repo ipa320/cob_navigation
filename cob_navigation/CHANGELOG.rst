@@ -2,6 +2,11 @@
 Changelog for package cob_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge tag '0.5.2' into hydro_release_candidate
+* Contributors: ipa-mig
+
 0.5.2 (2014-08-28)
 ------------------
 

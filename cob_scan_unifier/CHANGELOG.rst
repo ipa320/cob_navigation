@@ -2,6 +2,13 @@
 Changelog for package cob_scan_unifier
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* reduced MAGIC NUMBER
+* check range values
+* round index
+* Contributors: ipa-josh
+
 0.5.2 (2014-08-28)
 ------------------
 * add changelog

@@ -2,6 +2,9 @@
 Changelog for package cob_navigation_local
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.5.2 (2014-08-28)
 ------------------
 * Update package.xml

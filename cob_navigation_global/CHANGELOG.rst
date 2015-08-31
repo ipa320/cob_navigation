@@ -2,6 +2,11 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge tag '0.5.2' into hydro_release_candidate
+* Contributors: ipa-mig
+
 0.5.2 (2014-08-28)
 ------------------
 * cob_navigation_global: add launch file argument to scan_unifier launch file for changing location of param file
