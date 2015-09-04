@@ -2,6 +2,18 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.3 (2015-08-31)
+------------------
+
+0.5.2 (2014-08-28)
+------------------
+* removed start_delay from scan-unifier configs and intendation-fix
+* updated scan_unifier to parse scan_topics for subscription from parameter-server. added scan_unifier config-files for each robot. modified launch files for navigation and amcl to use scan_unifier
+* added the new scan_unifier as well as a dummy config file and removed the old one
+* added softkinetic cameras as voxel based observation sources
+* Changed frame_ids to non slashed versions. TF should now work with hydro.
+* Contributors: Alexander Bubeck, Florian Mirus, flg
+
 0.5.1 (2014-03-21)
 ------------------
 * cob_navigation: removing cob3-5b configs

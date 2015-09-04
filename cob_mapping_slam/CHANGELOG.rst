@@ -2,6 +2,17 @@
 Changelog for package cob_mapping_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.3 (2015-08-31)
+------------------
+* Merge tag '0.5.2' into hydro_release_candidate
+* Contributors: ipa-mig
+
+0.5.2 (2014-08-28)
+------------------
+* fixed indentation of 2dslam.xml
+* fixed the gmapping launch file after cob_scan_unifier rework
+* Contributors: Florian Mirus
+
 0.5.1 (2014-03-21)
 ------------------
 * add changelog
