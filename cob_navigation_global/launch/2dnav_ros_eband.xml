@@ -7,8 +7,8 @@
   <rosparam command="delete" param="/move_base"/>
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-    <remap from="cmd_vel" to="base_controller/command_direct"/>
-    <remap from="odom" to="base_controller/odometry"/>
+    <remap from="cmd_vel" to="base/twist_controller/command_direct"/>
+    <remap from="odom" to="base/odometry_controller/odometry"/>
     <param name="controller_frequency" value="10"/>
 
     <!-- Use the dwa local planner for the PR2 -->
