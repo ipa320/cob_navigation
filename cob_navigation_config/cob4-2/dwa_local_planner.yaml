@@ -40,8 +40,8 @@ vtheta_samples: 20
 
 sim_period: 0.1
 
-xy_goal_tolerance: 0.2
-yaw_goal_tolerance: 0.17
+xy_goal_tolerance: 0.2 #0.3
+yaw_goal_tolerance: 0.17 #0.5
 
 rot_stopped_vel: 0.01
 trans_stopped_vel: 0.01

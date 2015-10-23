@@ -2,6 +2,34 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.3 (2015-08-31)
+------------------
+* remove trailing whitespace
+* migration to package format v2, indentation fixes
+* remove deprecated launchfiles
+* Contributors: ipa-mig
+
+0.6.2 (2015-06-17)
+------------------
+
+0.6.1 (2014-09-18)
+------------------
+
+0.6.0 (2014-09-10)
+------------------
+* Merge branch 'indigo_dev' into indigo_release_candidate
+* fix dependencies
+* Contributors: Florian Weisshardt
+
+0.5.2 (2014-08-28)
+------------------
+* cob_navigation_global: add launch file argument to scan_unifier launch file for changing location of param file
+* renamed ipa_navigation_scan_uniffier to cob_scan_unifier
+* updated scan_unifier to parse scan_topics for subscription from parameter-server. added scan_unifier config-files for each robot. modified launch files for navigation and amcl to use scan_unifier
+* set minimal linear velocity in local_planner_eband.yaml to 0 to allow in place rotation
+* Update package.xml
+* Contributors: Florian Mirus, Florian Weisshardt, ipa-mig
+
 0.5.1 (2014-03-21)
 ------------------
 * add changelog

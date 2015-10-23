@@ -3,24 +3,15 @@ project(cob_navigation_slam)
 
 find_package(catkin REQUIRED)
 
-catkin_package(
-  CATKIN_DEPENDS
-    cob_navigation_config
-    cob_navigation_global
-    cob_mapping_slam
-    rviz
-)
-
+catkin_package()
 
 #############
 ## Install ##
 #############
 
-install(DIRECTORY launch
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
-install(DIRECTORY config
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY launch config
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 # rostest for robots
 # SET(robotlist

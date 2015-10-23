@@ -1,6 +1,7 @@
-<package>
+<?xml version="1.0"?>
+<package format="2">
   <name>cob_navigation_global</name>
-  <version>0.5.1</version>
+  <version>0.6.3</version>
   <description>
     This package holds config and launch files for running the  <a href="http://ros.org/wiki/move_base">move_base</a> node on the <a href="http://ros.org/wiki/care-o-bot">Care-O-bot</a>.
     The move_base node is configured to run over a pre-specified static map.
@@ -13,15 +14,15 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>navigation</run_depend>
-  <run_depend>move_base</run_depend>
-  <run_depend>amcl</run_depend>
-  <run_depend>map_server</run_depend>
-  <run_depend>topic_tools</run_depend>
-  <run_depend>cob_default_env_config</run_depend>
-  <run_depend>cob_linear_nav</run_depend>
-  <run_depend>cob_navigation_config</run_depend>
-  <run_depend>cob_scan_unifier</run_depend>
-  <run_depend>rviz</run_depend>
+  <exec_depend>amcl</exec_depend>
+  <exec_depend>cob_default_env_config</exec_depend>
+  <exec_depend>cob_linear_nav</exec_depend>
+  <exec_depend>cob_navigation_config</exec_depend>
+  <exec_depend>cob_scan_unifier</exec_depend>
+  <exec_depend>eband_local_planner</exec_depend>
+  <exec_depend>map_server</exec_depend>
+  <exec_depend>move_base</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>topic_tools</exec_depend>
 
 </package>
