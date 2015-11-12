@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="unified_laser_scan" default="false"/>
-  <!-- generate unified scan from front and rear scanner -->
-  <include file="$(find cob_navigation_global)/launch/scan_unifier_node.xml" if="$(arg unified_laser_scan)"/>
 
   <!-- dynamic map generation from unified scan -->
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">

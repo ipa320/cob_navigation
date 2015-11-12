@@ -7,11 +7,6 @@
 
   <arg name="robot" default="$(optenv ROBOT !!NO_ROBOT_SET!!)"/>
 
-  <!-- start scan_unifier -->
-  <include file="$(find cob_navigation_global)/launch/scan_unifier_node.xml">
-    <arg name="robot" value="$(arg robot)" />
-  </include>
-
   <!-- start amcl -->
   <node pkg="amcl" type="amcl" name="amcl">
     <remap from="scan" to="scan_unified" />
