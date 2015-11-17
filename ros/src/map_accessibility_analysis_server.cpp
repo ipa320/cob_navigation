@@ -319,6 +319,8 @@ void MapAccessibilityAnalysis::mapDataCallback(const nav_msgs::OccupancyGrid::Co
 	// compute inflated static map
 	std::cout << "inflation thickness: " << cvRound(robot_radius_*inverse_map_resolution_) << std::endl;
 	cv::erode(original_map_, inflated_original_map_, cv::Mat(), cv::Point(-1,-1), cvRound(robot_radius_*inverse_map_resolution_));
+	if (inflated_map_.empty() == true)
+		inflated_map_ = inflated_original_map_;	// initial setup (if no obstacle msgs were received yet)
 
 	map_data_recieved_ = true;
 	map_msg_sub_.shutdown();
@@ -375,11 +377,13 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 {
 	ROS_INFO("Received request to check accessibility of %u points.", (unsigned int)req.points_to_check.size());
 
+	const bool value_approach_path_accessibility_check_ = approach_path_accessibility_check_;
+	approach_path_accessibility_check_ = req.approach_path_accessibility_check;
+
 	// determine robot pose if approach path analysis activated
 	cv::Point robot_location(0,0);
 	if (approach_path_accessibility_check_ == true)
 		robot_location = getRobotLocationInPixelCoordinates();
-
 
 	res.accessibility_flags.resize(req.points_to_check.size(), false);
 	{
@@ -420,6 +424,9 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 		cv::waitKey(50);
 #endif
 	}
+
+	// reset parameter
+	approach_path_accessibility_check_ = value_approach_path_accessibility_check_;
 
 	return true;
 }
