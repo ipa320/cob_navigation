@@ -19,7 +19,6 @@
   <exec_depend>cob_navigation_global</exec_depend>
   <exec_depend>cob_navigation_local</exec_depend>
   <exec_depend>cob_navigation_slam</exec_depend>
-  <exec_depend>cob_scan_unifier</exec_depend>
 
   <export>
     <metapackage/>
