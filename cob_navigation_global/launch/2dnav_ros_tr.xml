@@ -8,7 +8,7 @@
 
   <!--- Run move base -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-    <remap from="cmd_vel" to="base/twist_controller/command"/>
+    <remap from="cmd_vel" to="base/twist_mux/command_nav"/>
     <remap from="odom" to="base/odometry_controller/odometry"/>
     <param name="controller_frequency" value="12"/>
 
