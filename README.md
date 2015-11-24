@@ -1,5 +1,6 @@
 cob_navigation
 ====================
+Travis-CI: [![Build Status](https://travis-ci.org/ipa320/cob_navigation.svg?branch=indigo_dev)](https://travis-ci.org/ipa320/cob_navigation)
 
 The cob_navigation repository provides configuration and launch files for running the navigation stack on the Fraunhofer IPA robots Care-O-bot and rob@work in a number of common configurations.
 For example, the `cob_navigation_local` package holds files that configure the `move_base` node to operate in an odometric frame, and the ’cob_mapping_slam’ package holds files that configure the robot for SLAM.
