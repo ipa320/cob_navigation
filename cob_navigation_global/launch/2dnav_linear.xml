@@ -7,7 +7,7 @@
     <!-- remap inputs -->
     <remap from="odom" to="base/odometry_controller/odometry"/>
     <!-- remap outputs -->
-    <remap from="cmd_vel" to="base/twist_controller/command_safe"/>
+    <remap from="cmd_vel" to="base/collision_velocity_filter/command"/>
     <rosparam file="$(find cob_navigation_config)/$(arg robot)/linear/ctrl_params.yaml" command="load" />
   </node>
 
