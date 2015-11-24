@@ -19,10 +19,10 @@ footprint: [[0.4,0.0],[0.35,0.35],[-0.2,0.4],[-0.45,0.0],[-0.2,-0.4],[0.35,-0.35
 
 # BEGIN VOXEL STUFF
 observation_sources: laser_scan_front laser_scan_left laser_scan_right
-laser_scan_front: {sensor_frame: base_laser_front_link, topic: /scan_front, data_type: LaserScan, marking: true, clearing: true}
+laser_scan_front: {sensor_frame: base_laser_front_link, topic: /base_laser_front/scan, data_type: LaserScan, marking: true, clearing: true}
 
-laser_scan_left: {sensor_frame: base_laser_left_link, topic: /scan_left, data_type: LaserScan, marking: true, clearing: true}
+laser_scan_left: {sensor_frame: base_laser_left_link, topic: /base_laser_left/scan, data_type: LaserScan, marking: true, clearing: true}
 
-laser_scan_right: {sensor_frame: base_laser_right_link, topic: /scan_right, data_type: LaserScan, marking: true, clearing: true}
+laser_scan_right: {sensor_frame: base_laser_right_link, topic: /base_laser_right/scan, data_type: LaserScan, marking: true, clearing: true}
 
 # END VOXEL STUFF
