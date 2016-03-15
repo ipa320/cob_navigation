@@ -22,8 +22,8 @@
 	<build_depend>sensor_msgs</build_depend>
 	<build_depend>nav_msgs</build_depend>
 	<build_depend>geometry_msgs</build_depend>
-	<build_depend>cob_3d_mapping_msgs</build_depend>
-	<build_depend>cob_3d_mapping_common</build_depend>
+	<!--build_depend>cob_3d_mapping_msgs</build_depend>
+	<build_depend>cob_3d_mapping_common</build_depend-->
 	<build_depend>message_generation</build_depend>
 
 	<build_depend>boost</build_depend>
