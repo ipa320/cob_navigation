@@ -57,19 +57,11 @@
 *
 ****************************************************************/
 
+#include <ros/ros.h>
 
-#include "ros/ros.h"
-
-#include <cob_3d_mapping_common/polygon.h>
-#include <cob_3d_mapping_common/ros_msg_conversions.h>
-
-#include <tf/tf.h>
-
-#include "opencv/cv.h"
-
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
-
+//#include <cob_3d_mapping_common/polygon.h>
+//#include <cob_3d_mapping_common/ros_msg_conversions.h>
+//#include <tf/tf.h>
 
 // services - here you have to include the header file with exactly the same name as your message in the /srv folder (the Message.h is automatically generated from your Message.srv file during compilation)
 #include <cob_map_accessibility_analysis/CheckPointAccessibility.h>
@@ -153,7 +145,7 @@ int main(int argc, char **argv)
 	req_perimeter.center.y = 2.25;
 	req_perimeter.center.theta = 0.;
 	req_perimeter.radius = 0.45;
-	req_perimeter.rotational_sampling_step = 10./180. * CV_PI;
+	req_perimeter.rotational_sampling_step = 10./180. * M_PI;
 
 	// this calls the service server to process our request message and put the result into the response message
 	// this call is blocking, i.e. this program will not proceed until the service server sends the response
@@ -169,46 +161,46 @@ int main(int argc, char **argv)
 		std::cout << "The service call for perimeter points was not successful.\n" << std::endl;
 
 
-	// ===== example call to polygon accessibility service =====
-	cob_3d_mapping_msgs::GetApproachPoseForPolygonRequest req_polygon;
-	cob_3d_mapping_msgs::GetApproachPoseForPolygonResponse res_polygon;
+	//// ===== example call to polygon accessibility service =====
+	//cob_3d_mapping_msgs::GetApproachPoseForPolygonRequest req_polygon;
+	//cob_3d_mapping_msgs::GetApproachPoseForPolygonResponse res_polygon;
 
-	cob_3d_mapping::Polygon p1;
-	Eigen::Vector2f v;
-	std::vector<Eigen::Vector2f> vv;
-	p1.id_ = 1;
-	p1.normal_ << 0.0,0.0,1.0;
-	p1.d_ = -1;
-	v << 1,-2;//,1;
-	vv.push_back(v);
-	v << 1,-3;//,1;
-	vv.push_back(v);
-	v << 2,-3;//,1;
-	vv.push_back(v);
-	v << 2,-2;//,1;
-	vv.push_back(v);
-	p1.contours_.push_back(vv);
-	p1.holes_.push_back(false);
-	cob_3d_mapping_msgs::Shape p_msg;
-	toROSMsg(p1, p_msg);
-	req_polygon.polygon = p_msg;
+	//cob_3d_mapping::Polygon p1;
+	//Eigen::Vector2f v;
+	//std::vector<Eigen::Vector2f> vv;
+	//p1.id_ = 1;
+	//p1.normal_ << 0.0,0.0,1.0;
+	//p1.d_ = -1;
+	//v << 1,-2;//,1;
+	//vv.push_back(v);
+	//v << 1,-3;//,1;
+	//vv.push_back(v);
+	//v << 2,-3;//,1;
+	//vv.push_back(v);
+	//v << 2,-2;//,1;
+	//vv.push_back(v);
+	//p1.contours_.push_back(vv);
+	//p1.holes_.push_back(false);
+	//cob_3d_mapping_msgs::Shape p_msg;
+	//toROSMsg(p1, p_msg);
+	//req_polygon.polygon = p_msg;
 
-	// this calls the service server to process our request message and put the result into the response message
-	// this call is blocking, i.e. this program will not proceed until the service server sends the response
-	success = ros::service::call(polygon_service_name, req_polygon, res_polygon);
+	//// this calls the service server to process our request message and put the result into the response message
+	//// this call is blocking, i.e. this program will not proceed until the service server sends the response
+	//success = ros::service::call(polygon_service_name, req_polygon, res_polygon);
 
-	if (success == true)
-	{
-		printf("Accessible points around the polygon:\n");
-		for (unsigned int i=0; i<res_polygon.approach_poses.poses.size(); i++)
-		{
-			tf::Quaternion q;
-			tf::quaternionMsgToTF(res_polygon.approach_poses.poses[i].orientation, q);
-			std::cout << "i=" << i << "  x=" << res_polygon.approach_poses.poses[i].position.x << "  y=" << res_polygon.approach_poses.poses[i].position.y << "  ang=" << tf::getYaw(q) << std::endl;
-		}
-	}
-	else
-		std::cout << "The service call for polygon points was not successful.\n" << std::endl;
+	//if (success == true)
+	//{
+		//printf("Accessible points around the polygon:\n");
+		//for (unsigned int i=0; i<res_polygon.approach_poses.poses.size(); i++)
+		//{
+			//tf::Quaternion q;
+			//tf::quaternionMsgToTF(res_polygon.approach_poses.poses[i].orientation, q);
+			//std::cout << "i=" << i << "  x=" << res_polygon.approach_poses.poses[i].position.x << "  y=" << res_polygon.approach_poses.poses[i].position.y << "  ang=" << tf::getYaw(q) << std::endl;
+		//}
+	//}
+	//else
+		//std::cout << "The service call for polygon points was not successful.\n" << std::endl;
 
 	return 0;
 }

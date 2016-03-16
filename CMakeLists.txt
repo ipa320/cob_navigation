@@ -12,7 +12,7 @@ set(catkin_RUN_PACKAGES
 	nav_msgs
 	geometry_msgs
 	cob_3d_mapping_msgs
-	cob_3d_mapping_common
+	#cob_3d_mapping_common
 )
 
 set(catkin_BUILD_PACKAGES
