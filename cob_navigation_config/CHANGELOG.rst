@@ -2,6 +2,12 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* restructure laser topics
+* removed scan_unifier from cob_navigation
+* Contributors: Benjamin Maidel, ipa-fxm
+
 0.6.3 (2015-08-31)
 ------------------
 * cob_navigation_config: remove robots not supported anymore
