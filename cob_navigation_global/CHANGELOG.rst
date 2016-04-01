@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.4 (2016-04-01)
+------------------
 * remove slashes from frame_ids
 * restructure laser topics
 * adapt twist_mux topic names according to https://github.com/ipa320/orga/pull/1#issuecomment-159195427

@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.4 (2016-04-01)
+------------------
 * restructure laser topics
 * Contributors: ipa-fxm
 
