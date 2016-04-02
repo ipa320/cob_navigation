@@ -2,6 +2,13 @@
 Changelog for package cob_navigation_local
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.4 (2016-04-01)
+------------------
+* restructure laser topics
+* adapt twist_mux topic names according to https://github.com/ipa320/orga/pull/1#issuecomment-159195427
+* changed base command topic names to twist_mux topic input
+* Contributors: Benjamin Maidel, ipa-fmw, ipa-fxm
+
 0.6.3 (2015-08-31)
 ------------------
 * migration to package format v2, indentation fixes

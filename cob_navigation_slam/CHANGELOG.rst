@@ -2,6 +2,11 @@
 Changelog for package cob_navigation_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.4 (2016-04-01)
+------------------
+* restructure laser topics
+* Contributors: ipa-fxm
+
 0.6.3 (2015-08-31)
 ------------------
 * migration to package format v2, indentation fixes

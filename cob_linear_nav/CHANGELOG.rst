@@ -2,6 +2,9 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.4 (2016-04-01)
+------------------
+
 0.6.3 (2015-08-31)
 ------------------
 * remove trailing whitespace

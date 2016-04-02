@@ -2,6 +2,21 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.4 (2016-04-01)
+------------------
+* remove slashes from frame_ids
+* restructure laser topics
+* adapt twist_mux topic names according to https://github.com/ipa320/orga/pull/1#issuecomment-159195427
+* moved collision_velocity_filter to base namespace
+* changed 2dnav_linear twist topic to twist_mux input topic
+* changed base command topic names to twist_mux topic input
+* removed scan_unifier from cob_navigation
+* Remap to command_safe for linear nav
+  see discussion in https://github.com/ipa320/cob_navigation/pull/54
+* removed global prefix
+* use base  new name spaces
+* Contributors: Benjamin Maidel, Florian Weisshardt, ipa-fmw, ipa-fxm, ipa-mig, ipa-nhg
+
 0.6.3 (2015-08-31)
 ------------------
 * remove trailing whitespace
