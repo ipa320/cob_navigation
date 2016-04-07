@@ -19,6 +19,8 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV REQUIRED)
 find_package(Boost REQUIRED)
 
+catkin_python_setup()
+
 # Generate services in the 'srv' folder
 add_service_files(
   FILES
