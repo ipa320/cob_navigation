@@ -39,7 +39,7 @@ class BlockedGoalAlternative():
     for i in range(len(self.point_req.points_to_check)):
         if self.point_res.accessibility_flags[i]:
             rospy.loginfo("Nav Goal is valid")
-            print self.point_req.points_to_check[i]
+            #print self.point_req.points_to_check[i]
             return (True, self.point_req.points_to_check[i])
     
     rospy.logwarn("Nav Goal is not accessible")
@@ -65,7 +65,7 @@ class BlockedGoalAlternative():
         # use first valid alternative
         if not self.perimeter_res.accessible_poses_on_perimeter == []:
             rospy.loginfo("Found valid alternative")
-            print self.perimeter_res.accessible_poses_on_perimeter[0]
+            #print self.perimeter_res.accessible_poses_on_perimeter[0]
             return (True, self.perimeter_res.accessible_poses_on_perimeter[0])
     
     rospy.logerr("No valid alternative in perimeter")
