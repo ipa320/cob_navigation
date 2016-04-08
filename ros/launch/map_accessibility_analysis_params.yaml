@@ -1,6 +1,6 @@
 # if true, the path to a goal position must be accessible as well
 # bool
-approach_path_accessibility_check: true
+approach_path_accessibility_check: false
 
 # link name of the map in tf
 # string
@@ -16,4 +16,4 @@ obstacle_topic_update_rate: 5.0
 
 # publish the inflated map for viewing purposes
 # bool
-publish_inflated_map: true
+publish_inflated_map: false

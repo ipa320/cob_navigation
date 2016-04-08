@@ -69,17 +69,17 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 	// read in parameters
 	// todo: parameters from yaml file/param server are not taken
 	std::cout << "\n--------------------------------------\nMap Accessibility Analysis Parameters:\n--------------------------------------\n";
-	node_handle_.param("map_accessibility_analysis/approach_path_accessibility_check", approach_path_accessibility_check_, true);
+	node_handle_.param("approach_path_accessibility_check", approach_path_accessibility_check_, false);
 	std::cout << "approach_path_accessibility_check = " << approach_path_accessibility_check_ << std::endl;
-	node_handle_.param<std::string>("map_accessibility_analysis/map_link_name", map_link_name_, "/map");
+	node_handle_.param<std::string>("map_link_name", map_link_name_, "/map");
 	std::cout << "map_link_name = " << map_link_name_ << std::endl;
-	node_handle_.param<std::string>("map_accessibility_analysis/robot_base_link_name", robot_base_link_name_, "/base_link");
+	node_handle_.param<std::string>("robot_base_link_name", robot_base_link_name_, "/base_link");
 	std::cout << "robot_base_link_name_ = " << robot_base_link_name_ << std::endl;
-	node_handle_.param("map_accessibility_analysis/obstacle_topic_update_rate", obstacle_topic_update_rate_, 5.0);
+	node_handle_.param("obstacle_topic_update_rate", obstacle_topic_update_rate_, 5.0);
 	std::cout << "obstacle_topic_update_rate = " << obstacle_topic_update_rate_ << std::endl;
 	obstacle_topic_update_delay_ = ros::Duration(1.0/obstacle_topic_update_rate_);
 	last_update_time_obstacles_ = ros::Time::now();
-	node_handle_.param("map_accessibility_analysis/publish_inflated_map", publish_inflated_map_, false);
+	node_handle_.param("publish_inflated_map", publish_inflated_map_, false);
 	std::cout << "publish_inflated_map = " << publish_inflated_map_ << std::endl;
 	robot_radius_=0.;
 	if (node_handle_.hasParam("/local_costmap_node/costmap/footprint"))
@@ -413,15 +413,15 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 
 #ifdef __DEBUG_DISPLAYS__
 			if (res.accessibility_flags[i] == false)
-				cv::circle(display_map, cv::Point((req.points_to_check[i].x-map_origin_.x)*inverse_map_resolution_, (req.points_to_check[i].y-map_origin_.y)*inverse_map_resolution_), 2, cv::Scalar(64), 2);
+				cv::circle(display_map, cv::Point((req.points_to_check[i].x-map_origin_.x)*inverse_map_resolution_, (req.points_to_check[i].y-map_origin_.y)*inverse_map_resolution_), 2, cv::Scalar(64), 10);
 			else
-				cv::circle(display_map, cv::Point((req.points_to_check[i].x-map_origin_.x)*inverse_map_resolution_, (req.points_to_check[i].y-map_origin_.y)*inverse_map_resolution_), 2, cv::Scalar(192), 2);
+				cv::circle(display_map, cv::Point((req.points_to_check[i].x-map_origin_.x)*inverse_map_resolution_, (req.points_to_check[i].y-map_origin_.y)*inverse_map_resolution_), 2, cv::Scalar(192), 10);
 #endif
 		}
 
 #ifdef __DEBUG_DISPLAYS__
 		cv::imshow("points", display_map);
-		cv::waitKey(50);
+		cv::waitKey();
 #endif
 	}
 
@@ -484,15 +484,21 @@ bool MapAccessibilityAnalysis::checkPerimeterCallback(cob_map_accessibility_anal
 					res.accessible_poses_on_perimeter.push_back(pose);
 
 #ifdef __DEBUG_DISPLAYS__
-					cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 2);
+					cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 5);
 #endif
 				}
+			}
+			else
+			{
+#ifdef __DEBUG_DISPLAYS__
+				cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(64), 5);
+#endif
 			}
 		}
 
 #ifdef __DEBUG_DISPLAYS__
 		cv::imshow("perimeter", display_map);
-		cv::waitKey(50);
+		cv::waitKey();
 #endif
 	}
 
@@ -539,7 +545,7 @@ bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetAppr
 	}
 #ifdef __DEBUG_DISPLAYS__
 	cv::imshow("inflated polygon map", inflated_map);
-	cv::waitKey(50);
+	cv::waitKey();
 #endif
 
 	// find the individual connected areas
@@ -603,7 +609,7 @@ bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetAppr
 	}
 #ifdef __DEBUG_DISPLAYS__
 	cv::imshow("contour areas", map_expanded_copy);
-	cv::waitKey(50);
+	cv::waitKey();
 #endif
 
 	return true;
