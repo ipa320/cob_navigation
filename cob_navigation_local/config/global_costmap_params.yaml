@@ -1,12 +1,33 @@
-global_costmap:
-  global_frame: odom_combined
-  robot_base_frame: base_footprint
-  update_frequency: 5.0
-  publish_frequency: 2.0
-  static_map: false
-  rolling_window: true
-  width: 6.0
-  height: 6.0
-  resolution: 0.025
-  origin_x: 0.0
-  origin_y: 0.0
+# The global frame of the costmap to operate in
+global_frame: odom_combined # default: "/map" -> WARNING: Default value has a "/" in front of the frame-name
+
+# The name of the frame for the base link of the robot
+robot_base_frame: base_footprint # default: "base_link"
+
+# The frequency in Hz for the map to be updated
+update_frequency: 5.0 # default: 5.0
+
+# The frequency in Hz for the map to be publish display information.
+publish_frequency: 2.0 # default: 0.0
+
+# Whether or not to use a rolling window version of the costmap
+rolling_window: true # default: false
+
+# The parameters for the rolling_window (must be set if rolling_window = true)
+width: 6.0          # default: 10
+height: 6.0         # default: 10
+resolution: 0.025   # default: 0.05
+origin_x: 0.0       # default: 0.0
+origin_y: 0.0       # default: 0.0
+
+# Whether or not to use a static map (needs to be false if rolling_window = true)
+static_map: false # default: true
+
+# The list of all the costmap layers that will be loaded
+plugins:
+# The obstacle layer tracks the obstacles as read by the sensor data. The ObstacleCostmapPlugin marks and
+# raytraces obstacles in two dimensions, while the VoxelCostmapPlugin does so in three dimensions.
+- {name: obstacle_layer, type: "costmap_2d::VoxelLayer"}
+# The inflation layer is an optimization that adds new values around lethal obstacles (i.e. inflates the obstacles)
+# in order to make the costmap represent the configuration space of the robot.
+- {name: inflation_layer, type: "costmap_2d::InflationLayer"}
