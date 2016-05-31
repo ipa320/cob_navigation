@@ -15,6 +15,7 @@
 
   <exec_depend>cob_linear_nav</exec_depend>
   <exec_depend>cob_mapping_slam</exec_depend>
+  <exec_depend>cob_map_accessibility_analysis</exec_depend>
   <exec_depend>cob_navigation_config</exec_depend>
   <exec_depend>cob_navigation_global</exec_depend>
   <exec_depend>cob_navigation_local</exec_depend>

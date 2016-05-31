@@ -1,0 +1,34 @@
+<package format="2">
+  <name>cob_map_accessibility_analysis</name>
+  <version>0.1.0</version>
+  <description>
+    cob_map_accessibility_analysis receives the map from navigation as well as obstacles and inflates_obstacles topics to assemble a common obstacle map. Upon request, this node checks the accessibility of poses within thin map by (i) checking whether the pose itself is free and by (ii) checking whether there is a closed path from robot to the goal pose.
+  </description>
+
+  <license>LGPL</license>
+  <url>http://ros.org/wiki/cob_map_accessibility_analysis</url>
+
+  <author email="richard.bormann@ipa.fraunhofer.de">Richard Bormann</author>
+  <maintainer email="richard.bormann@ipa.fraunhofer.de">Richard Bormann</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <depend>boost</depend>
+  <!--depend>cob_3d_mapping_common</depend-->
+  <depend>cob_3d_mapping_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>geometry_msgs</depend>
+  <depend>image_transport</depend>
+  <depend>libpcl-all-dev</depend>
+  <depend>libopencv-dev</depend>
+  <depend>message_filters</depend>
+  <depend>nav_msgs</depend>
+  <depend>pcl_ros</depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf</depend>
+
+</package>
