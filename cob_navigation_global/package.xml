@@ -19,6 +19,7 @@
   <exec_depend>cob_linear_nav</exec_depend>
   <exec_depend>cob_navigation_config</exec_depend>
   <exec_depend>cob_scan_unifier</exec_depend>
+  <exec_depend>dwa_local_planner</exec_depend>
   <exec_depend>eband_local_planner</exec_depend>
   <exec_depend>map_server</exec_depend>
   <exec_depend>move_base</exec_depend>
