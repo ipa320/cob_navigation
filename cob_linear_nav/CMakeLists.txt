@@ -3,6 +3,7 @@ project(cob_linear_nav)
 
 find_package(catkin REQUIRED COMPONENTS
   actionlib
+  cob_srvs
   geometry_msgs
   move_base_msgs
   nav_msgs

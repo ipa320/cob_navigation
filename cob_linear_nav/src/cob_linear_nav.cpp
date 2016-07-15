@@ -70,6 +70,7 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Odometry.h>
+#include <cob_srvs/SetString.h>
 
 #include <tf/transform_listener.h>
 
@@ -85,6 +86,8 @@ class NodeClass
   ros::Publisher topic_pub_command_;
 
   ros::Subscriber goal_sub_, odometry_sub_;
+
+  ros::ServiceServer ss_;
 
   // declaration of action server
   actionlib::SimpleActionServer<move_base_msgs::MoveBaseAction> as_;
@@ -115,6 +118,8 @@ class NodeClass
 
     // subscribe to odometry
     odometry_sub_ = nh_.subscribe<nav_msgs::Odometry>("odom", 1, boost::bind(&NodeClass::odometryCB, this, _1));
+
+    ss_ = private_nh.advertiseService("set_global_frame", &NodeClass::serviceCB, this);
 
     // read parameters from parameter server
     if(!private_nh.hasParam("kv")) ROS_WARN("Used default parameter for kv [2.5]");
@@ -189,16 +194,16 @@ class NodeClass
     vtheta_last_ = 0.0;
 
     //we need to make sure that the transform between the robot base frame and the global frame is available
-    ros::Time last_error = ros::Time::now();
-    std::string tf_error;
-    while(!tf_listener_.waitForTransform(global_frame_, robot_frame_, ros::Time(), ros::Duration(0.1), ros::Duration(0.01), &tf_error)) {
-      ros::spinOnce();
-      if(last_error + ros::Duration(5.0) < ros::Time::now()){
-        ROS_WARN("Waiting on transform from %s to %s to become available before running cob_linear_nav, tf error: %s",
-        robot_frame_.c_str(), global_frame_.c_str(), tf_error.c_str());
-        last_error = ros::Time::now();
-      }
-    }
+//    ros::Time last_error = ros::Time::now();
+//    std::string tf_error;
+//    while(!tf_listener_.waitForTransform(global_frame_, robot_frame_, ros::Time(), ros::Duration(0.1), ros::Duration(0.01), &tf_error)) {
+//      ros::spinOnce();
+//      if(last_error + ros::Duration(5.0) < ros::Time::now()){
+//        ROS_WARN("Waiting on transform from %s to %s to become available before running cob_linear_nav, tf error: %s",
+//        robot_frame_.c_str(), global_frame_.c_str(), tf_error.c_str());
+//        last_error = ros::Time::now();
+//      }
+//    }
 
     //start action server, it holds the main loop while driving
     as_.start();
@@ -207,7 +212,7 @@ class NodeClass
   void topicCB(const geometry_msgs::PoseStamped::ConstPtr& goal)
   {
 
-    if(!goalValid(goal->pose))
+    if(!goalValid(*goal))
       return;
 
     if(use_move_action_)
@@ -250,8 +255,11 @@ class NodeClass
 
   void actionCB(const move_base_msgs::MoveBaseGoalConstPtr &goal)
   {
-    if(!goalValid(goal->target_pose.pose))
+    if(!goalValid(goal->target_pose))
+    {
+      as_.setAborted(move_base_msgs::MoveBaseResult(), "Aborting because a transformation could not be found");
       return;
+    }
     // goal is of type geometry_msgs/PoseStamped
     ROS_INFO("In idle mode, new goal accepted");
 
@@ -321,11 +329,33 @@ class NodeClass
 
     vec_stamped.vector = odometry->twist.twist.linear;
     vec_stamped.header.frame_id =  "base_footprint";
-    tf_listener_.transformVector(robot_frame_, vec_stamped, robot_twist_linear_robot_);
+    try
+    {
+      tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(0.01));
+      tf_listener_.transformVector(robot_frame_, vec_stamped, robot_twist_linear_robot_);
+    }
+    catch(tf::TransformException& ex){ROS_ERROR("%s",ex.what());}
 
     vec_stamped.vector = odometry->twist.twist.angular;
     vec_stamped.header.frame_id =  "base_footprint";
-    tf_listener_.transformVector(robot_frame_, vec_stamped, robot_twist_angular_robot_);
+    try
+    {
+      tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(0.01));
+      tf_listener_.transformVector(robot_frame_, vec_stamped, robot_twist_angular_robot_);
+    }
+    catch(tf::TransformException& ex){ROS_ERROR("%s",ex.what());}
+  }
+
+  bool serviceCB(cob_srvs::SetString::Request &req, cob_srvs::SetString::Response &res)
+  {
+    global_frame_ = req.data;
+    ros::NodeHandle private_nh("~");
+    private_nh.setParam("global_frame", req.data);
+    ROS_INFO_STREAM("Set global frame to: " << req.data);
+    res.success = true;
+    res.message = "";
+
+    return true;
   }
 
   // Destructor
@@ -364,7 +394,7 @@ private:
   double sign(double x);
   void stopMovement();
   bool notMovingDueToObstacle();
-  bool goalValid(const geometry_msgs::Pose & goal);
+  bool goalValid(const geometry_msgs::PoseStamped& goal_pose);
 
   //Potential field Controller variables
   double vx_last_, vy_last_, x_last_, y_last_, theta_last_, vtheta_last_;
@@ -435,7 +465,10 @@ void NodeClass::publishVelocitiesGlobal(double vx, double vy, double theta) {
   cmd_global.header.frame_id = global_frame_;
   cmd_global.vector.x = vx;
   cmd_global.vector.y = vy;
-  try { tf_listener_.transformVector(robot_frame_, cmd_global, cmd_robot);
+  try
+  {
+    tf_listener_.waitForTransform(robot_frame_, cmd_global.header.frame_id, ros::Time(0), ros::Duration(0.02));
+    tf_listener_.transformVector(robot_frame_, cmd_global, cmd_robot);
   } catch (tf::TransformException ex){
     ROS_ERROR("%s",ex.what());
     cmd_robot.vector.x = 0.0f;
@@ -496,15 +529,27 @@ bool NodeClass::notMovingDueToObstacle() {
   return false;
 }
 
-bool NodeClass::goalValid(const geometry_msgs::Pose & goal)
+bool NodeClass::goalValid(const geometry_msgs::PoseStamped& goal_pose)
 {
-  if( goal.orientation.x == 0.0 &&
-      goal.orientation.y == 0.0 &&
-      goal.orientation.z == 0.0 &&
-      goal.orientation.w == 0.0 )
+  if( goal_pose.pose.orientation.x == 0.0 &&
+      goal_pose.pose.orientation.y == 0.0 &&
+      goal_pose.pose.orientation.z == 0.0 &&
+      goal_pose.pose.orientation.w == 0.0 )
   {
     ROS_WARN("Goal invalid! Received Quaternion with all values 0.0!");
     return false;
+  }
+  else if (!tf_listener_.canTransform(global_frame_, goal_pose.header.frame_id, goal_pose.header.stamp, new std::string))
+  {
+    ROS_WARN_STREAM("Can not transform goal which is given in /"
+                    << goal_pose.header.frame_id << " into global frame /" << global_frame_);
+    return false;
+  }
+  else if (!tf_listener_.canTransform(robot_frame_, goal_pose.header.frame_id, goal_pose.header.stamp, new std::string))
+  {
+     ROS_WARN_STREAM("Can not transform goal which is given in /"
+                      << goal_pose.header.frame_id << " into robot frame /" << robot_frame_);
+     return false;
   }
   else
   {
