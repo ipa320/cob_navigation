@@ -193,18 +193,6 @@ class NodeClass
     last_time_ = ros::Time::now().toSec();
     vtheta_last_ = 0.0;
 
-    //we need to make sure that the transform between the robot base frame and the global frame is available
-//    ros::Time last_error = ros::Time::now();
-//    std::string tf_error;
-//    while(!tf_listener_.waitForTransform(global_frame_, robot_frame_, ros::Time(), ros::Duration(0.1), ros::Duration(0.01), &tf_error)) {
-//      ros::spinOnce();
-//      if(last_error + ros::Duration(5.0) < ros::Time::now()){
-//        ROS_WARN("Waiting on transform from %s to %s to become available before running cob_linear_nav, tf error: %s",
-//        robot_frame_.c_str(), global_frame_.c_str(), tf_error.c_str());
-//        last_error = ros::Time::now();
-//      }
-//    }
-
     //start action server, it holds the main loop while driving
     as_.start();
   }
@@ -331,7 +319,7 @@ class NodeClass
     vec_stamped.header.frame_id =  "base_footprint";
     try
     {
-      tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(0.01));
+      tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(1.0));
       tf_listener_.transformVector(robot_frame_, vec_stamped, robot_twist_linear_robot_);
     }
     catch(tf::TransformException& ex){ROS_ERROR("%s",ex.what());}
@@ -340,7 +328,7 @@ class NodeClass
     vec_stamped.header.frame_id =  "base_footprint";
     try
     {
-      tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(0.01));
+      tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(1.0));
       tf_listener_.transformVector(robot_frame_, vec_stamped, robot_twist_angular_robot_);
     }
     catch(tf::TransformException& ex){ROS_ERROR("%s",ex.what());}
@@ -426,9 +414,11 @@ geometry_msgs::PoseStamped NodeClass::transformGoalToMap(geometry_msgs::PoseStam
 }
 
 geometry_msgs::PoseStamped NodeClass::getRobotPoseGlobal() {
-  try{
-    tf_listener_.waitForTransform(global_frame_, robot_frame_, ros::Time(0), ros::Duration(5.0));
-    tf_listener_.transformPose(global_frame_, ros::Time(0), zero_pose_, robot_frame_, robot_pose_global_);
+  try
+  {
+    ros::Time now = ros::Time::now();
+    tf_listener_.waitForTransform(global_frame_, robot_frame_, now, ros::Duration(5.0));
+    tf_listener_.transformPose(global_frame_, now, zero_pose_, robot_frame_, robot_pose_global_);
   }
   catch(tf::TransformException& ex){
     ROS_WARN("Failed to find robot pose in global frame %s", global_frame_.c_str());
@@ -463,11 +453,12 @@ void NodeClass::publishVelocitiesGlobal(double vx, double vy, double theta) {
   geometry_msgs::Twist msg;
 
   cmd_global.header.frame_id = global_frame_;
+  cmd_global.header.stamp = ros::Time::now();
   cmd_global.vector.x = vx;
   cmd_global.vector.y = vy;
   try
   {
-    tf_listener_.waitForTransform(robot_frame_, cmd_global.header.frame_id, ros::Time(0), ros::Duration(0.02));
+    tf_listener_.waitForTransform(robot_frame_, cmd_global.header.frame_id, cmd_global.header.stamp, ros::Duration(1.0));
     tf_listener_.transformVector(robot_frame_, cmd_global, cmd_robot);
   } catch (tf::TransformException ex){
     ROS_ERROR("%s",ex.what());
