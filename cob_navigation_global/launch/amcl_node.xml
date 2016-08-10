@@ -1,10 +1,6 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- combine front and rear scanner -->
-  <!--node pkg="topic_tools" type="relay" name="scan_front_relay" args="/base_laser_front/scan scan_combined"/>
-    <node pkg="topic_tools" type="relay" name="scan_rear_relay" args="/base_laser_rear/scan scan_combined"/-->
-
   <arg name="robot" default="$(optenv ROBOT !!NO_ROBOT_SET!!)"/>
 
   <!-- start amcl -->
