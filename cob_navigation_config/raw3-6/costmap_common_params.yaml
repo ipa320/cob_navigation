@@ -3,7 +3,7 @@ transform_tolerance: 0.4 # default: 0.2
 
 # The footprint of the robot -> WARNING: According to documentation this parameter should not be loaded from parameter
 # server but be subscribed to! However, it is required to run without error
-footprint: [[0.52,0.3],[-0.52,0.3],[-0.52,-0.3],[0.52,-0.3]]
+footprint: [[0.58,0.36],[-0.58,0.36],[-0.58,-0.36],[0.58,-0.36]]
 
 #
 # configure the static layer plugin
