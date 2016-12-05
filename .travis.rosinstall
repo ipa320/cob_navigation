@@ -2,3 +2,11 @@
     uri: 'https://github.com/ipa320/cob_environments.git'
     local-name: cob_environments
     version: kinetic_dev
+- git:
+    uri: 'https://github.com/ipa320/cob_common.git'
+    local-name: cob_common
+    version: kinetic_dev
+- git:
+    uri: 'https://github.com/ipa320/cob_perception_common.git'
+    local-name: cob_perception_common
+    version: kinetic_dev
