@@ -17,7 +17,6 @@ install(DIRECTORY launch config
 
 # rostest for robots
 SET(robotlist
-    cob4-1
     cob4-2
 #    cob4-3
 #    cob4-4
