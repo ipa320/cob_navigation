@@ -1,0 +1,89 @@
+# Specifies the delay in transform (tf) data that is tolerable in seconds
+transform_tolerance: 0.4 # default: 0.2
+
+# The footprint of the robot -> WARNING: According to documentation this parameter should not be loaded from parameter
+# server but be subscribed to! However, it is required to run without error
+footprint: [[0.4,0.0],[0.35,0.35],[-0.2,0.4],[-0.45,0.0],[-0.2,-0.4],[0.35,-0.35]]
+
+#
+# configure the static layer plugin
+#
+static_layer:
+  # The value for which a cost should be considered unknown when reading in a map from the map server
+  unknown_cost_value: 0 # default: 0
+  # The threshold value at which to consider a cost lethal when reading in a map from the map server
+  lethal_cost_threshold: 100 # default: 100
+  # The topic that the costmap subscribes to for the static map. This parameter is useful when you have multiple
+  # costmap instances within a single node that you want to use different static maps.
+  map_topic: map # default: "map"
+
+#
+# configure the obstacle layer plugin
+#
+obstacle_layer:
+
+  # Definition of the sensors/observation sources
+  observation_sources: laser_scan_front laser_scan_left laser_scan_right
+
+  # Parameters of the source: laser_scan_front
+  laser_scan_front:
+    sensor_frame: base_laser_front_link # The frame of the origin of the sensor, default: ""
+    topic: /base_laser_front/scan       # The topic on which sensor data comes in for this source, default: source_name
+    data_type: LaserScan                # The data type associated with the topic, default: "PointCloud"
+    marking: true                       # Whether or not this observation is used to mark obstacles, default: true
+    clearing: true                      # Whether or not this observation is used to clear out freespace, default: false
+
+  # Parameters of the source: laser_scan_rear
+  laser_scan_left:
+    sensor_frame: base_laser_left_link  # The frame of the origin of the sensor, default: ""
+    topic: /base_laser_left/scan        # The topic on which sensor data comes in for this source, default: source_name
+    data_type: LaserScan                # The data type associated with the topic, default: "PointCloud"
+    marking: true                       # Whether or not this observation is used to mark obstacles, default: true
+    clearing: true                      # Whether or not this observation is used to clear out freespace, default: false
+
+  # Parameters of the source: laser_scan_front
+  laser_scan_right:
+    sensor_frame: base_laser_right_link # The frame of the origin of the sensor, default: ""
+    topic: /base_laser_right/scan       # The topic on which sensor data comes in for this source, default: source_name
+    data_type: LaserScan                # The data type associated with the topic, default: "PointCloud"
+    marking: true                       # Whether or not this observation is used to mark obstacles, default: true
+    clearing: true                      # Whether or not this observation is used to clear out freespace, default: false
+
+  # The default maximum distance from the robot at which an obstacle will be inserted into the cost map in meters
+  obstacle_range: 5.0 # default: 2.5
+
+  # The default range in meters at which to raytrace out obstacles from the map using sensor data
+  raytrace_range: 5.5 # default: 3.0
+
+  # What map type to use. "voxel" or "costmap" are the supported types, with the difference between them being a 3D-view of the world vs. a 2D-view of the world
+  map_type: costmap
+
+  # The following parameters are only required if you have a VoxelLayer configured as ObstacleLayer
+  # Voxel Parameter: The z origin of the map in meters
+  #origin_z: 0.0 # default: 0.0
+
+  # Voxel Parameter: The z resolution of the map in meters/cell
+  #z_resolution: 0.23 # default: 0.2
+
+  # Voxel Parameter: The number of voxels to in each vertical column, the height of the grid is z_resolution * z_voxels
+  #z_voxels: 2 # default: 10
+
+  # Voxel Parameter: The number of unknown cells allowed in a column considered to be "known"
+  unknown_threshold: 2 # default: ~<name>/z_voxels
+
+  # Voxel Parameter: The maximum number of marked cells allowed in a column considered to be "free"
+  mark_threshold: 0 # default: 0
+
+  # Whether or not to publish the underlying voxel grid for visualization purposes
+  publish_voxel_map: true
+
+#
+# Configure the inflation_layer
+#
+inflation_layer:
+
+  # The radius in meters to which the map inflates obstacle cost values.
+  inflation_radius: 0.55 # default: 0.55
+
+  # A scaling factor to apply to cost values during inflation.
+  cost_scaling_factor: 8.01 # default: 10.0

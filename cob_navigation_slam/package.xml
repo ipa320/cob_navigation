@@ -18,4 +18,7 @@
   <exec_depend>cob_mapping_slam</exec_depend>
   <exec_depend>rviz</exec_depend>
 
+  <test_depend>cob_supported_robots</test_depend>
+  <test_depend>roslaunch</test_depend>
+
 </package>
