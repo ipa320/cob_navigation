@@ -1,62 +1,19 @@
-/*!
-*****************************************************************
-* \file
-*
-* \note
-* Copyright (c) 2013 \n
-* Fraunhofer Institute for Manufacturing Engineering
-* and Automation (IPA) \n\n
-*
-*****************************************************************
-*
-* \note
-* Project name: care-o-bot
-* \note
-* ROS stack name: cob_scenario_states
-* \note
-* ROS package name: cob_generic_states_experimental
-*
-* \author
-* Author: Richard Bormann
-* \author
-* Supervised by:
-*
-* \date Date of creation: August 2013
-*
-* \brief
-* cob_map_accessibility_analysis receives the map from navigation as well as obstacles and inflates_obstacles topics to assemble a common obstacle map. Upon request, this node checks the accessibility of poses within thin map by (i) checking whether the pose itself is free and by (ii) checking whether there is a closed path from robot to the goal pose.
-*
-*****************************************************************
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions are met:
-*
-* - Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer. \n
-* - Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in the
-* documentation and/or other materials provided with the distribution. \n
-* - Neither the name of the Fraunhofer Institute for Manufacturing
-* Engineering and Automation (IPA) nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission. \n
+/*
+* Copyright (c) 2017 Fraunhofer Institute for Manufacturing Engineering and Automation (IPA)
 *
 * This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License LGPL as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Lesser General Public License LGPL for more details.
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
 *
-* You should have received a copy of the GNU Lesser General Public
-* License LGPL along with this program.
-* If not, see <http://www.gnu.org/licenses/>.
-*
-****************************************************************/
-
+* You should have received a copy of the GNU Lesser General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include <cob_map_accessibility_analysis/map_accessibility_analysis_server.h>
 #include <pcl_ros/point_cloud.h>
@@ -68,19 +25,19 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 {
 	// read in parameters
 	// todo: parameters from yaml file/param server are not taken
-	std::cout << "\n--------------------------------------\nMap Accessibility Analysis Parameters:\n--------------------------------------\n";
+        ROS_INFO("\n--------------------------------------\nMap Accessibility Analysis Parameters:\n--------------------------------------\n");
 	node_handle_.param("approach_path_accessibility_check", approach_path_accessibility_check_, false);
-	std::cout << "approach_path_accessibility_check = " << approach_path_accessibility_check_ << std::endl;
+	ROS_INFO_STREAM("approach_path_accessibility_check = " << approach_path_accessibility_check_);
 	node_handle_.param<std::string>("map_link_name", map_link_name_, "/map");
-	std::cout << "map_link_name = " << map_link_name_ << std::endl;
+	ROS_INFO_STREAM("map_link_name = " << map_link_name_ );
 	node_handle_.param<std::string>("robot_base_link_name", robot_base_link_name_, "/base_link");
-	std::cout << "robot_base_link_name_ = " << robot_base_link_name_ << std::endl;
+	ROS_INFO_STREAM("robot_base_link_name_ = " << robot_base_link_name_ );
 	node_handle_.param("obstacle_topic_update_rate", obstacle_topic_update_rate_, 5.0);
-	std::cout << "obstacle_topic_update_rate = " << obstacle_topic_update_rate_ << std::endl;
+	ROS_INFO_STREAM("obstacle_topic_update_rate = " << obstacle_topic_update_rate_ );
 	obstacle_topic_update_delay_ = ros::Duration(1.0/obstacle_topic_update_rate_);
 	last_update_time_obstacles_ = ros::Time::now();
 	node_handle_.param("publish_inflated_map", publish_inflated_map_, false);
-	std::cout << "publish_inflated_map = " << publish_inflated_map_ << std::endl;
+	ROS_INFO_STREAM("publish_inflated_map = " << publish_inflated_map_ );
 	robot_radius_=0.;
 	if (node_handle_.hasParam("/local_costmap_node/costmap/footprint"))
 	{
@@ -88,13 +45,18 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 		XmlRpc::XmlRpcValue footprint_list;
 		node_handle_.getParam("/local_costmap_node/costmap/footprint", footprint_list);
 		std::vector<geometry_msgs::Point> footprint = loadRobotFootprint(footprint_list);
-		std::cout << "footprint = [ ";
+		std::string footprint_string = "footprint = [ ";
 		for (unsigned int i=0; i<footprint.size(); ++i)
 		{
 			robot_radius_ = std::max<double>(robot_radius_, sqrt(footprint[i].x*footprint[i].x+footprint[i].y*footprint[i].y));
-			std::cout << "[" << footprint[i].x << ", " << footprint[i].y << "] ";
+			footprint_string += "[";
+			footprint_string += footprint[i].x;
+			footprint_string += ", ";
+			footprint_string += footprint[i].y;
+			footprint_string += "] ";
 		}
-		std::cout << "]\n";
+		footprint_string += "]\n";
+		ROS_INFO(footprint_string.c_str());
 	}
 	if (robot_radius_==0.0)
 	{
@@ -103,7 +65,7 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh)
 	}
 	// hack:
 	robot_radius_ = 0.35;
-	std::cout << "robot_radius = " << robot_radius_ << std::endl;
+	ROS_INFO_STREAM("robot_radius = " << robot_radius_);
 
 	// receive ground floor map once
 	mapInit(node_handle_);
@@ -303,7 +265,7 @@ void MapAccessibilityAnalysis::mapDataCallback(const nav_msgs::OccupancyGrid::Co
 	map_resolution_ = map_msg_data->info.resolution;
 	inverse_map_resolution_ = 1. / map_resolution_;
 	map_origin_ = cv::Point2d(map_msg_data->info.origin.position.x, map_msg_data->info.origin.position.y);
-	std::cout << "map resolution: " << map_msg_data->info.resolution << std::endl;
+	ROS_INFO_STREAM("map resolution: " << map_msg_data->info.resolution);
 
 	// create original map
 	original_map_ = 255 * cv::Mat::ones(map_msg_data->info.height, map_msg_data->info.width, CV_8UC1);
@@ -317,7 +279,7 @@ void MapAccessibilityAnalysis::mapDataCallback(const nav_msgs::OccupancyGrid::Co
 	}
 
 	// compute inflated static map
-	std::cout << "inflation thickness: " << cvRound(robot_radius_*inverse_map_resolution_) << std::endl;
+	ROS_INFO_STREAM("inflation thickness: " << cvRound(robot_radius_*inverse_map_resolution_));
 	cv::erode(original_map_, inflated_original_map_, cv::Mat(), cv::Point(-1,-1), cvRound(robot_radius_*inverse_map_resolution_));
 	if (inflated_map_.empty() == true)
 		inflated_map_ = inflated_original_map_;	// initial setup (if no obstacle msgs were received yet)
@@ -405,7 +367,7 @@ bool MapAccessibilityAnalysis::checkPose2DArrayCallback(cob_map_accessibility_an
 		{
 			int u = cvRound((req.points_to_check[i].x-map_origin_.x)*inverse_map_resolution_);
 			int v = cvRound((req.points_to_check[i].y-map_origin_.y)*inverse_map_resolution_);
-			std::cout << "Checking accessibility of point (" << req.points_to_check[i].x << ", " << req.points_to_check[i].y << ")m / (" << u << ", " << v << ")pix." << std::endl;
+			ROS_INFO_STREAM("Checking accessibility of point (" << req.points_to_check[i].x << ", " << req.points_to_check[i].y << ")m / (" << u << ", " << v << ")pix.");
 			if (inflated_map_.at<uchar>(v, u) != 0)
 				// check if robot can approach this position
 				if (approach_path_accessibility_check_==false || isApproachPositionAccessible(robot_location, cv::Point(u,v), area_contours)==true)
@@ -601,7 +563,7 @@ bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetAppr
 					// display found contours
 					cv::circle(map_expanded_copy, robot_location, 3, cv::Scalar(200,200,200,200), -1);
 					cv::circle(map_expanded_copy, cv::Point(x,y), 3, cv::Scalar(200,200,200,200), -1);
-//					std::cout << " x=" << x << "  y=" << y << "\n";
+//					ROS_DEBUG_STREAM(" x=" << x << "  y=" << y);
 #endif
 				}
 			}
@@ -647,7 +609,7 @@ bool MapAccessibilityAnalysis::isApproachPositionAccessible(const cv::Point& rob
 		if (0 <= cv::pointPolygonTest(contours[i], robotLocation, false))
 			contourIndexRobot = i;
 	}
-	//std::cout << "contourIndexPotentialApproachPose=" << contourIndexPotentialApproachPose << "  contourIndexRobot=" << contourIndexRobot << std::endl;
+	ROS_DEBUG_STREAM("contourIndexPotentialApproachPose=" << contourIndexPotentialApproachPose << "  contourIndexRobot=" << contourIndexRobot);
 	if (contourIndexRobot != contourIndexPotentialApproachPose || (contourIndexRobot==-1 && contourIndexPotentialApproachPose==-1))
 		return false;
 

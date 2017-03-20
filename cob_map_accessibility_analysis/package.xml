@@ -22,8 +22,8 @@
   <depend>cv_bridge</depend>
   <depend>geometry_msgs</depend>
   <depend>image_transport</depend>
-  <depend>libpcl-all-dev</depend>
   <depend>libopencv-dev</depend>
+  <depend>libpcl-all-dev</depend>
   <depend>message_filters</depend>
   <depend>nav_msgs</depend>
   <depend>pcl_ros</depend>
