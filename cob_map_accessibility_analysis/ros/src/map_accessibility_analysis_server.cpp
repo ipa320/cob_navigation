@@ -57,7 +57,7 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh) : node_ha
       footprint_string += "] ";
     }
     footprint_string += "]\n";
-    ROS_INFO(footprint_string.c_str());
+    ROS_INFO("%s", footprint_string.c_str());
   }
   if (robot_radius_ == 0.0)
   {
