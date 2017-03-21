@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2017 Fraunhofer Institute for Manufacturing Engineering and Automation (IPA)
+* Copyright (c) 2016-2017 Fraunhofer Institute for Manufacturing Engineering and Automation (IPA)
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -47,10 +47,10 @@ int main(int argc, char** argv)
   // only proceed if the service is available
   if (serviceAvailable == false)
   {
-    ROS_ERROR("The services could not be found.\n");
+    ROS_ERROR("The services could not be found.");
     return -1;
   }
-  ROS_INFO("The service servers are advertised.\n");
+  ROS_INFO("The service servers are advertised.");
 
   // Call to point accessibility service
   cob_map_accessibility_analysis::CheckPointAccessibility::Request req_points;
@@ -70,15 +70,15 @@ int main(int argc, char** argv)
 
   if (success == true)
   {
-    ROS_INFO("Points request successful, results:\n");
+    ROS_INFO("Points request successful, results: ");
     for (unsigned int i = 0; i < res_points.accessibility_flags.size(); ++i)
-      ROS_INFO(" - (xy)=(%f, %f), accessible=%d\n",
+      ROS_INFO(" - (xy)=(%f, %f), accessible=%d",
                req_points.points_to_check[i].x,
                req_points.points_to_check[i].y,
                res_points.accessibility_flags[i]);
   }
   else
-    ROS_WARN("The service call for points was not successful.\n");
+    ROS_WARN("The service call for points was not successful.");
 
   // Call to perimeter accessibility service
   cob_map_accessibility_analysis::CheckPerimeterAccessibility::Request req_perimeter;
@@ -96,15 +96,15 @@ int main(int argc, char** argv)
 
   if (success == true)
   {
-    ROS_INFO("Accessible points on perimeter:\n");
+    ROS_INFO("Accessible points on perimeter:");
     for (unsigned int i = 0; i < res_perimeter.accessible_poses_on_perimeter.size(); ++i)
-      ROS_INFO(" - (xyt)=(%f, %f, %f)\n",
+      ROS_INFO(" - (xyt)=(%f, %f, %f)",
                res_perimeter.accessible_poses_on_perimeter[i].x,
                res_perimeter.accessible_poses_on_perimeter[i].y,
                res_perimeter.accessible_poses_on_perimeter[i].theta);
   }
   else
-    ROS_WARN("The service call for perimeter points was not successful.\n");
+    ROS_WARN("The service call for perimeter points was not successful.");
 
   //// ===== example call to polygon accessibility service =====
   // cob_3d_mapping_msgs::GetApproachPoseForPolygonRequest req_polygon;

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2017 Fraunhofer Institute for Manufacturing Engineering and Automation (IPA)
+* Copyright (c) 2016-2017 Fraunhofer Institute for Manufacturing Engineering and Automation (IPA)
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +25,7 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh) : node_ha
   // read in parameters
   // todo: parameters from yaml file/param server are not taken
   ROS_INFO("\n--------------------------------------\nMap Accessibility Analysis "
-           "Parameters:\n--------------------------------------\n");
+           "Parameters:\n--------------------------------------");
   node_handle_.param("approach_path_accessibility_check", approach_path_accessibility_check_, false);
   ROS_INFO_STREAM("approach_path_accessibility_check = " << approach_path_accessibility_check_);
   node_handle_.param<std::string>("map_link_name", map_link_name_, "/map");
@@ -56,7 +56,7 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh) : node_ha
       footprint_string += footprint[i].y;
       footprint_string += "] ";
     }
-    footprint_string += "]\n";
+    footprint_string += "]";
     ROS_INFO("%s", footprint_string.c_str());
   }
   if (robot_radius_ == 0.0)
