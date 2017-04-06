@@ -3,7 +3,7 @@
 
   <arg name="robot" default="$(optenv ROBOT !!NO_ROBOT_SET!!)"/>
   <arg name="robot_env" default="$(optenv ROBOT_ENV !!NO_ROBOT_ENV_SET!!)"/>
-  <arg name="map" default="$(find cob_default_env_config)/$(arg robot_env)/map.yaml" />
+  <arg name="map" default="$(find cob_default_env_config)/envs/$(arg robot_env)/map.yaml" />
 
   <!--- Run map_server -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map)"/>
