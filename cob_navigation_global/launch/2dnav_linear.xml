@@ -2,13 +2,14 @@
 <launch>
 
   <arg name="robot"/>
+  <arg name="pkg_nav_config" default="$(find cob_navigation_config)"/>
 
   <node pkg="cob_linear_nav" type="cob_linear_nav" respawn="false" name="move_base_linear" output="screen">
     <!-- remap inputs -->
     <remap from="odom" to="base/odometry_controller/odometry"/>
     <!-- remap outputs -->
     <remap from="cmd_vel" to="base/collision_velocity_filter/command"/>
-    <rosparam file="$(find cob_navigation_config)/robots/$(arg robot)/nav/linear_ctrl_params.yaml" command="load" />
+    <rosparam file="$(arg pkg_nav_config)/robots/$(arg robot)/nav/linear_ctrl_params.yaml" command="load" />
   </node>
 
 </launch>
