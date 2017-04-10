@@ -2,6 +2,7 @@
 <launch>
 
   <arg name="robot" default="$(optenv ROBOT !!NO_ROBOT_SET!!)"/>
+  <arg name="pkg_nav_config" default="$(find cob_navigation_config)"/>
   <arg name="unified_laser_scan" default="false"/>
 
   <!-- dynamic map generation -->
@@ -12,6 +13,7 @@
   <!--- Run move base -->
   <include file="$(find cob_navigation_global)/launch/2dnav_ros_dwa.xml" >
     <arg name="robot" value="$(arg robot)"/>
+    <arg name="pkg_nav_config" value="$(arg pkg_nav_config)"/>
   </include>
 
 </launch>

@@ -2,10 +2,12 @@
 <launch>
 
   <arg name="robot" default="$(optenv ROBOT !!NO_ROBOT_SET!!)"/>
+  <arg name="pkg_nav_config" default="$(find cob_navigation_config)"/>
 
   <!--- Run move base -->
   <include file="$(find cob_navigation_local)/launch/2dnav_ros_tr.xml" >
     <arg name="robot" value="$(arg robot)"/>
+    <arg name="pkg_nav_config" value="$(arg pkg_nav_config)"/>
   </include>
 
 </launch>
