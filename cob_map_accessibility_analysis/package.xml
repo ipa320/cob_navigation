@@ -17,7 +17,6 @@
   <exec_depend>message_runtime</exec_depend>
 
   <depend>boost</depend>
-  <!--depend>cob_3d_mapping_common</depend-->
   <depend>cob_3d_mapping_msgs</depend>
   <depend>cv_bridge</depend>
   <depend>geometry_msgs</depend>

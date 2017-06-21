@@ -20,13 +20,12 @@
 
 //#define __DEBUG_DISPLAYS__
 
-MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh) : node_handle_(nh)
+MapAccessibilityAnalysisServer::MapAccessibilityAnalysisServer(ros::NodeHandle nh) : node_handle_(nh)
 {
   // read in parameters
-  // todo: parameters from yaml file/param server are not taken
   ROS_INFO("\n--------------------------------------\nMap Accessibility Analysis "
            "Parameters:\n--------------------------------------");
-  node_handle_.param("approach_path_accessibility_check", approach_path_accessibility_check_, false);
+  node_handle_.param("approach_path_accessibility_check", approach_path_accessibility_check_, false);	// this setting is overwritten temporarily on receiving the CheckPointAccessibility.srv message
   ROS_INFO_STREAM("approach_path_accessibility_check = " << approach_path_accessibility_check_);
   node_handle_.param<std::string>("map_link_name", map_link_name_, "/map");
   ROS_INFO_STREAM("map_link_name = " << map_link_name_);
@@ -44,20 +43,16 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh) : node_ha
     // compute robot radius from footprint
     XmlRpc::XmlRpcValue footprint_list;
     node_handle_.getParam("/local_costmap_node/costmap/footprint", footprint_list);
-    std::vector<geometry_msgs::Point> footprint = loadRobotFootprint(footprint_list);
-    std::string footprint_string = "footprint = [ ";
+    std::vector<geometry_msgs::Point> footprint = loadRobotFootprint(footprint_list);	// polygonal footprint of the robot in [m]
+    std::stringstream footprint_string;
+    footprint_string << "footprint = [ ";
     for (unsigned int i = 0; i < footprint.size(); ++i)
     {
-      robot_radius_ =
-          std::max<double>(robot_radius_, sqrt(footprint[i].x * footprint[i].x + footprint[i].y * footprint[i].y));
-      footprint_string += "[";
-      footprint_string += footprint[i].x;
-      footprint_string += ", ";
-      footprint_string += footprint[i].y;
-      footprint_string += "] ";
+      robot_radius_ = std::max<double>(robot_radius_, sqrt(footprint[i].x * footprint[i].x + footprint[i].y * footprint[i].y));
+      footprint_string << "[" << footprint[i].x << ", " << footprint[i].y << "] ";
     }
-    footprint_string += "]";
-    ROS_INFO("%s", footprint_string.c_str());
+    footprint_string << "]";
+    ROS_INFO("%s", footprint_string.str().c_str());
   }
   if (robot_radius_ == 0.0)
   {
@@ -81,22 +76,22 @@ MapAccessibilityAnalysis::MapAccessibilityAnalysis(ros::NodeHandle nh) : node_ha
 
   // advertise services
   map_points_accessibility_check_server_ = node_handle_.advertiseService(
-      "map_points_accessibility_check", &MapAccessibilityAnalysis::checkPose2DArrayCallback, this);
+      "map_points_accessibility_check", &MapAccessibilityAnalysisServer::checkPose2DArrayCallback, this);
   map_perimeter_accessibility_check_server_ = node_handle_.advertiseService(
-      "map_perimeter_accessibility_check", &MapAccessibilityAnalysis::checkPerimeterCallback, this);
+      "map_perimeter_accessibility_check", &MapAccessibilityAnalysisServer::checkPerimeterCallback, this);
   map_polygon_accessibility_check_server_ = node_handle_.advertiseService(
-      "map_polygon_accessibility_check", &MapAccessibilityAnalysis::checkPolygonCallback, this);
+      "map_polygon_accessibility_check", &MapAccessibilityAnalysisServer::checkPolygonCallback, this);
 
   ROS_INFO("MapPointAccessibilityCheck initialized.");
 }
 
-MapAccessibilityAnalysis::~MapAccessibilityAnalysis()
+MapAccessibilityAnalysisServer::~MapAccessibilityAnalysisServer()
 {
   if (it_ != 0)
     delete it_;
 }
 
-std::vector<geometry_msgs::Point> MapAccessibilityAnalysis::loadRobotFootprint(XmlRpc::XmlRpcValue& footprint_list)
+std::vector<geometry_msgs::Point> MapAccessibilityAnalysisServer::loadRobotFootprint(XmlRpc::XmlRpcValue& footprint_list)
 {
   std::vector<geometry_msgs::Point> footprint;
   geometry_msgs::Point pt;
@@ -249,17 +244,17 @@ std::vector<geometry_msgs::Point> MapAccessibilityAnalysis::loadRobotFootprint(X
   return footprint;
 }
 
-void MapAccessibilityAnalysis::mapInit(ros::NodeHandle& nh)
+void MapAccessibilityAnalysisServer::mapInit(ros::NodeHandle& nh)
 {
   map_data_recieved_ = false;
-  map_msg_sub_ = nh.subscribe<nav_msgs::OccupancyGrid>("map", 1, &MapAccessibilityAnalysis::mapDataCallback, this);
+  map_msg_sub_ = nh.subscribe<nav_msgs::OccupancyGrid>("map", 1, &MapAccessibilityAnalysisServer::mapDataCallback, this);
   ROS_INFO("MapPointAccessibilityCheck: Waiting to receive map...");
   while (map_data_recieved_ == false)
     ros::spinOnce();
   ROS_INFO("MapPointAccessibilityCheck: Map received.");
 }
 
-void MapAccessibilityAnalysis::inflationInit(ros::NodeHandle& nh)
+void MapAccessibilityAnalysisServer::inflationInit(ros::NodeHandle& nh)
 {
   obstacles_sub_.subscribe(nh, "obstacles", 1);
   inflated_obstacles_sub_.subscribe(nh, "inflated_obstacles", 1);
@@ -268,16 +263,16 @@ void MapAccessibilityAnalysis::inflationInit(ros::NodeHandle& nh)
       new message_filters::Synchronizer<InflatedObstaclesSyncPolicy>(InflatedObstaclesSyncPolicy(5)));
   inflated_obstacles_sub_sync_->connectInput(obstacles_sub_, inflated_obstacles_sub_);
   inflated_obstacles_sub_sync_->registerCallback(
-      boost::bind(&MapAccessibilityAnalysis::inflatedObstacleDataCallback, this, _1, _2));
+      boost::bind(&MapAccessibilityAnalysisServer::inflatedObstacleDataCallback, this, _1, _2));
 }
 
-void MapAccessibilityAnalysis::dynamicObstaclesInit(ros::NodeHandle& nh)
+void MapAccessibilityAnalysisServer::dynamicObstaclesInit(ros::NodeHandle& nh)
 {
   obstacles_sub_.subscribe(nh, "obstacles", 1);
-  obstacles_sub_.registerCallback(boost::bind(&MapAccessibilityAnalysis::obstacleDataCallback, this, _1));
+  obstacles_sub_.registerCallback(boost::bind(&MapAccessibilityAnalysisServer::obstacleDataCallback, this, _1));
 }
 
-void MapAccessibilityAnalysis::mapDataCallback(const nav_msgs::OccupancyGrid::ConstPtr& map_msg_data)
+void MapAccessibilityAnalysisServer::mapDataCallback(const nav_msgs::OccupancyGrid::ConstPtr& map_msg_data)
 {
   map_resolution_ = map_msg_data->info.resolution;
   inverse_map_resolution_ = 1. / map_resolution_;
@@ -297,11 +292,7 @@ void MapAccessibilityAnalysis::mapDataCallback(const nav_msgs::OccupancyGrid::Co
 
   // compute inflated static map
   ROS_INFO_STREAM("inflation thickness: " << cvRound(robot_radius_ * inverse_map_resolution_));
-  cv::erode(original_map_,
-            inflated_original_map_,
-            cv::Mat(),
-            cv::Point(-1, -1),
-            cvRound(robot_radius_ * inverse_map_resolution_));
+  inflateMap(original_map_, inflated_original_map_, cvRound(robot_radius_ * inverse_map_resolution_));
   if (inflated_map_.empty() == true)
     inflated_map_ = inflated_original_map_;  // initial setup (if no obstacle msgs were received yet)
 
@@ -309,7 +300,7 @@ void MapAccessibilityAnalysis::mapDataCallback(const nav_msgs::OccupancyGrid::Co
   map_msg_sub_.shutdown();
 }
 
-void MapAccessibilityAnalysis::inflatedObstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data,
+void MapAccessibilityAnalysisServer::inflatedObstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data,
                                                             const nav_msgs::GridCells::ConstPtr& inflated_obstacles_data)
 {
   if (obstacle_topic_update_rate_ != 0.0 &&
@@ -330,7 +321,7 @@ void MapAccessibilityAnalysis::inflatedObstacleDataCallback(const nav_msgs::Grid
   }
 }
 
-void MapAccessibilityAnalysis::obstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data)
+void MapAccessibilityAnalysisServer::obstacleDataCallback(const nav_msgs::GridCells::ConstPtr& obstacles_data)
 {
   if (obstacle_topic_update_rate_ != 0.0 &&
       (ros::Time::now() - last_update_time_obstacles_) > obstacle_topic_update_delay_)
@@ -342,10 +333,10 @@ void MapAccessibilityAnalysis::obstacleDataCallback(const nav_msgs::GridCells::C
     inflated_map_ = inflated_original_map_.clone();
     for (unsigned int i = 0; i < obstacles_data->cells.size(); ++i)
     {
-      int x = (obstacles_data->cells[i].x - map_origin_.x) * inverse_map_resolution_;
-      int y = (obstacles_data->cells[i].y - map_origin_.y) * inverse_map_resolution_;
-      inflated_map_.at<uchar>(y, x) = 0;
-      cv::circle(inflated_map_, cv::Point(x, y), radius, cv::Scalar(0, 0, 0, 0), -1);
+      const int u = (obstacles_data->cells[i].x - map_origin_.x) * inverse_map_resolution_;
+      const int v = (obstacles_data->cells[i].y - map_origin_.y) * inverse_map_resolution_;
+      inflated_map_.at<uchar>(v, u) = 0;
+      cv::circle(inflated_map_, cv::Point(u, v), radius, cv::Scalar(0), -1);
     }
 
     if (publish_inflated_map_ == true)
@@ -361,99 +352,49 @@ void MapAccessibilityAnalysis::obstacleDataCallback(const nav_msgs::GridCells::C
   }
 }
 
-bool MapAccessibilityAnalysis::checkPose2DArrayCallback(
+bool MapAccessibilityAnalysisServer::checkPose2DArrayCallback(
     cob_map_accessibility_analysis::CheckPointAccessibility::Request& req,
     cob_map_accessibility_analysis::CheckPointAccessibility::Response& res)
 {
   ROS_INFO("Received request to check accessibility of %u points.", (unsigned int)req.points_to_check.size());
 
-  const bool value_approach_path_accessibility_check_ = approach_path_accessibility_check_;
-  approach_path_accessibility_check_ = req.approach_path_accessibility_check;
-
   // determine robot pose if approach path analysis activated
   cv::Point robot_location(0, 0);
   if (approach_path_accessibility_check_ == true)
     robot_location = getRobotLocationInPixelCoordinates();
 
-  res.accessibility_flags.resize(req.points_to_check.size(), false);
+  // prepare request and response data in appropriate format
+  std::vector<cv::Point> points_to_check(req.points_to_check.size());
+  for (size_t i=0; i<req.points_to_check.size(); ++i)
+    points_to_check[i] = cv::Point(cvRound((req.points_to_check[i].x - map_origin_.x) * inverse_map_resolution_),
+                                     cvRound((req.points_to_check[i].y - map_origin_.y) * inverse_map_resolution_));
+  std::vector<bool> accessibility_flags(req.points_to_check.size(), false);
+
+  // compute accessibility
   {
     boost::mutex::scoped_lock lock(mutex_inflated_map_);
-
-#ifdef __DEBUG_DISPLAYS__
-    cv::Mat display_map = inflated_map_.clone();
-#endif
-
-    // find the individual connected areas
-    std::vector<std::vector<cv::Point> > area_contours;  // first index=contour index;  second index=point index within
-                                                         // contour
-    if (approach_path_accessibility_check_ == true)
-    {
-      cv::Mat inflated_map_copy = inflated_map_.clone();
-      cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-    }
-
-    for (unsigned int i = 0; i < req.points_to_check.size(); ++i)
-    {
-      int u = cvRound((req.points_to_check[i].x - map_origin_.x) * inverse_map_resolution_);
-      int v = cvRound((req.points_to_check[i].y - map_origin_.y) * inverse_map_resolution_);
-      ROS_INFO_STREAM("Checking accessibility of point (" << req.points_to_check[i].x << ", "
-                                                          << req.points_to_check[i].y
-                                                          << ")m / ("
-                                                          << u
-                                                          << ", "
-                                                          << v
-                                                          << ")pix.");
-      if (inflated_map_.at<uchar>(v, u) != 0)
-        // check if robot can approach this position
-        if (approach_path_accessibility_check_ == false ||
-            isApproachPositionAccessible(robot_location, cv::Point(u, v), area_contours) == true)
-          res.accessibility_flags[i] = true;
-
-#ifdef __DEBUG_DISPLAYS__
-      if (res.accessibility_flags[i] == false)
-        cv::circle(display_map,
-                   cv::Point((req.points_to_check[i].x - map_origin_.x) * inverse_map_resolution_,
-                             (req.points_to_check[i].y - map_origin_.y) * inverse_map_resolution_),
-                   2,
-                   cv::Scalar(64),
-                   10);
-      else
-        cv::circle(display_map,
-                   cv::Point((req.points_to_check[i].x - map_origin_.x) * inverse_map_resolution_,
-                             (req.points_to_check[i].y - map_origin_.y) * inverse_map_resolution_),
-                   2,
-                   cv::Scalar(192),
-                   10);
-#endif
-    }
-
-#ifdef __DEBUG_DISPLAYS__
-    cv::imshow("points", display_map);
-    cv::waitKey();
-#endif
+    checkPoses(points_to_check, accessibility_flags, inflated_map_, req.approach_path_accessibility_check, robot_location);
   }
 
-  // reset parameter
-  approach_path_accessibility_check_ = value_approach_path_accessibility_check_;
+  // prepare return data
+  res.accessibility_flags.resize(req.points_to_check.size());
+  for (size_t i=0; i<accessibility_flags.size(); ++i)
+    res.accessibility_flags[i] = accessibility_flags[i];
 
   return true;
 }
 
-bool MapAccessibilityAnalysis::checkPerimeterCallback(
+bool MapAccessibilityAnalysisServer::checkPerimeterCallback(
     cob_map_accessibility_analysis::CheckPerimeterAccessibility::Request& req,
     cob_map_accessibility_analysis::CheckPerimeterAccessibility::Response& res)
 {
   ROS_INFO("Received request to check accessibility of a circle with center (%f,%f), radius %f and sampling step %f.",
-           req.center.x,
-           req.center.y,
-           req.radius,
-           req.rotational_sampling_step);
+           req.center.x, req.center.y, req.radius, req.rotational_sampling_step);
 
   if (req.rotational_sampling_step == 0.0)
   {
     req.rotational_sampling_step = 10. / 180. * CV_PI;
-    ROS_WARN("rotational_sampling_step was provided as 0.0. Automatically changed it to %f.",
-             req.rotational_sampling_step);
+    ROS_WARN("rotational_sampling_step was provided as 0.0 . Automatically changed it to %f.", req.rotational_sampling_step);
   }
 
   // determine robot pose if approach path analysis activated
@@ -461,68 +402,31 @@ bool MapAccessibilityAnalysis::checkPerimeterCallback(
   if (approach_path_accessibility_check_ == true)
     robot_location = getRobotLocationInPixelCoordinates();
 
+  // prepare request and response data in appropriate format
+  Pose center((req.center.x-map_origin_.x)*inverse_map_resolution_, (req.center.y-map_origin_.y)*inverse_map_resolution_, req.center.theta);
+  std::vector<Pose> accessible_poses_on_perimeter;
+
+  // compute accessibility
   {
     boost::mutex::scoped_lock lock(mutex_inflated_map_);
+    checkPerimeter(accessible_poses_on_perimeter, center, req.radius, req.rotational_sampling_step, inflated_map_,
+                   approach_path_accessibility_check_, robot_location);
+  }
 
-#ifdef __DEBUG_DISPLAYS__
-    cv::Mat display_map = inflated_map_.clone();
-#endif
-
-    // find the individual connected areas
-    std::vector<std::vector<cv::Point> > area_contours;  // first index=contour index;  second index=point index within
-                                                         // contour
-    if (approach_path_accessibility_check_ == true)
-    {
-      cv::Mat inflated_map_copy = inflated_map_.clone();
-      cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-    }
-
-    for (double angle = req.center.theta; angle < req.center.theta + 2 * CV_PI; angle += req.rotational_sampling_step)
-    {
-      double x = req.center.x + req.radius * cos(angle);
-      double y = req.center.y + req.radius * sin(angle);
-      int u = (x - map_origin_.x) * inverse_map_resolution_;
-      int v = (y - map_origin_.y) * inverse_map_resolution_;
-      if (inflated_map_.at<uchar>(v, u) == 255)
-      {
-        // check if robot can approach this position
-        if (approach_path_accessibility_check_ == false ||
-            isApproachPositionAccessible(robot_location, cv::Point(u, v), area_contours) == true)
-        {
-          // add accessible point to results
-          geometry_msgs::Pose2D pose;
-          pose.x = x;
-          pose.y = y;
-          pose.theta = angle + CV_PI;
-          while (pose.theta > 2 * CV_PI)
-            pose.theta -= 2 * CV_PI;
-          while (pose.theta < 0.)
-            pose.theta += 2 * CV_PI;
-          res.accessible_poses_on_perimeter.push_back(pose);
-
-#ifdef __DEBUG_DISPLAYS__
-          cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 5);
-#endif
-        }
-      }
-      else
-      {
-#ifdef __DEBUG_DISPLAYS__
-        cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(64), 5);
-#endif
-      }
-    }
-
-#ifdef __DEBUG_DISPLAYS__
-    cv::imshow("perimeter", display_map);
-    cv::waitKey();
-#endif
+  // prepare return data
+  for (size_t i=0; i<accessible_poses_on_perimeter.size(); ++i)
+  {
+    geometry_msgs::Pose2D pose;
+    pose.x = accessible_poses_on_perimeter[i].x*map_resolution_ + map_origin_.x;
+    pose.y = accessible_poses_on_perimeter[i].y*map_resolution_ + map_origin_.y;
+    pose.theta = accessible_poses_on_perimeter[i].orientation;
+    res.accessible_poses_on_perimeter.push_back(pose);
   }
 
   return true;
 }
 
-bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetApproachPoseForPolygon::Request& req,
+bool MapAccessibilityAnalysisServer::checkPolygonCallback(cob_3d_mapping_msgs::GetApproachPoseForPolygon::Request& req,
                                                     cob_3d_mapping_msgs::GetApproachPoseForPolygon::Response& res)
 {
   ROS_INFO("Received request to check accessibility around a polygon.");
@@ -543,7 +447,8 @@ bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetAppr
       std::vector<cv::Point> p_vec(pc.size());
       for (unsigned int j = 0; j < pc.size(); j++)
       {
-        p_vec[j] = convertFromMeterToPixelCoordinates<cv::Point>(Pose(pc.points[j].x, pc.points[j].y, 0));
+        p_vec[j] = convertFromMeterToPixelCoordinates<cv::Point>(Pose(pc.points[j].x, pc.points[j].y, 0),
+                                                                 map_origin_, inverse_map_resolution_);
       }
       polygon_contours.push_back(p_vec);
     }
@@ -605,7 +510,7 @@ bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetAppr
           {
             geometry_msgs::Pose pose;
             Pose pose_p(x, y, 0);
-            Pose pose_m = convertFromPixelCoordinatesToMeter<Pose>(pose_p);
+            Pose pose_m = convertFromPixelCoordinatesToMeter<Pose>(pose_p, map_origin_, map_resolution_);
             pose.position.x = pose_m.x;
             pose.position.y = pose_m.y;
             pose.position.z = 0;
@@ -639,7 +544,7 @@ bool MapAccessibilityAnalysis::checkPolygonCallback(cob_3d_mapping_msgs::GetAppr
   return true;
 }
 
-cv::Point MapAccessibilityAnalysis::getRobotLocationInPixelCoordinates()
+cv::Point MapAccessibilityAnalysisServer::getRobotLocationInPixelCoordinates()
 {
   tf::StampedTransform transform;
   try
@@ -654,74 +559,11 @@ cv::Point MapAccessibilityAnalysis::getRobotLocationInPixelCoordinates()
     return cv::Point(0, 0);
   }
   tf::Vector3 pose = transform.getOrigin();
-  cv::Point robot_location = convertFromMeterToPixelCoordinates<cv::Point>(Pose(pose.x(), pose.y(), 0));
+  cv::Point robot_location = convertFromMeterToPixelCoordinates<cv::Point>(Pose(pose.x(), pose.y(), 0), map_origin_, inverse_map_resolution_);
 
   return robot_location;
 }
 
-bool MapAccessibilityAnalysis::isApproachPositionAccessible(const cv::Point& robotLocation,
-                                                            const cv::Point& potentialApproachPose,
-                                                            std::vector<std::vector<cv::Point> > contours)
-{
-  // check whether potentialApproachPose and robotLocation are in the same area (=same contour)
-  int contourIndexRobot = -1;
-  int contourIndexPotentialApproachPose = -1;
-  for (unsigned int i = 0; i < contours.size(); i++)
-  {
-    if (0 <= cv::pointPolygonTest(contours[i], potentialApproachPose, false))
-      contourIndexPotentialApproachPose = i;
-    if (0 <= cv::pointPolygonTest(contours[i], robotLocation, false))
-      contourIndexRobot = i;
-  }
-  ROS_DEBUG_STREAM("contourIndexPotentialApproachPose=" << contourIndexPotentialApproachPose << "  contourIndexRobot="
-                                                        << contourIndexRobot);
-  if (contourIndexRobot != contourIndexPotentialApproachPose ||
-      (contourIndexRobot == -1 && contourIndexPotentialApproachPose == -1))
-    return false;
-
-  return true;
-}
-
-// pose_p and closest_point_on_polygon in pixel coordinates!
-void MapAccessibilityAnalysis::computeClosestPointOnPolygon(const cv::Mat& map_with_polygon,
-                                                            const Pose& pose_p,
-                                                            Pose& closest_point_on_polygon)
-{
-  double closest_pixel_distance_squared = 1e10;
-  for (int v = 0; v < map_with_polygon.rows; v++)
-  {
-    for (int u = 0; u < map_with_polygon.cols; u++)
-    {
-      double dist_squared = 0;
-      if (map_with_polygon.at<uchar>(v, u) == 128 &&
-          (dist_squared = (pose_p.x - u) * (pose_p.x - u) + (pose_p.y - v) * (pose_p.y - v)) <
-              closest_pixel_distance_squared)
-      {
-        closest_pixel_distance_squared = dist_squared;
-        closest_point_on_polygon.x = u;
-        closest_point_on_polygon.y = v;
-      }
-    }
-  }
-}
-
-template <class T>
-T MapAccessibilityAnalysis::convertFromMeterToPixelCoordinates(const Pose& pose)
-{
-  T val;
-  val.x = (pose.x - map_origin_.x) * inverse_map_resolution_;
-  val.y = (pose.y - map_origin_.y) * inverse_map_resolution_;
-  return val;
-}
-
-template <class T>
-T MapAccessibilityAnalysis::convertFromPixelCoordinatesToMeter(const Pose& pose)
-{
-  T val;
-  val.x = map_resolution_ * pose.x + map_origin_.x;
-  val.y = map_resolution_ * pose.y + map_origin_.y;
-  return val;
-}
 
 int main(int argc, char** argv)
 {
@@ -729,7 +571,7 @@ int main(int argc, char** argv)
 
   ros::NodeHandle nh;
 
-  MapAccessibilityAnalysis map_accessibility_analysis(nh);
+  MapAccessibilityAnalysisServer map_accessibility_analysis(nh);
 
   ros::spin();
 
