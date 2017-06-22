@@ -447,8 +447,7 @@ bool MapAccessibilityAnalysisServer::checkPolygonCallback(cob_3d_mapping_msgs::G
       std::vector<cv::Point> p_vec(pc.size());
       for (unsigned int j = 0; j < pc.size(); j++)
       {
-        p_vec[j] = convertFromMeterToPixelCoordinates<cv::Point>(Pose(pc.points[j].x, pc.points[j].y, 0),
-                                                                 map_origin_, inverse_map_resolution_);
+        p_vec[j] = convertFromMeterToPixelCoordinates<cv::Point>(Pose(pc.points[j].x, pc.points[j].y, 0), map_origin_, inverse_map_resolution_);
       }
       polygon_contours.push_back(p_vec);
     }
@@ -457,8 +456,7 @@ bool MapAccessibilityAnalysisServer::checkPolygonCallback(cob_3d_mapping_msgs::G
   // compute inflated polygon
   cv::Mat polygon_expanded = 255 * cv::Mat::ones(original_map_.rows, original_map_.cols, original_map_.type());
   cv::drawContours(polygon_expanded, polygon_contours, -1, cv::Scalar(128), CV_FILLED);
-  int iterations = cvRound(robot_radius_ * inverse_map_resolution_);
-  cv::erode(polygon_expanded, polygon_expanded, cv::Mat(), cv::Point(-1, -1), iterations);
+  cv::erode(polygon_expanded, polygon_expanded, cv::Mat(), cv::Point(-1, -1), cvRound(robot_radius_ * inverse_map_resolution_));
 
   // combine inflated polygon with inflated map
   cv::Mat inflated_map;
@@ -472,8 +470,7 @@ bool MapAccessibilityAnalysisServer::checkPolygonCallback(cob_3d_mapping_msgs::G
 #endif
 
   // find the individual connected areas
-  std::vector<std::vector<cv::Point> > area_contours;  // first index=contour index;  second index=point index within
-                                                       // contour
+  std::vector<std::vector<cv::Point> > area_contours;  // first index=contour index;  second index=point index within contour
   if (approach_path_accessibility_check_ == true)
   {
     cv::Mat inflated_map_copy = inflated_map.clone();
