@@ -18,7 +18,7 @@
 #include <cob_map_accessibility_analysis/map_accessibility_analysis.h>
 #include <ros/ros.h>
 
-#define __DEBUG_DISPLAYS__
+//#define __DEBUG_DISPLAYS__
 
 MapAccessibilityAnalysis::MapAccessibilityAnalysis()
 {

@@ -18,7 +18,7 @@
 #include <cob_map_accessibility_analysis/map_accessibility_analysis_server.h>
 #include <pcl_ros/point_cloud.h>
 
-#define __DEBUG_DISPLAYS__
+//#define __DEBUG_DISPLAYS__
 
 MapAccessibilityAnalysisServer::MapAccessibilityAnalysisServer(ros::NodeHandle nh) : node_handle_(nh)
 {
