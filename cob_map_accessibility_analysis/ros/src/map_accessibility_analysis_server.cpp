@@ -18,7 +18,7 @@
 #include <cob_map_accessibility_analysis/map_accessibility_analysis_server.h>
 #include <pcl_ros/point_cloud.h>
 
-//#define __DEBUG_DISPLAYS__
+#define __DEBUG_DISPLAYS__
 
 MapAccessibilityAnalysisServer::MapAccessibilityAnalysisServer(ros::NodeHandle nh) : node_handle_(nh)
 {
@@ -409,7 +409,7 @@ bool MapAccessibilityAnalysisServer::checkPerimeterCallback(
   // compute accessibility
   {
     boost::mutex::scoped_lock lock(mutex_inflated_map_);
-    checkPerimeter(accessible_poses_on_perimeter, center, req.radius, req.rotational_sampling_step, inflated_map_,
+    checkPerimeter(accessible_poses_on_perimeter, center, req.radius*inverse_map_resolution_, req.rotational_sampling_step, inflated_map_,
                    approach_path_accessibility_check_, robot_location);
   }
 

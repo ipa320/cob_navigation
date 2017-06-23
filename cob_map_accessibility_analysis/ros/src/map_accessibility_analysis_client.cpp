@@ -85,9 +85,9 @@ int main(int argc, char** argv)
   cob_map_accessibility_analysis::CheckPerimeterAccessibility::Response res_perimeter;
 
   req_perimeter.center.x = 2.5;
-  req_perimeter.center.y = 2.25;
+  req_perimeter.center.y = 0.5;
   req_perimeter.center.theta = 0.;
-  req_perimeter.radius = 0.45;
+  req_perimeter.radius = 1.0;
   req_perimeter.rotational_sampling_step = 10. / 180. * M_PI;
 
   // this calls the service server to process our request message and put the result into the response message

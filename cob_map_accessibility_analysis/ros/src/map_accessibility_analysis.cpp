@@ -18,7 +18,7 @@
 #include <cob_map_accessibility_analysis/map_accessibility_analysis.h>
 #include <ros/ros.h>
 
-//#define __DEBUG_DISPLAYS__
+#define __DEBUG_DISPLAYS__
 
 MapAccessibilityAnalysis::MapAccessibilityAnalysis()
 {
@@ -65,7 +65,7 @@ void MapAccessibilityAnalysis::checkPoses(const std::vector<cv::Point>& points_t
 
 #ifdef __DEBUG_DISPLAYS__
 		if (accessibility_flags[i] == false)
-			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(64), 10);
+			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(32), 10);
 		else
 			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 10);
 #endif
@@ -100,6 +100,7 @@ void MapAccessibilityAnalysis::checkPerimeter(std::vector<Pose>& accessible_pose
 		const double y = center.y + radius * sin(angle);
 		const int u = cvRound(x);
 		const int v = cvRound(y);
+		bool found_pose = false;
 		if (inflated_map.at<uchar>(v, u) != 0)
 		{
 			// check if robot can approach this position
@@ -116,18 +117,15 @@ void MapAccessibilityAnalysis::checkPerimeter(std::vector<Pose>& accessible_pose
 				while (pose.orientation < 0.)
 					pose.orientation += 2 * CV_PI;
 				accessible_poses_on_perimeter.push_back(pose);
-
-#ifdef __DEBUG_DISPLAYS__
-				cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 5);
-#endif
+				found_pose = true;
 			}
 		}
-		else
-		{
 #ifdef __DEBUG_DISPLAYS__
-			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(64), 5);
+		if (found_pose == true)
+			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 5);
+		else
+			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(32), 5);
 #endif
-		}
 	}
 
 #ifdef __DEBUG_DISPLAYS__
