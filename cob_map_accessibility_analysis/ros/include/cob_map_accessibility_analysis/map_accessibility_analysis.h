@@ -83,20 +83,6 @@ public:
 	void checkPerimeter(std::vector<Pose>& accessible_poses_on_perimeter,
 			const Pose& center, const double radius, const double rotational_sampling_step,
 			const cv::Mat& inflated_map, const bool approach_path_accessibility_check, const cv::Point& robot_location);
-protected:
-
-	/*
-	 * This function computes whether a given point (potentialApproachPose) is accessible by the robot at location robotLocation
-	 */
-	bool isApproachPositionAccessible(const cv::Point& robotLocation,
-			const cv::Point& potentialApproachPose,
-			std::vector<std::vector<cv::Point> > contours);
-
-	/*
-	 * pose_p and closest_point_on_polygon in pixel coordinates!
-	 */
-	void computeClosestPointOnPolygon(const cv::Mat& map_with_polygon,
-			const Pose& pose_p, Pose& closest_point_on_polygon);
 
 	template<class T>
 	T convertFromMeterToPixelCoordinates(const Pose& pose, const cv::Point2d& map_origin, const double inverse_map_resolution)
@@ -115,5 +101,21 @@ protected:
 		val.y = map_resolution * pose.y + map_origin.y;
 		return val;
 	}
+
+protected:
+
+	/*
+	 * This function computes whether a given point (potentialApproachPose) is accessible by the robot at location robotLocation
+	 */
+	bool isApproachPositionAccessible(const cv::Point& robotLocation,
+			const cv::Point& potentialApproachPose,
+			std::vector<std::vector<cv::Point> > contours);
+
+	/*
+	 * pose_p and closest_point_on_polygon in pixel coordinates!
+	 */
+	void computeClosestPointOnPolygon(const cv::Mat& map_with_polygon,
+			const Pose& pose_p, Pose& closest_point_on_polygon);
+
 };
 
