@@ -147,7 +147,7 @@ protected:
   // map properties
   double map_resolution_;          // in [m/cell]
   double inverse_map_resolution_;  // in [cell/m]
-  cv::Point2d map_origin_;         // in [m]
+  cv::Point2d map_origin_;         // in [m,m,rad]
   std::string map_link_name_;
 
   // robot
