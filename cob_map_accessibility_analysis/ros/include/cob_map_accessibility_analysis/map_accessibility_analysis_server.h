@@ -19,6 +19,7 @@
 #define MAP_ACCESSIBILITY_ANALYSIS_H
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <math.h>
@@ -45,8 +46,7 @@
 #include <cob_3d_mapping_msgs/GetApproachPoseForPolygon.h>
 
 // opencv
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 
@@ -59,35 +59,18 @@
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
 
-class MapAccessibilityAnalysis
+#include <cob_map_accessibility_analysis/map_accessibility_analysis.h>
+
+class MapAccessibilityAnalysisServer : public MapAccessibilityAnalysis
 {
 public:
-  MapAccessibilityAnalysis(ros::NodeHandle nh);
-  ~MapAccessibilityAnalysis();
+  MapAccessibilityAnalysisServer(ros::NodeHandle nh);
+  ~MapAccessibilityAnalysisServer();
 
 protected:
-  struct Pose
-  {
-    float x;
-    float y;
-    float orientation;  // in degree
-
-    Pose()
-    {
-      x = 0;
-      y = 0;
-      orientation = 0;
-    }
-
-    Pose(float x_, float y_, float orientation_)
-    {
-      x = x_;
-      y = y_;
-      orientation = orientation_;
-    }
-  };
 
   // reads out the robot footprint from a string or array
+  // returns the polygonal footprint of the robot in [m]
   std::vector<geometry_msgs::Point> loadRobotFootprint(XmlRpc::XmlRpcValue& footprint_list);
 
   // original map initializer
@@ -123,23 +106,6 @@ protected:
 
   // reads the robot coordinates from tf
   cv::Point getRobotLocationInPixelCoordinates();
-
-  // this function computes whether a given point (potentialApproachPose) is accessible by the robot at location
-  // robotLocation
-  bool isApproachPositionAccessible(const cv::Point& robotLocation,
-                                    const cv::Point& potentialApproachPose,
-                                    std::vector<std::vector<cv::Point> > contours);
-
-  // pose_p and closest_point_on_polygon in pixel coordinates!
-  void computeClosestPointOnPolygon(const cv::Mat& map_with_polygon,
-                                    const Pose& pose_p,
-                                    Pose& closest_point_on_polygon);
-
-  template <class T>
-  T convertFromMeterToPixelCoordinates(const Pose& pose);
-
-  template <class T>
-  T convertFromPixelCoordinatesToMeter(const Pose& pose);
 
   ros::NodeHandle node_handle_;
 
@@ -181,11 +147,10 @@ protected:
   // map properties
   double map_resolution_;          // in [m/cell]
   double inverse_map_resolution_;  // in [cell/m]
-  cv::Point2d map_origin_;         // in [m]
+  cv::Point2d map_origin_;         // in [m,m,rad]
   std::string map_link_name_;
 
   // robot
-  std::vector<geometry_msgs::Point> footprint_;  // polygonal footprint of the robot in [m]
   double robot_radius_;                          // in [m]
   std::string robot_base_link_name_;
   bool approach_path_accessibility_check_;  // if true, the path to a goal position must be accessible as well

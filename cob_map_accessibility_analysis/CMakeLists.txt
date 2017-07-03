@@ -1,14 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(cob_map_accessibility_analysis)
 
-find_package(catkin REQUIRED COMPONENTS
-  #cob_3d_mapping_common
+set(catkin_RUN_PACKAGES
   cob_3d_mapping_msgs
   cv_bridge
   geometry_msgs
   image_transport
   message_filters
-  message_generation
   nav_msgs
   pcl_ros
   roscpp
@@ -16,8 +14,18 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
-find_package(OpenCV REQUIRED)
+set(catkin_BUILD_PACKAGES
+	${catkin_RUN_PACKAGES}
+	cmake_modules
+	message_generation
+)
+
+find_package(catkin REQUIRED COMPONENTS
+  ${catkin_BUILD_PACKAGES}
+)
+
 find_package(Boost REQUIRED)
+find_package(OpenCV REQUIRED)
 
 catkin_python_setup()
 
@@ -32,22 +40,46 @@ generate_messages(
     geometry_msgs
 )
 
-catkin_package()
+catkin_package(
+INCLUDE_DIRS
+	ros/include
+LIBRARIES
+	map_accessibility_analysis
+CATKIN_DEPENDS
+	${catkin_RUN_PACKAGES}
+	message_runtime
+DEPENDS
+	Boost
+	OpenCV
+)
 
 include_directories(
   ros/include
   ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
+# map_accessibility_analysis lib
+add_library(map_accessibility_analysis
+  ros/src/map_accessibility_analysis.cpp
+)
+target_link_libraries(map_accessibility_analysis
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+add_dependencies(map_accessibility_analysis ${catkin_EXPORTED_TARGETS})
 
 # map_accessibility_analysis_server
-add_executable(map_accessibility_analysis_server ros/src/map_accessibility_analysis_server.cpp)
+add_executable(map_accessibility_analysis_server
+  ros/src/map_accessibility_analysis_server.cpp
+)
 target_link_libraries(map_accessibility_analysis_server
   ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  map_accessibility_analysis
 )
 add_dependencies(map_accessibility_analysis_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
@@ -56,8 +88,8 @@ add_dependencies(map_accessibility_analysis_server ${${PROJECT_NAME}_EXPORTED_TA
 add_executable(map_accessibility_analysis_client ros/src/map_accessibility_analysis_client.cpp)
 target_link_libraries(map_accessibility_analysis_client
   ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
 add_dependencies(map_accessibility_analysis_client ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 

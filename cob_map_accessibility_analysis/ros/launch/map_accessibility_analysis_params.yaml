@@ -1,4 +1,5 @@
 # if true, the path to a goal position must be accessible as well
+# (this setting is overwritten temporarily on receiving the CheckPointAccessibility.srv message)
 # bool
 approach_path_accessibility_check: false
 
