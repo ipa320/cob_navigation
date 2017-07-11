@@ -17,7 +17,6 @@
   <exec_depend>message_runtime</exec_depend>
 
   <depend>boost</depend>
-  <depend>cmake_modules</depend>
   <depend>cob_3d_mapping_msgs</depend>
   <depend>cv_bridge</depend>
   <depend>geometry_msgs</depend>
@@ -30,5 +29,7 @@
   <depend>roscpp</depend>
   <depend>sensor_msgs</depend>
   <depend>tf</depend>
+
+  <exec_depend>rospy</exec_depend>
 
 </package>

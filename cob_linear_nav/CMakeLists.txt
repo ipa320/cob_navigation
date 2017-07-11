@@ -15,6 +15,8 @@ catkin_package()
 
 include_directories(${catkin_INCLUDE_DIRS})
 
+add_definitions(-std=c++11)
+
 add_executable(${PROJECT_NAME} src/cob_linear_nav.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
