@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2017-07-18)
+------------------
 * remove nav config for unsupported bases
 * arg pkg_nav_config
 * refactoring env config

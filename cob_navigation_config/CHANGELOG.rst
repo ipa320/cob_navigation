@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2017-07-18)
+------------------
 * remove nav config for unsupported bases
 * refactoring env config
 * restructure nav config

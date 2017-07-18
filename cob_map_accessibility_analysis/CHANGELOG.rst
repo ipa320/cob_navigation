@@ -2,8 +2,8 @@
 Changelog for package cob_map_accessibility_analysis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2017-07-18)
+------------------
 * remove obsolete dependencies to cmake_modules
 * added comment
 * disabled the output

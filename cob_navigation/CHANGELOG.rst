@@ -2,8 +2,8 @@
 Changelog for package cob_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2017-07-18)
+------------------
 * added cob_map_accessibility_analysis to metapackage
 * Contributors: Benjamin Maidel
 
