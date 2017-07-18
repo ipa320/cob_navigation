@@ -9,7 +9,7 @@
 
   <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
   <author email="mig@ipa.fraunhofer.de">Matthias Gruhler</author>
-  <license>LGPL</license>
+  <license>Apache 2.0</license>
   <url>http://ros.org/wiki/cob_navigation_local</url>
 
   <buildtool_depend>catkin</buildtool_depend>
