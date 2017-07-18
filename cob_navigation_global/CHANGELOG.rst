@@ -2,6 +2,26 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove nav config for unsupported bases
+* arg pkg_nav_config
+* refactoring env config
+* restructure nav config
+* use exported robotlist and envlist
+* remove dependency to eband_local_planner
+* remove cob4-1
+* remove obsolete configs due to unsupported robots
+* remove relays
+* cob4-5 setup
+* enable roslaunch checks (requires ros_comm `#814 <https://github.com/ipa320/cob_navigation/issues/814>`_ to be merged and released)
+* add dependency to dwa_local_planner (was not automatically installed using apt-get)
+* adapt global rviz config
+* put specific launch files in correct namespaces
+* first adaption of costmap parameters
+* remove eband planner launch and config files
+* Contributors: Felix Messmer, Florian Weisshardt, ipa-cob4-5, ipa-fxm, ipa-mig
+
 0.6.4 (2016-04-01)
 ------------------
 * remove slashes from frame_ids

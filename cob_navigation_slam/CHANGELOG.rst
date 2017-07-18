@@ -2,6 +2,14 @@
 Changelog for package cob_navigation_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove nav config for unsupported bases
+* arg pkg_nav_config
+* use exported robotlist and envlist
+* remove obsolete configs due to unsupported robots
+* Contributors: ipa-fxm
+
 0.6.4 (2016-04-01)
 ------------------
 * restructure laser topics

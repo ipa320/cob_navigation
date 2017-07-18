@@ -2,6 +2,13 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add c++11 definitions
+* adjusted look up time stamps and durations of wait for transform
+* added server to set base_frame, included some wait for transfrom and error handling
+* Contributors: ipa-fxm, ipa-srd
+
 0.6.4 (2016-04-01)
 ------------------
 
