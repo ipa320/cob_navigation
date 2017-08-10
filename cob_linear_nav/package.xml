@@ -7,8 +7,10 @@
     Obstacle avoidance should be carried out in other package, e.g. <a href="http://ros.org/wiki/cob_collision_velocity_filter">cob_collision_velocity_filter</a>.
   </description>
 
-  <maintainer email="mig@ipa.fraunhofer.de">Matthias Gruhler</maintainer>
+  <maintainer email="fez@ipa.fraunhofer.de">Felix Zeltner</maintainer>
+  <author email="mig@ipa.fraunhofer.de">Matthias Gruhler</author>
   <author>Philipp Koehler</author>
+
   <license>Apache 2.0</license>
   <url>http://ros.org/wiki/cob_linear_nav</url>
 
