@@ -95,7 +95,7 @@ add_dependencies(map_accessibility_analysis_client ${${PROJECT_NAME}_EXPORTED_TA
 #############
 ## Install ##
 #############
-install(TARGETS map_accessibility_analysis_server map_accessibility_analysis_client
+install(TARGETS map_accessibility_analysis map_accessibility_analysis_server map_accessibility_analysis_client
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
