@@ -29,7 +29,7 @@ public:
 	{
 		float x;
 		float y;
-		float orientation;  // in degree
+		float orientation;   // usually in [rad]
 
 		Pose()
 		{
