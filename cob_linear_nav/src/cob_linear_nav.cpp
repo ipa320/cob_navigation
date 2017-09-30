@@ -446,8 +446,9 @@ void NodeClass::publishVelocitiesGlobal(double vx, double vy, double theta) {
   }
   catch ( std::string err )
   {
-    ROS_FATAL("%s", err.c_str());
-    ros::shutdown();
+    ROS_ERROR("%s", err.c_str());
+    topic_pub_command_.publish(geometry_msgs::Twist());
+    return;
   }
 
 
