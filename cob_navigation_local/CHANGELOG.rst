@@ -2,6 +2,21 @@
 Changelog for package cob_navigation_local
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.5 (2017-07-18)
+------------------
+* remove nav config for unsupported bases
+* arg pkg_nav_config
+* restructure nav config
+* use exported robotlist and envlist
+* remove cob4-1
+* remove obsolete configs due to unsupported robots
+* enable roslaunch checks (requires ros_comm `#814 <https://github.com/ipa320/cob_navigation/issues/814>`_ to be merged and released)
+* add dependency to dwa_local_planner (was not automatically installed using apt-get)
+* Added namespace to parameter loading
+* Adapted config for cob_navigation_local
+* adapt local rviz config
+* Contributors: Florian Weisshardt, ipa-fxm, teddy
+
 0.6.4 (2016-04-01)
 ------------------
 * restructure laser topics

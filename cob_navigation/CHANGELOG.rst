@@ -2,6 +2,11 @@
 Changelog for package cob_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.5 (2017-07-18)
+------------------
+* added cob_map_accessibility_analysis to metapackage
+* Contributors: Benjamin Maidel
+
 0.6.4 (2016-04-01)
 ------------------
 * removed scan_unifier from cob_navigation

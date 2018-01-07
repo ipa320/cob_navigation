@@ -2,6 +2,9 @@
 Changelog for package cob_mapping_slam
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.5 (2017-07-18)
+------------------
+
 0.6.4 (2016-04-01)
 ------------------
 * restructure laser topics

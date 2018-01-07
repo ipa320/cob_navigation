@@ -2,6 +2,31 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.5 (2017-07-18)
+------------------
+* remove nav config for unsupported bases
+* refactoring env config
+* restructure nav config
+* remove cob4-10
+* add configs for missing supported robots
+* remove cob4-1
+* remove obsolete configs due to unsupported robots
+* nav config for raw3-6
+* use new costmap param layout
+* cob4-5 setup
+* Adapted config file for cob3-2
+* Adapted config file for cob3-6
+* Added map types to changed configs
+* Adapted config file for cob4-2
+* Adapted config file for cob4-1
+* Adapted config file for raw3-6
+* Adapted config file for raw3-5
+* Adapted config file for raw3-4
+* Adapted config file for raw3-1
+* Adapted costmap config file for raw3-3
+* first adaption of costmap parameters
+* Contributors: Benjamin Maidel, Florian Weisshardt, ipa-cob4-5, ipa-fxm, ipa-mig, mig-em, teddy
+
 0.6.4 (2016-04-01)
 ------------------
 * restructure laser topics
