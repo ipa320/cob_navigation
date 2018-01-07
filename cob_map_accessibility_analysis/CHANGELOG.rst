@@ -2,6 +2,24 @@
 Changelog for package cob_map_accessibility_analysis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.6 (2018-01-07)
+------------------
+* Merge pull request `#97 <https://github.com/ipa320/cob_navigation/issues/97>`_ from ipa320/indigo_release_candidate
+  Indigo release candidate
+* Merge pull request `#94 <https://github.com/ipa320/cob_navigation/issues/94>`_ from ipa-rmb/indigo_dev
+  corrected comment
+* corrected comment
+* Merge pull request `#93 <https://github.com/ipa320/cob_navigation/issues/93>`_ from ipa-fez/bugfix/install_map_accessibility_analysis_library
+  install libmap_accessibility_analysis
+* install libmap_accessibility_analysis
+* Merge pull request `#92 <https://github.com/ipa320/cob_navigation/issues/92>`_ from ipa-rmb/indigo_dev
+  some format harmonization
+* some format harmonization
+* Merge pull request `#89 <https://github.com/ipa320/cob_navigation/issues/89>`_ from ipa-fxm/APACHE_license
+  use license apache 2.0
+* use license apache 2.0
+* Contributors: Felix, Felix Messmer, Richard Bormann, ipa-uhr-mk
+
 0.6.5 (2017-07-18)
 ------------------
 * remove obsolete dependencies to cmake_modules
