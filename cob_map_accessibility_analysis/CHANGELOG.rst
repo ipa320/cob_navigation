@@ -2,8 +2,8 @@
 Changelog for package cob_map_accessibility_analysis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.6 (2018-01-07)
+------------------
 * Merge pull request `#97 <https://github.com/ipa320/cob_navigation/issues/97>`_ from ipa320/indigo_release_candidate
   Indigo release candidate
 * Merge pull request `#94 <https://github.com/ipa320/cob_navigation/issues/94>`_ from ipa-rmb/indigo_dev
