@@ -2,6 +2,43 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.6 (2018-01-07)
+------------------
+* Merge pull request `#97 <https://github.com/ipa320/cob_navigation/issues/97>`_ from ipa320/indigo_release_candidate
+  Indigo release candidate
+* Merge pull request `#91 <https://github.com/ipa320/cob_navigation/issues/91>`_ from ipa-fxm/update_maintainer
+  update maintainer
+* update maintainer
+* Merge pull request `#89 <https://github.com/ipa320/cob_navigation/issues/89>`_ from ipa-fxm/APACHE_license
+  use license apache 2.0
+* use license apache 2.0
+* Contributors: Felix Messmer, ipa-fez, ipa-fxm, ipa-uhr-mk
+
+0.6.5 (2017-07-18)
+------------------
+* remove nav config for unsupported bases
+* refactoring env config
+* restructure nav config
+* remove cob4-10
+* add configs for missing supported robots
+* remove cob4-1
+* remove obsolete configs due to unsupported robots
+* nav config for raw3-6
+* use new costmap param layout
+* cob4-5 setup
+* Adapted config file for cob3-2
+* Adapted config file for cob3-6
+* Added map types to changed configs
+* Adapted config file for cob4-2
+* Adapted config file for cob4-1
+* Adapted config file for raw3-6
+* Adapted config file for raw3-5
+* Adapted config file for raw3-4
+* Adapted config file for raw3-1
+* Adapted costmap config file for raw3-3
+* first adaption of costmap parameters
+* Contributors: Benjamin Maidel, Florian Weisshardt, ipa-cob4-5, ipa-fxm, ipa-mig, mig-em, teddy
+
 0.6.4 (2016-04-01)
 ------------------
 * restructure laser topics

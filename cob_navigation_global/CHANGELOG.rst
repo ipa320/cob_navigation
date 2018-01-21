@@ -2,6 +2,38 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.6 (2018-01-07)
+------------------
+* Merge pull request `#97 <https://github.com/ipa320/cob_navigation/issues/97>`_ from ipa320/indigo_release_candidate
+  Indigo release candidate
+* Merge pull request `#91 <https://github.com/ipa320/cob_navigation/issues/91>`_ from ipa-fxm/update_maintainer
+  update maintainer
+* update maintainer
+* Merge pull request `#89 <https://github.com/ipa320/cob_navigation/issues/89>`_ from ipa-fxm/APACHE_license
+  use license apache 2.0
+* use license apache 2.0
+* Contributors: Felix Messmer, ipa-fez, ipa-fxm, ipa-uhr-mk
+
+0.6.5 (2017-07-18)
+------------------
+* remove nav config for unsupported bases
+* arg pkg_nav_config
+* refactoring env config
+* restructure nav config
+* use exported robotlist and envlist
+* remove dependency to eband_local_planner
+* remove cob4-1
+* remove obsolete configs due to unsupported robots
+* remove relays
+* cob4-5 setup
+* enable roslaunch checks (requires ros_comm `#814 <https://github.com/ipa320/cob_navigation/issues/814>`_ to be merged and released)
+* add dependency to dwa_local_planner (was not automatically installed using apt-get)
+* adapt global rviz config
+* put specific launch files in correct namespaces
+* first adaption of costmap parameters
+* remove eband planner launch and config files
+* Contributors: Felix Messmer, Florian Weisshardt, ipa-cob4-5, ipa-fxm, ipa-mig
+
 0.6.4 (2016-04-01)
 ------------------
 * remove slashes from frame_ids
