@@ -23,6 +23,7 @@
 
 // ROS includes
 #include <ros/ros.h>
+#include <angles/angles.h>
 
 #include <pthread.h>
 
@@ -407,8 +408,7 @@ double NodeClass::sign(double x) {
 }
 
 double NodeClass::getThetaDiffRad(double target, double actual) {
-  if(fabs(target - actual) <= M_PI) return (target - actual);
-  else return sign(target - actual) * -2.0f * M_PI - (target - actual);
+  return angles::shortest_angular_distance(actual, target);
 }
 
 void NodeClass::publishVelocitiesGlobal(double vx, double vy, double theta) {

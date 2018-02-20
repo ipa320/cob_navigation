@@ -16,6 +16,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>angles</depend>
   <depend>actionlib</depend>
   <depend>cob_srvs</depend>
   <depend>geometry_msgs</depend>
