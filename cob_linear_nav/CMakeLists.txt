@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(cob_linear_nav)
 
 find_package(catkin REQUIRED COMPONENTS
+  angles
   actionlib
   cob_srvs
   geometry_msgs
