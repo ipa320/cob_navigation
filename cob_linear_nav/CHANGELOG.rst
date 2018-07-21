@@ -2,8 +2,8 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.7 (2018-07-21)
+------------------
 * Merge pull request `#100 <https://github.com/ipa320/cob_navigation/issues/100>`_ from ipa-bnm/fix/simple_goal
   fixed goal Validation
 * Merge pull request `#101 <https://github.com/ipa320/cob_navigation/issues/101>`_ from ipa-bnm/fix/angular_dist_calculation
