@@ -23,6 +23,7 @@
 
 // ROS includes
 #include <ros/ros.h>
+#include <angles/angles.h>
 
 #include <pthread.h>
 
@@ -407,8 +408,7 @@ double NodeClass::sign(double x) {
 }
 
 double NodeClass::getThetaDiffRad(double target, double actual) {
-  if(fabs(target - actual) <= M_PI) return (target - actual);
-  else return sign(target - actual) * -2.0f * M_PI - (target - actual);
+  return angles::shortest_angular_distance(actual, target);
 }
 
 void NodeClass::publishVelocitiesGlobal(double vx, double vy, double theta) {
@@ -495,13 +495,13 @@ bool NodeClass::goalValid(const geometry_msgs::PoseStamped& goal_pose)
     ROS_WARN("Goal invalid! Received Quaternion with all values 0.0!");
     return false;
   }
-  else if (!tf_listener_.canTransform(global_frame_, goal_pose.header.frame_id, goal_pose.header.stamp, new std::string))
+  else if (!tf_listener_.waitForTransform(global_frame_, goal_pose.header.frame_id, goal_pose.header.stamp, ros::Duration(1.0)))
   {
     ROS_WARN_STREAM("Can not transform goal which is given in /"
                     << goal_pose.header.frame_id << " into global frame /" << global_frame_);
     return false;
   }
-  else if (!tf_listener_.canTransform(robot_frame_, goal_pose.header.frame_id, goal_pose.header.stamp, new std::string))
+  else if (!tf_listener_.waitForTransform(robot_frame_, goal_pose.header.frame_id, goal_pose.header.stamp, ros::Duration(1.0)))
   {
      ROS_WARN_STREAM("Can not transform goal which is given in /"
                       << goal_pose.header.frame_id << " into robot frame /" << robot_frame_);
