@@ -2,6 +2,13 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.7 (2018-07-21)
+------------------
+* Merge pull request `#105 <https://github.com/ipa320/cob_navigation/issues/105>`_ from floweisshardt/feature/add_cob4-13_and_cob4-16
+  add cob4-13 and cob4-16
+* add cob4-13 and cob4-16
+* Contributors: Florian Weisshardt, ipa-fmw
+
 0.6.6 (2018-01-07)
 ------------------
 * Merge pull request `#97 <https://github.com/ipa320/cob_navigation/issues/97>`_ from ipa320/indigo_release_candidate

@@ -2,6 +2,16 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.7 (2018-07-21)
+------------------
+* Merge pull request `#100 <https://github.com/ipa320/cob_navigation/issues/100>`_ from ipa-bnm/fix/simple_goal
+  fixed goal Validation
+* Merge pull request `#101 <https://github.com/ipa320/cob_navigation/issues/101>`_ from ipa-bnm/fix/angular_dist_calculation
+  fixed shortest angular distance calculation
+* fixed calculation of shortest angluar distance between current and desired yaw
+* replaced canTransform with waitForTransform to give move_base some chance receiving the transformation needed for move base goal
+* Contributors: Benjamin Maidel, Felix Messmer, Richard Bormann
+
 0.6.6 (2018-01-07)
 ------------------
 * Merge pull request `#97 <https://github.com/ipa320/cob_navigation/issues/97>`_ from ipa320/indigo_release_candidate
