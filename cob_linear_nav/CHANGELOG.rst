@@ -2,6 +2,9 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.8 (2019-08-07)
+------------------
+
 0.6.7 (2018-07-21)
 ------------------
 * Merge pull request `#100 <https://github.com/ipa320/cob_navigation/issues/100>`_ from ipa-bnm/fix/simple_goal
