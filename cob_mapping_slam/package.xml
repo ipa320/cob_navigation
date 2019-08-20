@@ -17,6 +17,8 @@
   <exec_depend>cob_navigation_global</exec_depend>
   <exec_depend>gmapping</exec_depend>
 
-</package>
+  <test_depend>cob_supported_robots</test_depend>
+  <test_depend>roslaunch</test_depend>
 
+</package>
 
