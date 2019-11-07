@@ -2,6 +2,9 @@
 Changelog for package cob_navigation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.6.8 (2019-08-07)
 ------------------
 
