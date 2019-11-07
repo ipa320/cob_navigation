@@ -33,7 +33,7 @@ obstacle_layer:
     marking: true                       # Whether or not this observation is used to mark obstacles, default: true
     clearing: true                      # Whether or not this observation is used to clear out freespace, default: false
 
-  # Parameters of the source: laser_scan_rear
+  # Parameters of the source: laser_scan_left
   laser_scan_left:
     sensor_frame: base_laser_left_link  # The frame of the origin of the sensor, default: ""
     topic: /base_laser_left/scan        # The topic on which sensor data comes in for this source, default: source_name
@@ -41,7 +41,7 @@ obstacle_layer:
     marking: true                       # Whether or not this observation is used to mark obstacles, default: true
     clearing: true                      # Whether or not this observation is used to clear out freespace, default: false
 
-  # Parameters of the source: laser_scan_front
+  # Parameters of the source: laser_scan_right
   laser_scan_right:
     sensor_frame: base_laser_right_link # The frame of the origin of the sensor, default: ""
     topic: /base_laser_right/scan       # The topic on which sensor data comes in for this source, default: source_name

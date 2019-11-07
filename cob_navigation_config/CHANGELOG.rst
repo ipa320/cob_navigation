@@ -2,6 +2,16 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.9 (2019-11-07)
+------------------
+* Merge pull request `#108 <https://github.com/ipa320/cob_navigation/issues/108>`_ from HannesBachter/add_cob4-24
+  add cob4-24
+* add cob4-24
+* Merge pull request `#107 <https://github.com/ipa320/cob_navigation/issues/107>`_ from floweisshardt/fix/roslaunch_tests
+  fix roslaunch checks for all cob_supported_robots
+* fix roslaunch checks for all cob_supported_robots
+* Contributors: Felix Messmer, Florian Weisshardt, floweisshardt, hyb
+
 0.6.8 (2019-08-07)
 ------------------
 
