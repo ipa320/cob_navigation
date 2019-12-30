@@ -440,7 +440,7 @@ void NodeClass::publishVelocitiesGlobal(double vx, double vy, double theta) {
     }
     if ( ! ( fabs(cmd_robot.vector.x) < 5.0 && fabs(cmd_robot.vector.y) < 5.0 && fabs(theta) < M_PI ) )
     {
-      std::string err = "linear_nav: Output velocity too high";
+      std::string err = "linear_nav: Output velocity too high (x="+std::to_string(cmd_robot.vector.x)+" y="+std::to_string(cmd_robot.vector.y)+" theta="+std::to_string(theta)+")";
       throw err;
     }
   }
@@ -515,6 +515,7 @@ bool NodeClass::goalValid(const geometry_msgs::PoseStamped& goal_pose)
 
 void NodeClass::performControllerStep() {
   pthread_mutex_lock(&m_mutex);
+  ROS_DEBUG_STREAM_NAMED("mutex", "performControllerStep: locked mutex");
 
   double dt;
   double F_x, F_y, F_theta;
@@ -528,6 +529,7 @@ void NodeClass::performControllerStep() {
     if(!use_move_action_)
       last_time_ = ros::Time::now().toSec();
     pthread_mutex_unlock(&m_mutex);
+    ROS_DEBUG_STREAM_NAMED("mutex", "performControllerStep: released mutex");
     return;
   }
 
@@ -549,6 +551,7 @@ void NodeClass::performControllerStep() {
     if(!use_move_action_)
       last_time_ = ros::Time::now().toSec();
     pthread_mutex_unlock(&m_mutex);
+    ROS_DEBUG_STREAM_NAMED("mutex", "performControllerStep: released mutex");
     return;
   } else if( notMovingDueToObstacle() == true ) {
     finished_ = false;
@@ -564,6 +567,7 @@ void NodeClass::performControllerStep() {
     }
     ROS_INFO("Cancel the goal because an obstacle is blocking the path.");
     pthread_mutex_unlock(&m_mutex);
+    ROS_DEBUG_STREAM_NAMED("mutex", "performControllerStep: released mutex");
     return;
   } else finished_ = false;
 
@@ -614,6 +618,7 @@ void NodeClass::performControllerStep() {
 
   publishVelocitiesGlobal(cmd_vx, cmd_vy, cmd_vtheta);
   pthread_mutex_unlock(&m_mutex);
+  ROS_DEBUG_STREAM_NAMED("mutex", "performControllerStep: released mutex");
 }
 
 
