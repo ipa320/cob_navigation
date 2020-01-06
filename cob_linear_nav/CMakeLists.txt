@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(cob_linear_nav)
 
+add_definitions(-std=c++11)
+
 find_package(catkin REQUIRED COMPONENTS
-  angles
   actionlib
+  angles
   cob_srvs
   geometry_msgs
   move_base_msgs
@@ -12,13 +14,13 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
-catkin_package()
+catkin_package(
+  CATKIN_DEPENDS geometry_msgs move_base_msgs nav_msgs
+)
 
 include_directories(${catkin_INCLUDE_DIRS})
 
-add_definitions(-std=c++11)
-
-add_executable(${PROJECT_NAME} src/cob_linear_nav.cpp)
+add_executable(${PROJECT_NAME} src/${PROJECT_NAME}.cpp)
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
@@ -26,7 +28,7 @@ add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 ## Install ##
 #############
 
-install(TARGETS cob_linear_nav
+install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
