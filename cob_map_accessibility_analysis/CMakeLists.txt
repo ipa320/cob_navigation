@@ -1,26 +1,18 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(cob_map_accessibility_analysis)
 
-set(catkin_RUN_PACKAGES
+find_package(catkin REQUIRED COMPONENTS
   cob_3d_mapping_msgs
   cv_bridge
   geometry_msgs
   image_transport
   message_filters
+  message_generation
   nav_msgs
   pcl_ros
   roscpp
   sensor_msgs
   tf
-)
-
-set(catkin_BUILD_PACKAGES
-	${catkin_RUN_PACKAGES}
-	message_generation
-)
-
-find_package(catkin REQUIRED COMPONENTS
-  ${catkin_BUILD_PACKAGES}
 )
 
 find_package(Boost REQUIRED)
@@ -41,15 +33,24 @@ generate_messages(
 
 catkin_package(
 INCLUDE_DIRS
-	ros/include
+  ros/include
 LIBRARIES
-	map_accessibility_analysis
+  map_accessibility_analysis
 CATKIN_DEPENDS
-	${catkin_RUN_PACKAGES}
-	message_runtime
+  cob_3d_mapping_msgs
+  cv_bridge
+  geometry_msgs
+  image_transport
+  message_filters
+  message_runtime
+  nav_msgs
+  pcl_ros
+  roscpp
+  sensor_msgs
+  tf
 DEPENDS
-	Boost
-	OpenCV
+  Boost
+  OpenCV
 )
 
 include_directories(
@@ -95,7 +96,7 @@ add_dependencies(map_accessibility_analysis_client ${${PROJECT_NAME}_EXPORTED_TA
 #############
 ## Install ##
 #############
-install(TARGETS map_accessibility_analysis map_accessibility_analysis_server map_accessibility_analysis_client
+install(TARGETS map_accessibility_analysis map_accessibility_analysis_client map_accessibility_analysis_server
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -107,4 +108,8 @@ install(DIRECTORY ros/include/${PROJECT_NAME}/
 
 install(DIRECTORY ros/launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/ros
+)
+
+catkin_install_python(PROGRAMS ros/scripts/example_blocked_goal_alternative.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

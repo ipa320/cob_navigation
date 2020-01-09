@@ -9,7 +9,7 @@ catkin_package()
 ## Install ##
 #############
 
-install(DIRECTORY launch config
+install(DIRECTORY config launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
