@@ -18,8 +18,8 @@
 import rospy
 
 from geometry_msgs.msg import Pose2D
-from cob_map_accessibility_analysis.srv import CheckPointAccessibility, CheckPointAccessibilityRequest, CheckPointAccessibilityResponse
-from cob_map_accessibility_analysis.srv import CheckPerimeterAccessibility, CheckPerimeterAccessibilityRequest, CheckPerimeterAccessibilityResponse
+from cob_map_accessibility_analysis.srv import CheckPointAccessibility, CheckPointAccessibilityRequest, CheckPointAccessibilityResponse  # pylint: disable=import-error,no-name-in-module
+from cob_map_accessibility_analysis.srv import CheckPerimeterAccessibility, CheckPerimeterAccessibilityRequest, CheckPerimeterAccessibilityResponse  # pylint: disable=import-error,no-name-in-module
 
 
 class BlockedGoalAlternative():
