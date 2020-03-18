@@ -20,9 +20,6 @@ resolution: 0.025   # default: 0.05
 origin_x: 0.0       # default: 0.0
 origin_y: 0.0       # default: 0.0
 
-# Whether or not to use a static map (needs to be false if rolling_window = true)
-static_map: false # default: true
-
 # The list of all the costmap layers that will be loaded
 plugins:
 # The obstacle layer tracks the obstacles as read by the sensor data. The ObstacleCostmapPlugin marks and

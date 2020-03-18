@@ -18,8 +18,8 @@
 import rospy
 
 from geometry_msgs.msg import Pose2D
-from cob_map_accessibility_analysis.srv import CheckPointAccessibility, CheckPointAccessibilityRequest, CheckPointAccessibilityResponse
-from cob_map_accessibility_analysis.srv import CheckPerimeterAccessibility, CheckPerimeterAccessibilityRequest, CheckPerimeterAccessibilityResponse
+from cob_map_accessibility_analysis.srv import CheckPointAccessibility, CheckPointAccessibilityRequest, CheckPointAccessibilityResponse  # pylint: disable=import-error,no-name-in-module
+from cob_map_accessibility_analysis.srv import CheckPerimeterAccessibility, CheckPerimeterAccessibilityRequest, CheckPerimeterAccessibilityResponse  # pylint: disable=import-error,no-name-in-module
 
 
 class BlockedGoalAlternative():
@@ -49,15 +49,15 @@ class BlockedGoalAlternative():
 
             self.point_res = self.point_client(self.point_req)
             # rospy.loginfo("CheckPointAccessibilityResponse")
-            # print self.point_res
-        except rospy.ServiceException, e:
+            # print(self.point_res)
+        except rospy.ServiceException as e:
             rospy.logerr("Service call 'map_points_accessibility_check' failed: %s" % e)
             return (False, None)
 
         for i in range(len(self.point_req.points_to_check)):
             if self.point_res.accessibility_flags[i]:
                 rospy.loginfo("Nav Goal is valid")
-                # print self.point_req.points_to_check[i]
+                # print(self.point_req.points_to_check[i])
                 return (True, self.point_req.points_to_check[i])
 
         rospy.logwarn("Nav Goal is not accessible")
@@ -76,15 +76,15 @@ class BlockedGoalAlternative():
 
                 self.perimeter_res = self.perimeter_client(self.perimeter_req)
                 # rospy.loginfo("CheckPerimeterAccessibilityResponse")
-                # print self.perimeter_res
-            except rospy.ServiceException, e:
+                # print(self.perimeter_res)
+            except rospy.ServiceException as e:
                 rospy.logerr("Service call 'map_perimeter_accessibility_check' failed: %s" % e)
                 break
 
             # use first valid alternative
             if not self.perimeter_res.accessible_poses_on_perimeter == []:
                 rospy.loginfo("Found valid alternative")
-                # print self.perimeter_res.accessible_poses_on_perimeter[0]
+                # print(self.perimeter_res.accessible_poses_on_perimeter[0])
                 return (True, self.perimeter_res.accessible_poses_on_perimeter[0])
 
         rospy.logerr("No valid alternative in perimeter")

@@ -32,7 +32,7 @@ if __name__ == "__main__":
     pose2d.theta = random.uniform(-math.pi, math.pi)
 
     rospy.loginfo("Incoming Nav Goal")
-    print pose2d
+    print(pose2d)
 
     (success, goal) = bga.check_nav_goal(pose2d)
     if not success:

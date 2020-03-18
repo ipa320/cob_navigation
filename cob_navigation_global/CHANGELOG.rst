@@ -2,6 +2,19 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.10 (2020-03-18)
+-------------------
+* Merge pull request `#115 <https://github.com/ipa320/cob_navigation/issues/115>`_ from fmessmer/speedup_roslaunch_checks
+  speed-up roslaunch checks
+* speed-up roslaunch checks
+* Merge pull request `#112 <https://github.com/ipa320/cob_navigation/issues/112>`_ from fmessmer/fix_deprecation_warning
+  remove pre-hydro parameter static_map
+* remove pre-hydro parameter static_map
+* Merge pull request `#111 <https://github.com/ipa320/cob_navigation/issues/111>`_ from fmessmer/ci_updates
+  [travis] ci updates
+* catkin_lint fixes
+* Contributors: Felix Messmer, fmessmer
+
 0.6.9 (2019-11-07)
 ------------------
 * Merge pull request `#107 <https://github.com/ipa320/cob_navigation/issues/107>`_ from floweisshardt/fix/roslaunch_tests

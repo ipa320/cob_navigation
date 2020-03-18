@@ -2,6 +2,16 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.10 (2020-03-18)
+-------------------
+* Merge pull request `#110 <https://github.com/ipa320/cob_navigation/issues/110>`_ from HannesBachter/fix/more_output
+  more output for linear_nav
+* more output for linear_nav
+* Merge pull request `#111 <https://github.com/ipa320/cob_navigation/issues/111>`_ from fmessmer/ci_updates
+  [travis] ci updates
+* catkin_lint fixes
+* Contributors: Felix Messmer, fmessmer, hyb
+
 0.6.9 (2019-11-07)
 ------------------
 

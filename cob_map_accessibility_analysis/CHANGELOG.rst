@@ -2,6 +2,17 @@
 Changelog for package cob_map_accessibility_analysis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.10 (2020-03-18)
+-------------------
+* Merge pull request `#113 <https://github.com/ipa320/cob_navigation/issues/113>`_ from fmessmer/feature/python3_compatibility
+  [ci_updates] pylint + Python3 compatibility
+* disable pylint reporting false positives
+* fix pylint errors
+* Merge pull request `#111 <https://github.com/ipa320/cob_navigation/issues/111>`_ from fmessmer/ci_updates
+  [travis] ci updates
+* catkin_lint fixes
+* Contributors: Felix Messmer, fmessmer
+
 0.6.9 (2019-11-07)
 ------------------
 
