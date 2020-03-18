@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.10 (2020-03-18)
+-------------------
 * Merge pull request `#114 <https://github.com/ipa320/cob_navigation/issues/114>`_ from HannesBachter/add_cob4-23
   add cob4-23
 * add cob4-23

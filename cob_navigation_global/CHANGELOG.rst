@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.10 (2020-03-18)
+-------------------
 * Merge pull request `#115 <https://github.com/ipa320/cob_navigation/issues/115>`_ from fmessmer/speedup_roslaunch_checks
   speed-up roslaunch checks
 * speed-up roslaunch checks

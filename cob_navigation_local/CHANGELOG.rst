@@ -2,8 +2,8 @@
 Changelog for package cob_navigation_local
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.10 (2020-03-18)
+-------------------
 * Merge pull request `#112 <https://github.com/ipa320/cob_navigation/issues/112>`_ from fmessmer/fix_deprecation_warning
   remove pre-hydro parameter static_map
 * remove pre-hydro parameter static_map

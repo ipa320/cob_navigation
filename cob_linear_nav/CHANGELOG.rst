@@ -2,8 +2,8 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.10 (2020-03-18)
+-------------------
 * Merge pull request `#110 <https://github.com/ipa320/cob_navigation/issues/110>`_ from HannesBachter/fix/more_output
   more output for linear_nav
 * more output for linear_nav
