@@ -129,6 +129,9 @@ class NodeClass
     if(!private_nh.hasParam("robot_frame")) ROS_WARN("Used default parameter for robot_frame [/base_link]");
     private_nh.param("robot_frame", robot_frame_, std::string("base_link"));
 
+    if(!private_nh.hasParam("robot_footprint_frame")) ROS_WARN("Used default parameter for robot_footprint_frame [/base_footprint]");
+    private_nh.param("robot_footprint_frame", robot_footprint_frame_, std::string("base_footprint"));
+
     if(!private_nh.hasParam("slow_down_distance")) ROS_WARN("Used default parameter for slow_down_distance [0.5m]");
     private_nh.param("slow_down_distance", slow_down_distance_, 0.5);
 
@@ -281,7 +284,7 @@ class NodeClass
     geometry_msgs::Vector3Stamped vec_stamped;
 
     vec_stamped.vector = odometry->twist.twist.linear;
-    vec_stamped.header.frame_id =  "base_footprint";
+    vec_stamped.header.frame_id =  robot_footprint_frame_;
     try
     {
       tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(1.0));
@@ -290,7 +293,7 @@ class NodeClass
     catch(tf::TransformException& ex){ROS_ERROR("%s",ex.what());}
 
     vec_stamped.vector = odometry->twist.twist.angular;
-    vec_stamped.header.frame_id =  "base_footprint";
+    vec_stamped.header.frame_id =  robot_footprint_frame_;
     try
     {
       tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(1.0));
@@ -321,7 +324,7 @@ class NodeClass
 
 private:
   tf::TransformListener tf_listener_;
-  std::string global_frame_, robot_frame_;
+  std::string global_frame_, robot_frame_, robot_footprint_frame_;
   geometry_msgs::PoseStamped goal_pose_global_;
   geometry_msgs::PoseStamped zero_pose_;
   geometry_msgs::PoseStamped robot_pose_global_;
