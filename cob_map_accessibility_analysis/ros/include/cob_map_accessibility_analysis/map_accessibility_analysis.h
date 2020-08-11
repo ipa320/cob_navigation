@@ -72,7 +72,7 @@ public:
 	/**
 	 * This function checks the accessibility of points on a perimeter around a center point.
 	 *
-	 * \param accessible_poses_on_radius The returned set of accessible poses on the perimeter of the given circle, in map coordinates [px,px,rad]
+	 * \param accessible_poses_on_radius The returned set of accessible poses on the perimeter of the given circle, orientation x axis facing to the circle center, in map coordinates [px,px,rad]
 	 * \param center Center of the circle whose perimeter should be checked for accessibility, in map coordinates [px,px,rad]
 	 * \param radius Radius of the circle whose perimeter should be checked for accessibility, in [px]
 	 * \param rotational_sampling_step Rotational sampling step width for checking points on the perimeter, in [rad]
