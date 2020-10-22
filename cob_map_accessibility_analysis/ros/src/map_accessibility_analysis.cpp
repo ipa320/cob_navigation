@@ -47,7 +47,7 @@ void MapAccessibilityAnalysis::checkPoses(const std::vector<cv::Point>& points_t
 	if (approach_path_accessibility_check == true)
 	{
 		cv::Mat inflated_map_copy = inflated_map.clone();
-		cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+		cv::findContours(inflated_map_copy, area_contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 	}
 
 	for (unsigned int i = 0; i < points_to_check.size(); ++i)
@@ -91,7 +91,7 @@ void MapAccessibilityAnalysis::checkPerimeter(std::vector<Pose>& accessible_pose
 	if (approach_path_accessibility_check == true)
 	{
 		cv::Mat inflated_map_copy = inflated_map.clone();
-		cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+		cv::findContours(inflated_map_copy, area_contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 	}
 
 	for (double angle = center.orientation; angle < center.orientation + 2 * CV_PI; angle += rotational_sampling_step)
