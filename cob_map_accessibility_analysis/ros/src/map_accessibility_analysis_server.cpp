@@ -455,7 +455,7 @@ bool MapAccessibilityAnalysisServer::checkPolygonCallback(cob_3d_mapping_msgs::G
 
   // compute inflated polygon
   cv::Mat polygon_expanded = 255 * cv::Mat::ones(original_map_.rows, original_map_.cols, original_map_.type());
-  cv::drawContours(polygon_expanded, polygon_contours, -1, cv::Scalar(128), CV_FILLED);
+  cv::drawContours(polygon_expanded, polygon_contours, -1, cv::Scalar(128), cv::FILLED);
   cv::erode(polygon_expanded, polygon_expanded, cv::Mat(), cv::Point(-1, -1), cvRound(robot_radius_ * inverse_map_resolution_));
 
   // combine inflated polygon with inflated map
@@ -474,7 +474,7 @@ bool MapAccessibilityAnalysisServer::checkPolygonCallback(cob_3d_mapping_msgs::G
   if (approach_path_accessibility_check_ == true)
   {
     cv::Mat inflated_map_copy = inflated_map.clone();
-    cv::findContours(inflated_map_copy, area_contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+    cv::findContours(inflated_map_copy, area_contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
   }
 
 // iterate through all white points and consider those as potential approach poses that have an expanded table pixel in

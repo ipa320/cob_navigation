@@ -13,7 +13,7 @@ env:
     - CATKIN_LINT_ARGS='--ignore description_boilerplate'
     - CMAKE_ARGS=-DCMAKE_BUILD_TYPE=Release
     - NOT_TEST_DOWNSTREAM=true
-    - PYLINT_ARGS="--output-format=parseable --errors-only --ignored-modules=catkin_pkg"
+    - PYLINT_ARGS="--output-format=parseable --errors-only --ignored-modules=catkin_pkg,setuptools"
     - PYLINT2_CHECK=true
     - PYLINT3_CHECK=true
     - ROS_REPO=ros
@@ -22,6 +22,7 @@ env:
   matrix:
     - ROS_DISTRO=kinetic
     - ROS_DISTRO=melodic
+    - ROS_DISTRO=noetic UPSTREAM_WORKSPACE='.travis.rosinstall.noetic' PYLINT2_CHECK=true PYLINT3_CHECK=false  # noetic is python3 only, i.e. only pylint command exists which is used as executable in PYLINT2_CHECK
 install:
   - git clone --quiet --depth 1 https://github.com/fmessmer/industrial_ci.git .industrial_ci -b master_pylint
 script:
