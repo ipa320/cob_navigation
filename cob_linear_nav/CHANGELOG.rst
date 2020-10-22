@@ -2,6 +2,23 @@
 Changelog for package cob_linear_nav
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.11 (2020-10-22)
+-------------------
+* Merge pull request `#120 <https://github.com/ipa320/cob_navigation/issues/120>`_ from fmessmer/test_noetic
+  test noetic
+* Bump CMake version to avoid CMP0048 warning
+* Merge pull request `#119 <https://github.com/ipa320/cob_navigation/issues/119>`_ from AravindaDP/feat/cob_linear_nav-velocity_threshold_param
+  feat: [cob_linear_nav] Goal abortion speed params
+* feat: [cob_linear_nav] Goal abortion speed params
+  Support adjusting linear and rotational velocity thresholds for goal
+  abortion detection. (No movement due to obstacle)
+* Merge pull request `#117 <https://github.com/ipa320/cob_navigation/issues/117>`_ from AravindaDP/feat/cob_linear_nav_footprint_tf_param
+  feat: robot_footprint_frame rosparam
+* feat: robot_footprint_frame rosparam
+  Support setting robot_footprint_frame as a rosparam (issues/116)
+  (defaults to "base_footprint")
+* Contributors: Felix Messmer, Florian Weisshardt, Pramuditha Aravinda, fmessmer
+
 0.6.10 (2020-03-18)
 -------------------
 * Merge pull request `#110 <https://github.com/ipa320/cob_navigation/issues/110>`_ from HannesBachter/fix/more_output

@@ -2,6 +2,16 @@
 Changelog for package cob_map_accessibility_analysis
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.11 (2020-10-22)
+-------------------
+* Merge pull request `#120 <https://github.com/ipa320/cob_navigation/issues/120>`_ from fmessmer/test_noetic
+  test noetic
+* Bugfix for OpenCV API change 2
+* Bugfix for OpenCV API change
+* use setuptools instead of distutils
+* Bump CMake version to avoid CMP0048 warning
+* Contributors: Felix Messmer, Richard Bormann, fmessmer
+
 0.6.10 (2020-03-18)
 -------------------
 * Merge pull request `#113 <https://github.com/ipa320/cob_navigation/issues/113>`_ from fmessmer/feature/python3_compatibility

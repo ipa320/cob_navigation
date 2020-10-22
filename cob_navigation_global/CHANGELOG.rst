@@ -2,6 +2,13 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.11 (2020-10-22)
+-------------------
+* Merge pull request `#120 <https://github.com/ipa320/cob_navigation/issues/120>`_ from fmessmer/test_noetic
+  test noetic
+* Bump CMake version to avoid CMP0048 warning
+* Contributors: Felix Messmer, fmessmer
+
 0.6.10 (2020-03-18)
 -------------------
 * Merge pull request `#115 <https://github.com/ipa320/cob_navigation/issues/115>`_ from fmessmer/speedup_roslaunch_checks

@@ -123,11 +123,20 @@ class NodeClass
     if(!private_nh.hasParam("speed_threshold_rot")) ROS_WARN("Used default parameter for speed_threshold_rot [0.08 rad/s]");
     private_nh.param("speed_threshold_rot", speed_threshold_rot_, 0.08);
 
+    if(!private_nh.hasParam("goal_abortion_speed")) ROS_WARN("Used default parameter for goal_abortion_speed [0.01 m/s]");
+    private_nh.param("goal_abortion_speed", goal_abortion_speed_, 0.01);
+
+    if(!private_nh.hasParam("goal_abortion_speed_rot")) ROS_WARN("Used default parameter for goal_abortion_speed_rot [0.01 rad/s]");
+    private_nh.param("goal_abortion_speed_rot", goal_abortion_speed_rot_, 0.01);
+
     if(!private_nh.hasParam("global_frame")) ROS_WARN("Used default parameter for global_frame [/map]");
     private_nh.param("global_frame", global_frame_, std::string("map"));
 
     if(!private_nh.hasParam("robot_frame")) ROS_WARN("Used default parameter for robot_frame [/base_link]");
     private_nh.param("robot_frame", robot_frame_, std::string("base_link"));
+
+    if(!private_nh.hasParam("robot_footprint_frame")) ROS_WARN("Used default parameter for robot_footprint_frame [/base_footprint]");
+    private_nh.param("robot_footprint_frame", robot_footprint_frame_, std::string("base_footprint"));
 
     if(!private_nh.hasParam("slow_down_distance")) ROS_WARN("Used default parameter for slow_down_distance [0.5m]");
     private_nh.param("slow_down_distance", slow_down_distance_, 0.5);
@@ -281,7 +290,7 @@ class NodeClass
     geometry_msgs::Vector3Stamped vec_stamped;
 
     vec_stamped.vector = odometry->twist.twist.linear;
-    vec_stamped.header.frame_id =  "base_footprint";
+    vec_stamped.header.frame_id =  robot_footprint_frame_;
     try
     {
       tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(1.0));
@@ -290,7 +299,7 @@ class NodeClass
     catch(tf::TransformException& ex){ROS_ERROR("%s",ex.what());}
 
     vec_stamped.vector = odometry->twist.twist.angular;
-    vec_stamped.header.frame_id =  "base_footprint";
+    vec_stamped.header.frame_id =  robot_footprint_frame_;
     try
     {
       tf_listener_.waitForTransform(robot_frame_, vec_stamped.header.frame_id, ros::Time(0), ros::Duration(1.0));
@@ -321,7 +330,7 @@ class NodeClass
 
 private:
   tf::TransformListener tf_listener_;
-  std::string global_frame_, robot_frame_;
+  std::string global_frame_, robot_frame_, robot_footprint_frame_;
   geometry_msgs::PoseStamped goal_pose_global_;
   geometry_msgs::PoseStamped zero_pose_;
   geometry_msgs::PoseStamped robot_pose_global_;
@@ -351,8 +360,8 @@ private:
 
   //Potential field Controller variables
   double vx_last_, vy_last_, x_last_, y_last_, theta_last_, vtheta_last_;
-  double goal_threshold_, speed_threshold_;
-  double goal_threshold_rot_, speed_threshold_rot_;
+  double goal_threshold_, speed_threshold_, goal_abortion_speed_;
+  double goal_threshold_rot_, speed_threshold_rot_, goal_abortion_speed_rot_;
   double kp_, kv_, virt_mass_;
   double kp_rot_, kv_rot_, virt_mass_rot_;
   double last_time_;
@@ -469,15 +478,15 @@ void NodeClass::stopMovement() {
 bool NodeClass::notMovingDueToObstacle() {
   if (move_ == true && // should move
       finished_ == false && // has not reached goal
-      fabs(robot_twist_linear_robot_.vector.x) <= 0.01 && // velocity components are small
-      fabs(robot_twist_linear_robot_.vector.y) <= 0.01 &&
-      fabs(robot_twist_angular_robot_.vector.z) <= 0.01 &&
+      fabs(robot_twist_linear_robot_.vector.x) <= goal_abortion_speed_ && // velocity components are small
+      fabs(robot_twist_linear_robot_.vector.y) <= goal_abortion_speed_ &&
+      fabs(robot_twist_angular_robot_.vector.z) <= goal_abortion_speed_rot_ &&
       ros::Time::now().toSec() - last_time_moving_ > goal_abortion_time_ ) // has not been moving for x seconds
   {
     return true;
-  } else if ( fabs(robot_twist_linear_robot_.vector.x) > 0.01 ||
-              fabs(robot_twist_linear_robot_.vector.y) > 0.01 ||
-              fabs(robot_twist_angular_robot_.vector.z) > 0.01 )
+  } else if ( fabs(robot_twist_linear_robot_.vector.x) > goal_abortion_speed_ ||
+              fabs(robot_twist_linear_robot_.vector.y) > goal_abortion_speed_ ||
+              fabs(robot_twist_angular_robot_.vector.z) > goal_abortion_speed_rot_ )
   { // still moving, then update last_time_moving_
     last_time_moving_ = ros::Time::now().toSec();
   }
