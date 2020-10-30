@@ -15,7 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-  CATKIN_DEPENDS geometry_msgs move_base_msgs nav_msgs
+  CATKIN_DEPENDS actionlib cob_srvs geometry_msgs move_base_msgs nav_msgs roscpp tf
 )
 
 include_directories(${catkin_INCLUDE_DIRS})
