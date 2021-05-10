@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>cob_mapping_slam</name>
-  <version>0.6.11</version>
+  <version>0.6.12</version>
   <description>
     cob_mapping_slam holds launch files for running SLAM using the <a href="http://ros.org/wiki/gmapping">gmapping</a> package.
   </description>
