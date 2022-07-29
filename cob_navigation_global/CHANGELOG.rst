@@ -2,6 +2,9 @@
 Changelog for package cob_navigation_global
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.6.12 (2021-05-10)
 -------------------
 
