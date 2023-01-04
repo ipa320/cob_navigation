@@ -2,6 +2,13 @@
 Changelog for package cob_navigation_config
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#123 <https://github.com/ipa320/cob_navigation/issues/123>`_ from fmessmer/fix/add_new_robots
+  add new research robots
+* add new research robots
+* Contributors: Felix Messmer, fmessmer
+
 0.6.13 (2022-07-29)
 -------------------
 
