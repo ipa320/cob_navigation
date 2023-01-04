@@ -11,7 +11,7 @@ cob_navigation
 
 ## Travis - Continuous Integration
 
-Status: [![Build Status](https://travis-ci.com/ipa320/cob_navigation.svg?branch=indigo_dev)](https://travis-ci.com/ipa320/cob_navigation)
+Status: [![Build Status](https://app.travis-ci.com/ipa320/cob_navigation.svg?branch=indigo_dev)](https://app.travis-ci.com/ipa320/cob_navigation)
 
 ## ROS Buildfarm
 
