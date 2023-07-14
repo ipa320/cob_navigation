@@ -566,7 +566,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "map_accessibility_analysis_server");
 
-  ros::NodeHandle nh;
+  ros::NodeHandle nh("~");
 
   MapAccessibilityAnalysisServer map_accessibility_analysis(nh);
 
