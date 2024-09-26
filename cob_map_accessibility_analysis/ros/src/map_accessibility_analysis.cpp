@@ -50,6 +50,10 @@ void MapAccessibilityAnalysis::checkPoses(const std::vector<cv::Point>& points_t
 		cv::findContours(inflated_map_copy, area_contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 	}
 
+#ifdef __DEBUG_DISPLAYS__
+	if (approach_path_accessibility_check == true)
+		cv::circle(display_map, robot_location, 2, cv::Scalar(127), -1);
+#endif
 	for (unsigned int i = 0; i < points_to_check.size(); ++i)
 	{
 		const int u = points_to_check[i].x;
@@ -65,9 +69,9 @@ void MapAccessibilityAnalysis::checkPoses(const std::vector<cv::Point>& points_t
 
 #ifdef __DEBUG_DISPLAYS__
 		if (accessibility_flags[i] == false)
-			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(32), 10);
+			cv::circle(display_map, cv::Point(u, v), 1, cv::Scalar(32), -1);
 		else
-			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 10);
+			cv::circle(display_map, cv::Point(u, v), 1, cv::Scalar(192), -1);
 #endif
 	}
 
@@ -94,6 +98,11 @@ void MapAccessibilityAnalysis::checkPerimeter(std::vector<Pose>& accessible_pose
 		cv::findContours(inflated_map_copy, area_contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 	}
 
+#ifdef __DEBUG_DISPLAYS__
+	cv::circle(display_map, cv::Point(center.x, center.y), 12, cv::Scalar(0), -1);
+	if (approach_path_accessibility_check == true)
+		cv::circle(display_map, robot_location, 2, cv::Scalar(127), -1);
+#endif
 	for (double angle = center.orientation; angle < center.orientation + 2 * CV_PI; angle += rotational_sampling_step)
 	{
 		const double x = center.x + radius * cos(angle);
@@ -122,9 +131,9 @@ void MapAccessibilityAnalysis::checkPerimeter(std::vector<Pose>& accessible_pose
 		}
 #ifdef __DEBUG_DISPLAYS__
 		if (found_pose == true)
-			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(192), 5);
+			cv::circle(display_map, cv::Point(u, v), 1, cv::Scalar(192), -1);
 		else
-			cv::circle(display_map, cv::Point(u, v), 2, cv::Scalar(32), 5);
+			cv::circle(display_map, cv::Point(u, v), 1, cv::Scalar(32), -1);
 #endif
 	}
 
